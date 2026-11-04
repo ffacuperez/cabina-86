@@ -34,4 +34,6 @@ npm run db:types   # genera los tipos de TypeScript de la base
 npm run db:stop
 ```
 
-Para conectar el proyecto remoto: `npx supabase login` y `npx supabase link --project-ref TU_REF`.
+Los cambios de la base van como archivos en `supabase/migrations/`. Al llegar a `main`, el workflow *Migraciones de Supabase* los aplica a producción (necesita los secrets `SUPABASE_ACCESS_TOKEN` y `SUPABASE_DB_PASSWORD`).
+
+Para conectar el proyecto remoto a mano: `npx supabase login` y `npx supabase link --project-ref TU_REF`.
