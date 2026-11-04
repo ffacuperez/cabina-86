@@ -1,0 +1,23 @@
+name: Pruebas de la base
+
+# Levanta Supabase local, aplica las migraciones y corre las pruebas pgTAP.
+on:
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/pruebas-db.yml'
+  workflow_dispatch:
+
+jobs:
+  pgtap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Levantar Supabase local
+        # Solo hace falta la base y Auth (crea auth.users)
+        run: supabase start -x realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+      - name: Correr pruebas pgTAP
+        run: supabase test db
