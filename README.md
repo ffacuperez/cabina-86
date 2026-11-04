@@ -16,3 +16,7 @@ npm run build    # build de producción en dist/
 npm run preview  # sirve el build para probar la PWA
 npm run lint
 ```
+
+## Deploy
+
+Se publica en Vercel automáticamente: cada push a `main` va a producción y cada PR genera una URL de vista previa. La configuración está en `vercel.json`.
