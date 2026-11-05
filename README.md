@@ -44,3 +44,19 @@ Para conectar el proyecto remoto a mano: `npx supabase login` y `npx supabase li
 ## Diseño
 
 Los tokens (colores, tipografía, espaciado, radios y sombras) salen del Figma *La Bandeja — Prototipo* y viven en `src/estilos/tokens.css`. Las fuentes se sirven desde la app con Fontsource, así funcionan sin conexión. En `/muestrario` se ven todos juntos.
+
+## Tareas programadas (GitHub Actions)
+
+| Workflow | Cuándo | Qué hace |
+|---|---|---|
+| *Latido de Supabase* | Cada 3 días | Llama a `latido()` para que el plan gratis no pause el proyecto (se pausa a los 7 días sin actividad) |
+| *Backup semanal de la base* | Lunes 03:43 | Exporta roles, esquema y datos, los cifra con `BACKUP_PASSPHRASE` y los guarda 90 días como artifact |
+
+Los dos se pueden correr a mano desde **Actions → Run workflow**.
+
+Para abrir un backup: bajar el artifact, descomprimir el `.zip` y correr
+
+```bash
+gpg --decrypt cabina86-AAAA-MM-DD.tar.gz.gpg > backup.tar.gz   # pide BACKUP_PASSPHRASE
+tar -xzf backup.tar.gz                                          # roles.sql, esquema.sql, datos.sql
+```
