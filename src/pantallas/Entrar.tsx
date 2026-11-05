@@ -30,9 +30,10 @@ export default function Entrar() {
 
   return (
     <main className="app">
-      <h1>Cabina 86</h1>
-      <p>Pasate discos con tus amigos, en rondas.</p>
-      <button type="button" onClick={continuar} disabled={enviando || session === undefined}>
+      <p className="mono-s suave">DISCOS · CDs · RONDAS</p>
+      <h1 className="cartel-xl">Cabina 86</h1>
+      <p>Pasale un disco a tus amigos. Escuchalo afuera. Acá se banca o se bardea.</p>
+      <button className="boton boton--ancho" type="button" onClick={continuar} disabled={enviando || session === undefined}>
         {enviando ? 'Abriendo Google…' : 'Continuar con Google'}
       </button>
       {error && <p role="alert" className="error">{MENSAJE_ERROR}</p>}

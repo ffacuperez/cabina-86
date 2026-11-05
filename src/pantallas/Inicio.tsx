@@ -24,9 +24,9 @@ export default function Inicio() {
       {perfil?.foto_url && (
         <img className="avatar" src={perfil.foto_url} alt="" width={72} height={72} referrerPolicy="no-referrer" />
       )}
-      <h1>Hola, {perfil?.nombre ?? '…'}</h1>
+      <h1 className="cartel-m">Hola, {perfil?.nombre ?? '…'}</h1>
       <p>Ya entraste a Cabina 86.</p>
-      <button type="button" onClick={salir}>Salir</button>
+      <button className="boton boton--contorno" type="button" onClick={salir}>Salir</button>
     </main>
   )
 }

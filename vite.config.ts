@@ -7,14 +7,16 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Incluye las fuentes en el precache para que la PWA se vea igual sin conexión
+      workbox: { globPatterns: ['**/*.{js,css,html,woff2,png,svg}'] },
       includeAssets: ['favicon-32.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Cabina 86',
         short_name: 'Cabina 86',
         description: 'Pasate discos con tus amigos, en rondas.',
         lang: 'es-AR',
-        theme_color: '#111111',
-        background_color: '#111111',
+        theme_color: '#c9d6a3',
+        background_color: '#c9d6a3',
         display: 'standalone',
         start_url: '/',
         icons: [

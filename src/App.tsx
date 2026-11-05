@@ -3,6 +3,7 @@ import { AuthProvider } from './auth/AuthProvider'
 import { RequiereSesion } from './auth/RequiereSesion'
 import Entrar from './pantallas/Entrar'
 import Inicio from './pantallas/Inicio'
+import Muestrario from './pantallas/Muestrario'
 import { faltaConfiguracion } from './lib/supabase'
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/entrar" element={<Entrar />} />
+          <Route path="/muestrario" element={<Muestrario />} />
           <Route element={<RequiereSesion />}>
             <Route path="/" element={<Inicio />} />
           </Route>

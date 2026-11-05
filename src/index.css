@@ -1,28 +1,16 @@
-:root {
-  color-scheme: dark;
-  font-family: system-ui, sans-serif;
-  background: #111;
-  color: #e8e1d3;
-}
-body { margin: 0; }
+@import './estilos/fuentes.css';
+@import './estilos/tokens.css';
+@import './estilos/base.css';
+
+/* Pantallas provisorias hasta HU-01 */
 .app {
   min-height: 100dvh;
   display: grid;
   place-content: center;
+  gap: var(--esp-3);
+  padding: var(--margen-pantalla);
   text-align: center;
-  padding: 16px;
 }
-.app { gap: 12px; }
-button {
-  font: inherit;
-  padding: 12px 20px;
-  border-radius: 999px;
-  border: 1px solid #e8e1d3;
-  background: #e8e1d3;
-  color: #111;
-  cursor: pointer;
-}
-button:disabled { opacity: 0.6; cursor: default; }
-.error { color: #ff8a5c; }
+.error { color: var(--magenta); font: var(--texto-m-fuerte); }
 .avatar { border-radius: 50%; justify-self: center; }
-.cargando { text-align: center; padding: 32px 16px; }
+.cargando { text-align: center; padding: var(--esp-8) var(--esp-4); font: var(--mono-s); letter-spacing: var(--mono-s-tracking); }
