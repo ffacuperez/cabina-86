@@ -7,4 +7,7 @@ if (!url || !key) {
   throw new Error('Faltan VITE_SUPABASE_URL o VITE_SUPABASE_PUBLISHABLE_KEY en el .env')
 }
 
-export const supabase = createClient(url, key)
+// PKCE: el login vuelve con un código de un solo uso en vez del token en la URL
+export const supabase = createClient(url, key, {
+  auth: { flowType: 'pkce' },
+})
