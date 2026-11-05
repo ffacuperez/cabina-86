@@ -1,0 +1,116 @@
+/* Cabina 86 · Base: reseteo mínimo y estilos de los elementos comunes */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--fondo);
+  color: var(--texto);
+  font: var(--texto-m);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, p { margin: 0; }
+img { max-width: 100%; display: block; }
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--marino);
+  outline-offset: 2px;
+}
+
+/* ── Utilidades de texto (nombres del Figma) ── */
+.cartel-xl { font: var(--cartel-xl); letter-spacing: var(--cartel-xl-tracking); text-transform: uppercase; }
+.cartel-m  { font: var(--cartel-m);  letter-spacing: var(--cartel-m-tracking);  text-transform: uppercase; }
+.cartel-s  { font: var(--cartel-s);  letter-spacing: var(--cartel-s-tracking);  text-transform: uppercase; }
+.texto-m        { font: var(--texto-m); }
+.texto-m-fuerte { font: var(--texto-m-fuerte); }
+.texto-s        { font: var(--texto-s); }
+.mono-m { font: var(--mono-m); letter-spacing: var(--mono-m-tracking); }
+.mono-s { font: var(--mono-s); letter-spacing: var(--mono-s-tracking); }
+.lcd-m  { font: var(--lcd-m); letter-spacing: var(--lcd-tracking); text-transform: uppercase; }
+.lcd-s  { font: var(--lcd-s); letter-spacing: var(--lcd-tracking); text-transform: uppercase; }
+.mano   { font: var(--mano-m); }
+.suave  { opacity: 0.75; }
+
+/* ── Botón (C86/Botón: primario, secundario, contorno, mostaza) ── */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 var(--esp-5);
+  border: 0;
+  border-radius: var(--radio-m);
+  background: var(--magenta);
+  color: var(--acrilico-claro);
+  box-shadow: var(--sombra-boton);
+  font: var(--cartel-s);
+  letter-spacing: var(--cartel-s-tracking);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform var(--duracion-corta) var(--curva), filter var(--duracion-corta);
+}
+.boton:active { transform: translateY(1px); box-shadow: none; }
+.boton:disabled { opacity: 0.5; cursor: default; transform: none; }
+.boton--secundario { background: var(--marino); }
+.boton--mostaza { background: var(--mostaza); color: var(--negro); }
+.boton--contorno { background: transparent; color: var(--negro); border: var(--borde-contorno); box-shadow: none; }
+.boton--ancho { width: 100%; }
+.boton .flecha { font: var(--texto-boton); }
+
+/* ── Chip (C86/Chip) ── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--esp-2) 13px;
+  border: var(--borde-chip);
+  border-radius: var(--radio-chip);
+  background: transparent;
+  color: var(--negro);
+  font: var(--texto-m-fuerte);
+  cursor: pointer;
+}
+.chip[aria-pressed='true'] { background: var(--negro); color: var(--mostaza); border-color: var(--negro); }
+
+/* ── LCD (C86/LCD) ── */
+.lcd {
+  display: inline-block;
+  padding: 6px var(--esp-3);
+  border: var(--borde-lcd);
+  border-radius: var(--radio-xs);
+  background: var(--lcd);
+  color: var(--lcd-tinta);
+  box-shadow: var(--sombra-lcd);
+  font: var(--lcd-m);
+  letter-spacing: var(--lcd-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Rótulo (pasillos del exhibidor) ── */
+.rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: 5px 10px;
+  border-radius: var(--radio-xs);
+  background: var(--negro);
+  color: var(--acrilico-claro);
+  font: var(--cartel-s);
+  letter-spacing: var(--cartel-s-tracking);
+  text-transform: uppercase;
+}
+.rotulo .lcd-s { color: var(--mostaza); }

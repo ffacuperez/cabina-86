@@ -1,0 +1,19 @@
+.muestrario {
+  display: grid;
+  gap: var(--esp-8);
+  padding: var(--esp-8) var(--margen-pantalla) 64px;
+}
+.muestrario section { display: grid; gap: var(--esp-4); justify-items: start; }
+.muestrario ul { list-style: none; margin: 0; padding: 0; width: 100%; }
+.muestrario__colores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--esp-4) var(--esp-3); }
+.muestrario__colores li { display: grid; gap: 2px; }
+.muestrario__muestra {
+  height: 56px;
+  border-radius: var(--radio-m);
+  border: var(--borde-acrilico);
+  margin-bottom: var(--esp-1);
+}
+.muestrario__textos { display: grid; gap: var(--esp-4); }
+.muestrario__textos li { display: grid; gap: var(--esp-1); padding-bottom: var(--esp-3); border-bottom: var(--borde-acrilico); }
+.muestrario__fila { display: grid; gap: var(--esp-3); width: 100%; }
+.muestrario__fila--horizontal { display: flex; gap: var(--esp-2); }

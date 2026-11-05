@@ -40,3 +40,7 @@ Los cambios de la base van como archivos en `supabase/migrations/`. Al llegar a 
 Cada PR que toca `supabase/` corre las pruebas pgTAP (workflow *Pruebas de la base*).
 
 Para conectar el proyecto remoto a mano: `npx supabase login` y `npx supabase link --project-ref TU_REF`.
+
+## Diseño
+
+Los tokens (colores, tipografía, espaciado, radios y sombras) salen del Figma *La Bandeja — Prototipo* y viven en `src/estilos/tokens.css`. Las fuentes se sirven desde la app con Fontsource, así funcionan sin conexión. En `/muestrario` se ven todos juntos.

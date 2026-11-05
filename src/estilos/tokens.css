@@ -1,0 +1,114 @@
+/*
+ * Cabina 86 · Tokens de diseño (T-07)
+ * Fuente: Figma "La Bandeja — Prototipo", páginas Componentes y Prototipo.
+ * Disquería de fines de los 80 en foto de rollo: acrílico verde, cartel, LCD y teclas de equipo.
+ */
+:root {
+  /* ── Color ─────────────────────────────────────────── */
+  /* Acrílico: el fondo de la disquería */
+  --acrilico: #c9d6a3;          /* fondo de pantalla */
+  --acrilico-claro: #dde6bf;    /* texto sobre oscuro, brillo de repisa */
+  --acrilico-oscuro: #a9b884;   /* repisas, bordes, nervios de la caja */
+  --acrilico-luz: #f2f7db;      /* centro iluminado del exhibidor */
+
+  /* Neutros */
+  --negro: #1f231c;             /* texto principal, rótulos, botonera */
+  --negro-2: #33392d;           /* teclas, cuerpo de la caja de CD */
+
+  /* Acentos (carteles y tapas) */
+  --marino: #26324f;            /* cartel, cabina de escucha, botón secundario */
+  --magenta: #c23f78;           /* botón primario, "RECOMENDADO" */
+  --mostaza: #e3c16f;           /* tecla activa, filete, botón mostaza */
+  --naranja: #ff7a1a;           /* sticker PENDIENTE, "ABIERTO", deuda destacada */
+
+  /* LCD */
+  --lcd: #b3c78a;               /* pantalla */
+  --lcd-tinta: #1f2a17;         /* dígitos */
+
+  /* Papel */
+  --cartulina: #f1e6c2;         /* tarjetita, vúmetro, ticket */
+  --cinta: #e9dfb8;             /* cinta que pega la tarjetita */
+
+  /* Luz de rollo (light leak) */
+  --luz-rollo: rgb(255 89 38);
+
+  /* Roles */
+  --fondo: var(--acrilico);
+  --texto: var(--negro);
+  --texto-suave: color-mix(in srgb, var(--negro) 75%, transparent);
+  --texto-sobre-oscuro: var(--acrilico-claro);
+  --peligro: var(--naranja);
+
+  /* ── Tipografía ────────────────────────────────────── */
+  --fuente-cartel: 'Zalando Sans Expanded', 'Arial Black', sans-serif; /* siempre 900 itálica, mayúsculas */
+  --fuente-texto: 'Figtree', system-ui, sans-serif;
+  --fuente-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --fuente-lcd: 'VT323', ui-monospace, monospace;                     /* siempre mayúsculas */
+  --fuente-mano: 'Permanent Marker', 'Comic Sans MS', cursive;
+
+  /* Estilos de texto del Figma: tamaño / interlineado / espaciado */
+  --cartel-xl: 900 italic 40px/0.95 var(--fuente-cartel);   --cartel-xl-tracking: -0.5px;
+  --cartel-m:  900 italic 20px/1.05 var(--fuente-cartel);   --cartel-m-tracking: 0;
+  --cartel-s:  900 italic 14px/1.1 var(--fuente-cartel);    --cartel-s-tracking: 0.3px;
+
+  --texto-m:        400 15px/1.4 var(--fuente-texto);
+  --texto-m-fuerte: 600 15px/1.35 var(--fuente-texto);
+  --texto-s:        400 13px/1.35 var(--fuente-texto);
+  --texto-boton:    700 16px/1.2 var(--fuente-texto);
+
+  --mono-m: 500 13px/1.25 var(--fuente-mono);  --mono-m-tracking: 0.5px;
+  --mono-s: 500 11px/1.2 var(--fuente-mono);   --mono-s-tracking: 0.8px;
+  --mono-tecla: 700 11px/1.2 var(--fuente-mono);
+
+  --lcd-xxl: 400 96px/0.85 var(--fuente-lcd);
+  --lcd-m:   400 24px/1 var(--fuente-lcd);     --lcd-tracking: 0.5px;
+  --lcd-s:   400 18px/1 var(--fuente-lcd);
+
+  --mano-m: 400 13.6px/1.18 var(--fuente-mano);
+
+  /* ── Espaciado (múltiplos de 4; 24 es el margen de pantalla) ── */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 20px;
+  --esp-6: 24px;
+  --esp-8: 32px;
+  --margen-pantalla: var(--esp-6);
+  --ancho-max: 430px;           /* el diseño es de 390px; en pantallas grandes se centra */
+
+  /* ── Radios ────────────────────────────────────────── */
+  --radio-xs: 3px;              /* LCD, rótulos, stickers */
+  --radio-s: 5px;               /* teclas de la botonera */
+  --radio-m: 6px;               /* botones, carteles */
+  --radio-l: 8px;               /* display de puntaje, cabina de escucha */
+  --radio-chip: 14px;
+
+  /* ── Sombras ───────────────────────────────────────── */
+  --sombra-cartel: 0 8px 12px rgb(31 36 28 / 0.35);
+  --sombra-caja: 0 3.6px 3px rgb(31 36 28 / 0.35);
+  --sombra-repisa: 0 4px 6px rgb(31 36 28 / 0.3);
+  --sombra-papel: 0.8px 2.4px 1.6px rgb(31 36 28 / 0.25);
+  --sombra-boton: inset 0 -3px 0 rgb(0 0 0 / 0.25);
+  --sombra-tecla: 0 4px 0 rgb(0 0 0 / 0.5), inset 0 2px 0 rgb(255 255 229 / 0.1);
+  --sombra-tecla-hundida: inset 0 2px 2px rgb(0 0 0 / 0.3);
+  --sombra-lcd: inset 0 2px 4px rgb(31 41 23 / 0.35);
+
+  /* ── Bordes ────────────────────────────────────────── */
+  --borde-lcd: 3px solid var(--negro);
+  --borde-contorno: 1.5px solid var(--negro);
+  --borde-chip: 1.2px solid var(--negro);
+  --borde-acrilico: 1px solid var(--acrilico-oscuro);
+
+  /* ── Movimiento ────────────────────────────────────── */
+  --duracion-corta: 120ms;
+  --duracion-media: 240ms;
+  --curva: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duracion-corta: 0ms;
+    --duracion-media: 0ms;
+  }
+}
