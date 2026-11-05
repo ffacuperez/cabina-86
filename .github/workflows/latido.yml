@@ -1,0 +1,23 @@
+name: Latido de Supabase
+
+# El plan gratis de Supabase pausa el proyecto tras 7 días sin actividad.
+# Cada 3 días se hace una consulta liviana para mantenerlo despierto.
+on:
+  schedule:
+    - cron: '17 12 */3 * *'   # 09:17 en Argentina, cada 3 días
+  workflow_dispatch:
+
+jobs:
+  latido:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar la base
+        env:
+          URL: https://xoxuewxwxkfgeiioileh.supabase.co
+          # Clave publicable: es pública, la misma que usa la app en el navegador
+          KEY: sb_publishable_QseiI01TSRIpZq65NToB-w_WKVS56sQ
+        run: |
+          respuesta=$(curl -sS --fail-with-body --retry 3 --retry-delay 10 \
+            -X POST "$URL/rest/v1/rpc/latido" \
+            -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}')
+          echo "Supabase respondió: $respuesta"
