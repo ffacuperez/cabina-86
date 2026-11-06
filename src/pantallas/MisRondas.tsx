@@ -9,8 +9,8 @@ const dosCifras = (n: number) => String(n).padStart(2, '0')
  * Tocar una ronda para entrar a su exhibidor es HU-05.
  */
 export default function MisRondas({ rondas, deudaTotal }: { rondas: RondaMia[]; deudaTotal: number }) {
-  // La tarjeta marino con filete mostaza: la ronda donde más debés
-  const destacada = rondas.reduce((max, r) => (r.deuda > max.deuda ? r : max), rondas[0])
+  // La tarjeta marino con filete mostaza: la última ronda en la que entraste
+  const destacada = rondas.reduce((ultima, r) => (r.ultimaEntrada > ultima.ultimaEntrada ? r : ultima), rondas[0])
 
   return (
     <main className="pantalla mis-rondas">
