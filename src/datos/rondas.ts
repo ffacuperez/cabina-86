@@ -10,6 +10,8 @@ export type RondaMia = {
   integrantes: string[]
   /** Mis pendientes en esta ronda (RN-05) */
   deuda: number
+  /** Cuándo entré a esta ronda por última vez (la registra entrar_a_ronda, HU-05) */
+  ultimaEntrada: string
 }
 
 type Estado =
@@ -19,6 +21,7 @@ type Estado =
 
 type FilaMiembro = {
   se_unio_en: string
+  ultima_entrada: string
   rondas: {
     id: string
     nombre: string
@@ -46,7 +49,7 @@ export function useMisRondas() {
     Promise.all([
       supabase
         .from('miembros_ronda')
-        .select('se_unio_en, rondas!inner(id, nombre, miembros_ronda(se_unio_en, usuarios(nombre)))')
+        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, miembros_ronda(se_unio_en, usuarios(nombre)))')
         .eq('usuario_id', uid),
       supabase.from('deuda').select('ronda_id, pendientes').eq('usuario_id', uid),
       supabase.from('deuda_total').select('pendientes').eq('usuario_id', uid).maybeSingle(),
@@ -59,7 +62,8 @@ export function useMisRondas() {
       )
       const rondas = (miembros.data as unknown as FilaMiembro[])
         .sort(porFecha)
-        .map(({ rondas: r }) => ({
+        .map(({ ultima_entrada, rondas: r }) => ({
+          ultimaEntrada: ultima_entrada,
           id: r.id,
           nombre: r.nombre,
           integrantes: [...r.miembros_ronda].sort(porFecha).map((m) => nombreDePila(m.usuarios?.nombre ?? '?')),

@@ -52,7 +52,7 @@ export default function ArmaLaRonda() {
 
         {/* Se habilita con HU-03, que crea la ronda en la base */}
         <button className="boton boton--ancho arma__boton" type="submit" disabled>
-          Armar la ronda <span className="flecha" aria-hidden="true">→</span>
+          Armar la ronda
         </button>
       </form>
     </main>
