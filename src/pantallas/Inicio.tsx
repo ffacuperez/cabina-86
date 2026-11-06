@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router'
 import { useMisRondas } from '../datos/rondas'
 import ArmaLaRonda from './ArmaLaRonda'
 import MisRondas from './MisRondas'
@@ -7,8 +8,16 @@ import MisRondas from './MisRondas'
  * - sin rondas → "Armá la ronda"
  * - con al menos una → "Mis rondas"
  * La sesión queda guardada en el celular, así que al volver a abrir la app se llega acá directo.
+ *
+ * Cada navegación a "/" vuelve a cargar las rondas, aunque ya estés en "/"
+ * (por ejemplo, "Abrir el exhibidor" después de armar la primera ronda, HU-03).
  */
 export default function Inicio() {
+  const { key } = useLocation()
+  return <InicioCargado key={key} />
+}
+
+function InicioCargado() {
   const { estado, reintentar } = useMisRondas()
 
   if (estado.tipo === 'cargando') return <p className="cargando">Cargando…</p>
