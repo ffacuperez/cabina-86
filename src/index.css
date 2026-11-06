@@ -59,8 +59,10 @@
 .arma__cartel .cartel__integrantes { margin-top: auto; }
 .arma__intro { margin-top: 18px; max-width: 330px; }
 .arma__form { flex: 1; display: flex; flex-direction: column; }
-.arma__campo { display: flex; flex-direction: column; gap: 5px; margin: var(--esp-4) 0 var(--esp-8); }
-.arma__boton { margin-top: auto; }
+.arma__campo { display: flex; flex-direction: column; gap: 5px; margin-top: var(--esp-4); }
+.arma__invitar { display: flex; flex-direction: column; gap: 5px; margin-top: var(--esp-5); }
+.arma__error { margin-top: var(--esp-4); }
+.arma__espacio { flex: 1; min-height: var(--esp-8); }
 
 /* ── 09 · Mis rondas ── */
 .mis-rondas__titulo { margin-top: 6px; }

@@ -29,7 +29,17 @@ type FilaMiembro = {
   }
 }
 
-const porFecha = (a: { se_unio_en: string }, b: { se_unio_en: string }) => a.se_unio_en.localeCompare(b.se_unio_en)
+/** La ronda recién creada (HU-03) */
+export type RondaCreada = { id: string; nombre: string; codigo_invitacion: string }
+
+/** HU-03: crea la ronda conmigo como único integrante y su código de invitación (en la base, todo junto). */
+export async function crearRonda(nombre: string): Promise<RondaCreada> {
+  const { data, error } = await supabase.rpc('crear_ronda', { p_nombre: nombre })
+  if (error || !data) throw error ?? new Error('crear_ronda no devolvió la ronda')
+  return data as RondaCreada
+}
+
+const porFecha =(a: { se_unio_en: string }, b: { se_unio_en: string }) => a.se_unio_en.localeCompare(b.se_unio_en)
 const nombreDePila = (nombre: string) => nombre.trim().split(/\s+/)[0]
 
 /**

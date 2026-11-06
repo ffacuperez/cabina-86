@@ -278,3 +278,24 @@ button { font: inherit; color: inherit; }
   font: var(--lcd-m);
   letter-spacing: var(--lcd-tracking);
 }
+
+/* ── Link de invitación (Figma: "Link" en 01 · Bienvenida) ── */
+.campo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  margin: 0;
+  padding: 10px var(--esp-2) 10px 14px;
+  border: 1.5px dashed var(--negro);
+  border-radius: var(--radio-m);
+  background: var(--acrilico-claro);
+  color: var(--negro);
+}
+.campo-link__texto {
+  flex: 1;
+  min-width: 0;
+  font: var(--mono-m);
+  letter-spacing: var(--mono-m-tracking);
+  overflow-wrap: anywhere;
+}
