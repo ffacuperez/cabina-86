@@ -114,3 +114,167 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 .rotulo .lcd-s { color: var(--mostaza); }
+
+.cartel-l { font: var(--cartel-l); letter-spacing: var(--cartel-l-tracking); text-transform: uppercase; }
+.texto-l  { font: var(--texto-l); }
+
+/* ── Cartel marino de la disquería (Entrar, Bienvenida) ── */
+.cartel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--esp-6);
+  border-radius: var(--radio-m);
+  background: var(--marino);
+  box-shadow: var(--sombra-cartel);
+  overflow: hidden;
+}
+.cartel::before { /* Filete */
+  content: '';
+  position: absolute;
+  inset: var(--esp-2);
+  border: 2px solid var(--mostaza);
+  border-radius: var(--radio-xs);
+  pointer-events: none;
+}
+.cartel__rotulo { color: var(--acrilico); }
+.cartel__titulo { color: var(--mostaza); overflow-wrap: anywhere; }
+.cartel__texto { color: var(--acrilico-claro); max-width: 300px; }
+.cartel__integrantes { color: var(--acrilico-claro); min-height: 1.2em; }
+.cartel__abierto {
+  position: absolute;
+  right: 10px;
+  bottom: 17px;
+  padding: var(--esp-1) var(--esp-2);
+  border-radius: var(--radio-xs);
+  background: var(--naranja);
+  color: var(--negro);
+  font: var(--lcd-m);
+  letter-spacing: var(--lcd-tracking);
+  transform: rotate(-6deg);
+}
+
+/* ── C86/Caja CD: medidas de la caja base de 110 × 102, escaladas con --caja-ancho ── */
+.caja-cd {
+  --caja-ancho: 121px;
+  --u: calc(var(--caja-ancho) / 110);
+  position: relative;
+  flex: none;
+  width: calc(var(--u) * 110);
+  height: calc(var(--u) * 102);
+  border-radius: calc(var(--u) * 1.5);
+  background: var(--negro-2);
+  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 2.5) rgb(31 36 28 / 0.35));
+}
+.caja-cd::after { /* Borde acrílico */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: calc(var(--u) * 0.75) solid rgb(255 255 242 / 0.35);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.caja-cd__tapa {
+  position: absolute;
+  left: calc(var(--u) * 9);
+  top: var(--u);
+  width: calc(var(--u) * 100);
+  height: calc(var(--u) * 100);
+  max-width: none;
+}
+.caja-cd__bisagra { /* Bisagra con 12 nervios */
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--u) * 8);
+  height: 100%;
+  border-radius: var(--u);
+  background-color: var(--negro);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 calc(var(--u) * 5),
+    var(--acrilico-oscuro) calc(var(--u) * 5) calc(var(--u) * 6),
+    transparent calc(var(--u) * 6) calc(var(--u) * 8)
+  );
+  background-size: calc(var(--u) * 5) calc(var(--u) * 94);
+  background-position: calc(var(--u) * 1.5) 0;
+  background-repeat: no-repeat;
+}
+.caja-cd__reflejo {
+  position: absolute;
+  left: calc(var(--u) * 9);
+  top: var(--u);
+  width: calc(var(--u) * 101);
+  height: calc(var(--u) * 100);
+  background: linear-gradient(135.285deg,
+    rgb(255 255 242 / 0) 14.286%, rgb(255 255 242 / 0) 44.286%,
+    rgb(255 255 242 / 0.32) 50%, rgb(255 255 242 / 0) 57.143%,
+    rgb(255 255 242 / 0.08) 85.714%);
+}
+
+/* ── Botón oficial de Google (claro): no usa la estética de la app ── */
+.boton-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-3);
+  width: 100%;
+  min-height: 54px;
+  padding: 0 var(--esp-3);
+  border: 1px solid #747775;
+  border-radius: var(--radio-m);
+  background: #fff;
+  color: #1f1f1f;
+  font: 500 15px/normal 'Roboto', system-ui, sans-serif;
+  cursor: pointer;
+}
+.boton-google img { width: 22px; height: 22px; }
+.boton-google:disabled { cursor: default; background: rgb(255 255 255 / 0.38); border-color: rgb(31 31 31 / 0.12); }
+.boton-google:disabled > * { opacity: 0.38; }
+
+/* ── Campo de texto (Campo nombre) ── */
+.campo-texto {
+  width: 100%;
+  padding: 13px 14px;
+  border: var(--borde-contorno);
+  border-radius: var(--radio-m);
+  background: var(--acrilico-claro);
+  color: var(--negro);
+  font: var(--texto-l);
+}
+.campo-texto::placeholder { color: var(--negro); opacity: 0.35; }
+.rotulo-campo { opacity: 0.7; }
+
+/* ── Tarjeta de ronda (Mis rondas) ── */
+.tarjeta-ronda {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  padding: var(--esp-4);
+  border-radius: var(--radio-m);
+  background: var(--negro-2);
+  overflow: hidden;
+}
+/* El filete suma 2 a cada lado: a la derecha se le descuenta del padding para que el nombre tenga el mismo ancho que en Figma */
+.tarjeta-ronda--destacada { background: var(--marino); border: 2px solid var(--mostaza); padding-right: 14px; }
+.tarjeta-ronda__encabezado {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  color: var(--acrilico);
+  font: var(--mono-tecla);
+  letter-spacing: var(--mono-s-tracking);
+}
+.tarjeta-ronda__luz { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--negro); }
+.tarjeta-ronda--destacada .tarjeta-ronda__luz { background: var(--naranja); box-shadow: 0 0 6px rgb(255 122 26 / 0.8); }
+.tarjeta-ronda__nombre { color: var(--mostaza); overflow-wrap: anywhere; }
+.tarjeta-ronda__integrantes { color: var(--acrilico-claro); }
+.tarjeta-ronda__deuda {
+  padding: 3px var(--esp-2);
+  border-radius: var(--radio-xs);
+  background: var(--naranja);
+  color: var(--negro);
+  font: var(--lcd-m);
+  letter-spacing: var(--lcd-tracking);
+}
