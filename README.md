@@ -43,7 +43,9 @@ Para conectar el proyecto remoto a mano: `npx supabase login` y `npx supabase li
 
 ## Diseño
 
-Los tokens (colores, tipografía, espaciado, radios y sombras) salen del Figma *La Bandeja — Prototipo* y viven en `src/estilos/tokens.css`. Las fuentes se sirven desde la app con Fontsource, así funcionan sin conexión. En `/muestrario` se ven todos juntos.
+Las pantallas salen del Figma **[La Bandeja — Prototipo](https://www.figma.com/design/10Q6td2G6pVRUsEjCfa4VZ/La-Bandeja-%E2%80%94-Prototipo?node-id=12-1292)** (página *Cabina 86 · Prototipo*; los componentes están en *Cabina 86 · Componentes*). Cada pantalla nueva se arma leyendo su frame, no con un diseño propio.
+
+Los tokens (colores, tipografía, espaciado, radios y sombras) salen de ese Figma y viven en `src/estilos/tokens.css`. Las fuentes se sirven desde la app con Fontsource, así funcionan sin conexión. En `/muestrario` se ven todos juntos.
 
 ## Tareas programadas (GitHub Actions)
 

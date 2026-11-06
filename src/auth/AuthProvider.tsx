@@ -5,23 +5,38 @@ import { supabase } from '../lib/supabase'
 type Auth = {
   /** undefined mientras se revisa si hay sesión guardada */
   session: Session | null | undefined
+  /** Volvió de Google sin sesión: cancelaste, o el código no se pudo canjear (HU-01) */
+  falloElIngreso: boolean
   entrarConGoogle: () => Promise<void>
   salir: () => Promise<void>
 }
 
 const AuthContext = createContext<Auth | null>(null)
 
+/** Google (o Supabase) vuelve con ?error=... o #error=... si cancelaste o algo falló. */
+function volvioConError() {
+  const { search, hash } = window.location
+  const query = new URLSearchParams(search)
+  return query.has('error') || query.has('error_description') || hash.includes('error=')
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined)
+  const [falloElIngreso, setFalloElIngreso] = useState(volvioConError)
 
   useEffect(() => {
     // La sesión queda guardada en el celular: si ya entraste antes, no hace falta volver a hacerlo.
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    // Si se vuelve de Google con ?code=..., getSession espera a que Supabase lo canjee (PKCE).
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      if (!data.session && new URLSearchParams(window.location.search).has('code')) setFalloElIngreso(true)
+    })
     const { data } = supabase.auth.onAuthStateChange((_evento, nueva) => setSession(nueva))
     return () => data.subscription.unsubscribe()
   }, [])
 
   async function entrarConGoogle() {
+    setFalloElIngreso(false)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       // Vuelve a la misma app (producción, vista previa o localhost) a la pantalla Entrar,
@@ -36,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ session, entrarConGoogle, salir }}>
+    <AuthContext.Provider value={{ session, falloElIngreso, entrarConGoogle, salir }}>
       {children}
     </AuthContext.Provider>
   )

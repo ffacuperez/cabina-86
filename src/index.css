@@ -2,7 +2,7 @@
 @import './estilos/tokens.css';
 @import './estilos/base.css';
 
-/* Pantallas provisorias hasta HU-01 */
+/* Pantalla centrada (errores) */
 .app {
   min-height: 100dvh;
   display: grid;
@@ -12,5 +12,61 @@
   text-align: center;
 }
 .error { color: var(--magenta); font: var(--texto-m-fuerte); }
-.avatar { border-radius: 50%; justify-self: center; }
 .cargando { text-align: center; padding: var(--esp-8) var(--esp-4); font: var(--mono-s); letter-spacing: var(--mono-s-tracking); }
+
+/* Pantalla de 390: el contenido arranca 8 debajo de la barra de estado y respeta la zona del indicador de inicio */
+.pantalla {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: calc(env(safe-area-inset-top) + var(--esp-2)) var(--margen-pantalla) max(env(safe-area-inset-bottom), var(--esp-6));
+}
+
+/* ── 00a · Entrar ── */
+.entrar__cartel { margin: 13px calc(-1 * var(--esp-2)) 0; min-height: 286px; padding-bottom: 37px; }
+.entrar__cartel .cartel__titulo { margin-top: 11px; }
+.entrar__cartel .cartel__texto { margin: var(--esp-6) 0; }
+.entrar__lema { margin-top: auto; }
+
+.exhibidor-muestra { /* Exhibidor (muestra): sale de borde a borde */
+  position: relative;
+  flex: none;
+  height: 170px;
+  margin: 26px calc(-1 * var(--margen-pantalla)) 0;
+  overflow: hidden;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--acrilico-luz), var(--acrilico));
+}
+.exhibidor-muestra::after { /* Repisa */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 140px;
+  height: 10px;
+  background: var(--acrilico-oscuro);
+}
+.exhibidor-muestra__cajas { position: absolute; top: var(--esp-6); left: var(--esp-5); display: flex; gap: 7px; }
+
+.entrar__acciones { display: flex; flex-direction: column; margin-top: auto; padding: var(--esp-8) 0; }
+.entrar__acciones .error { margin-top: var(--esp-3); }
+.entrar__aclaracion { margin-top: var(--esp-3); max-width: 330px; }
+.entrar__link { margin-top: 31px; max-width: 330px; }
+
+/* ── 01 · Bienvenida — Crear ronda ── */
+.arma__cartel { margin: 11px calc(-1 * var(--esp-2)) 0; min-height: 176px; padding-bottom: 23px; }
+.arma__nombre { margin: 7px 0 var(--esp-4); }
+.arma__nombre--vacio { opacity: 0.35; }
+.arma__cartel .cartel__integrantes { margin-top: auto; }
+.arma__intro { margin-top: 18px; max-width: 330px; }
+.arma__form { flex: 1; display: flex; flex-direction: column; }
+.arma__campo { display: flex; flex-direction: column; gap: 5px; margin: var(--esp-4) 0 var(--esp-8); }
+.arma__boton { margin-top: auto; }
+
+/* ── 09 · Mis rondas ── */
+.mis-rondas__titulo { margin-top: 6px; }
+.mis-rondas__total { align-self: flex-start; margin-top: var(--esp-3); }
+.mis-rondas__lista { list-style: none; margin: var(--esp-3) 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+a.boton { text-decoration: none; }
+.mis-rondas__armar { margin-top: 58px; }
+.mis-rondas__link { margin-top: var(--esp-4); }
+.mis-rondas__ayuda { margin-top: 41px; }

@@ -2,9 +2,11 @@
    Solo el subconjunto latino (incluye á, é, ñ, ¿, ¡) y los pesos que usa el diseño. */
 @import '@fontsource/zalando-sans-expanded/latin-900-italic.css'; /* Cartel */
 @import '@fontsource/figtree/latin-400.css';                     /* Texto */
+@import '@fontsource/figtree/latin-500.css';                     /* Texto L */
 @import '@fontsource/figtree/latin-600.css';                     /* Texto fuerte */
 @import '@fontsource/figtree/latin-700.css';                     /* Botón */
 @import '@fontsource/ibm-plex-mono/latin-500.css';               /* Mono */
 @import '@fontsource/ibm-plex-mono/latin-700.css';               /* Teclas */
 @import '@fontsource/vt323/latin-400.css';                       /* LCD */
 @import '@fontsource/permanent-marker/latin-400.css';            /* Escrito a mano */
+@import '@fontsource/roboto/latin-500.css';                      /* Solo el botón oficial de Google */

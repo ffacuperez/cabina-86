@@ -48,9 +48,11 @@
 
   /* Estilos de texto del Figma: tamaño / interlineado / espaciado */
   --cartel-xl: 900 italic 40px/0.95 var(--fuente-cartel);   --cartel-xl-tracking: -0.5px;
+  --cartel-l:  900 italic 28px/1 var(--fuente-cartel);      --cartel-l-tracking: -0.2px;
   --cartel-m:  900 italic 20px/1.05 var(--fuente-cartel);   --cartel-m-tracking: 0;
   --cartel-s:  900 italic 14px/1.1 var(--fuente-cartel);    --cartel-s-tracking: 0.3px;
 
+  --texto-l:        500 18px/1.3 var(--fuente-texto);
   --texto-m:        400 15px/1.4 var(--fuente-texto);
   --texto-m-fuerte: 600 15px/1.35 var(--fuente-texto);
   --texto-s:        400 13px/1.35 var(--fuente-texto);

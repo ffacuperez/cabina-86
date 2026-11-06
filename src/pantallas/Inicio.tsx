@@ -1,32 +1,28 @@
-import { useEffect, useState } from 'react'
-import { useAuth } from '../auth/AuthProvider'
-import { supabase } from '../lib/supabase'
+import { useMisRondas } from '../datos/rondas'
+import ArmaLaRonda from './ArmaLaRonda'
+import MisRondas from './MisRondas'
 
-type Perfil = { nombre: string; foto_url: string | null }
-
-/** Provisoria: confirma que el login y el perfil funcionan. HU-01 la reemplaza por "Armá la ronda" / "Mis rondas". */
+/**
+ * La primera pantalla con sesión (HU-01):
+ * - sin rondas → "Armá la ronda"
+ * - con al menos una → "Mis rondas"
+ * La sesión queda guardada en el celular, así que al volver a abrir la app se llega acá directo.
+ */
 export default function Inicio() {
-  const { session, salir } = useAuth()
-  const [perfil, setPerfil] = useState<Perfil | null>(null)
+  const { estado, reintentar } = useMisRondas()
 
-  useEffect(() => {
-    if (!session) return
-    supabase
-      .from('usuarios')
-      .select('nombre, foto_url')
-      .eq('id', session.user.id)
-      .single()
-      .then(({ data }) => setPerfil(data))
-  }, [session])
+  if (estado.tipo === 'cargando') return <p className="cargando">Cargando…</p>
 
-  return (
-    <main className="app">
-      {perfil?.foto_url && (
-        <img className="avatar" src={perfil.foto_url} alt="" width={72} height={72} referrerPolicy="no-referrer" />
-      )}
-      <h1 className="cartel-m">Hola, {perfil?.nombre ?? '…'}</h1>
-      <p>Ya entraste a Cabina 86.</p>
-      <button className="boton boton--contorno" type="button" onClick={salir}>Salir</button>
-    </main>
-  )
+  if (estado.tipo === 'error') {
+    return (
+      <main className="app">
+        <p role="alert" className="error">No pudimos cargar tus rondas.</p>
+        <button className="boton" type="button" onClick={reintentar}>Probar de nuevo</button>
+      </main>
+    )
+  }
+
+  return estado.rondas.length === 0
+    ? <ArmaLaRonda />
+    : <MisRondas rondas={estado.rondas} deudaTotal={estado.deudaTotal} />
 }
