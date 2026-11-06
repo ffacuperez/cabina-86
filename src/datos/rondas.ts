@@ -8,6 +8,10 @@ export type RondaMia = {
   nombre: string
   /** Nombres de pila, en el orden en que se sumaron */
   integrantes: string[]
+  /** Los demás integrantes (sin mí): "Ya se sumaron" en la hoja de invitar (HU-04) */
+  sumados: string[]
+  /** Código del link de invitación: /r/<codigo> */
+  codigo: string
   /** Mis pendientes en esta ronda (RN-05) */
   deuda: number
   /** Cuándo entré a esta ronda por última vez (la registra entrar_a_ronda, HU-05) */
@@ -25,7 +29,8 @@ type FilaMiembro = {
   rondas: {
     id: string
     nombre: string
-    miembros_ronda: { se_unio_en: string; usuarios: { nombre: string } | null }[]
+    codigo_invitacion: string
+    miembros_ronda: { se_unio_en: string; usuario_id: string; usuarios: { nombre: string } | null }[]
   }
 }
 
@@ -59,7 +64,7 @@ export function useMisRondas() {
     Promise.all([
       supabase
         .from('miembros_ronda')
-        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, miembros_ronda(se_unio_en, usuarios(nombre)))')
+        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, codigo_invitacion, miembros_ronda(se_unio_en, usuario_id, usuarios(nombre)))')
         .eq('usuario_id', uid),
       supabase.from('deuda').select('ronda_id, pendientes').eq('usuario_id', uid),
       supabase.from('deuda_total').select('pendientes').eq('usuario_id', uid).maybeSingle(),
@@ -72,13 +77,19 @@ export function useMisRondas() {
       )
       const rondas = (miembros.data as unknown as FilaMiembro[])
         .sort(porFecha)
-        .map(({ ultima_entrada, rondas: r }) => ({
-          ultimaEntrada: ultima_entrada,
-          id: r.id,
-          nombre: r.nombre,
-          integrantes: [...r.miembros_ronda].sort(porFecha).map((m) => nombreDePila(m.usuarios?.nombre ?? '?')),
-          deuda: deudaPorRonda.get(r.id) ?? 0,
-        }))
+        .map(({ ultima_entrada, rondas: r }) => {
+          const miembros = [...r.miembros_ronda].sort(porFecha)
+          const pila = (m: (typeof miembros)[number]) => nombreDePila(m.usuarios?.nombre ?? '?')
+          return {
+            id: r.id,
+            nombre: r.nombre,
+            codigo: r.codigo_invitacion,
+            integrantes: miembros.map(pila),
+            sumados: miembros.filter((m) => m.usuario_id !== uid).map(pila),
+            deuda: deudaPorRonda.get(r.id) ?? 0,
+            ultimaEntrada: ultima_entrada,
+          }
+        })
 
       setEstado({ tipo: 'listo', rondas, deudaTotal: (total.data as { pendientes: number } | null)?.pendientes ?? 0 })
     })

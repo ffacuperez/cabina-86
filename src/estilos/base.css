@@ -83,7 +83,9 @@ button { font: inherit; color: inherit; }
   font: var(--texto-m-fuerte);
   cursor: pointer;
 }
-.chip[aria-pressed='true'] { background: var(--negro); color: var(--mostaza); border-color: var(--negro); }
+.chip[aria-pressed='true'],
+.chip--activo { background: var(--negro); color: var(--mostaza); border-color: var(--negro); }
+.chip--activo { cursor: default; }
 
 /* ── LCD (C86/LCD) ── */
 .lcd {
@@ -247,6 +249,7 @@ button { font: inherit; color: inherit; }
 
 /* ── Tarjeta de ronda (Mis rondas) ── */
 .tarjeta-ronda {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -299,3 +302,51 @@ button { font: inherit; color: inherit; }
   letter-spacing: var(--mono-m-tracking);
   overflow-wrap: anywhere;
 }
+
+/* ── Chip de acción (COPIAR, INVITAR): negro con letra mostaza ── */
+.chip-accion {
+  flex: none;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--negro);
+  color: var(--mostaza);
+  font: var(--mono-s);
+  letter-spacing: var(--mono-s-tracking);
+  white-space: nowrap;
+  cursor: pointer;
+}
+/* Arriba a la derecha de la tarjeta, centrado con "RONDA N" (Figma 09) */
+.tarjeta-ronda__invitar { position: absolute; top: 10px; right: var(--esp-4); }
+
+/* ── Hoja que sube desde abajo (Figma 05d y 09c) ── */
+.hoja-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(31 36 28 / 0.55);
+}
+.hoja {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--esp-3);
+  width: 100%;
+  max-width: 430px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: var(--esp-3) var(--esp-5) max(34px, env(safe-area-inset-bottom));
+  border-radius: 14px 14px 0 0;
+  background: var(--acrilico-claro);
+  color: var(--negro);
+}
+.hoja > .campo-link, .hoja > .boton { align-self: stretch; }
+.hoja__asa { align-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--acrilico-oscuro); }
+.hoja__titulo { outline: none; }
+.hoja__sumados { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin: 0; padding: 0; list-style: none; }
+
+/* Solo para lectores de pantalla */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

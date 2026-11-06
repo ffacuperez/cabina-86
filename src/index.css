@@ -60,7 +60,6 @@
 .arma__intro { margin-top: 18px; max-width: 330px; }
 .arma__form { flex: 1; display: flex; flex-direction: column; }
 .arma__campo { display: flex; flex-direction: column; gap: 5px; margin-top: var(--esp-4); }
-.arma__invitar { display: flex; flex-direction: column; gap: 5px; margin-top: var(--esp-5); }
 .arma__error { margin-top: var(--esp-4); }
 .arma__espacio { flex: 1; min-height: var(--esp-8); }
 
