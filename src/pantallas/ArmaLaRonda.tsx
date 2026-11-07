@@ -1,23 +1,23 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
+import { useNavigate } from 'react-router'
 import { Cartel } from '../componentes/Cartel'
 import { usePerfil } from '../datos/perfil'
-import { crearRonda, type RondaCreada } from '../datos/rondas'
+import { crearRonda } from '../datos/rondas'
 
 const NOMBRE_DE_EJEMPLO = 'BIRRINHAS DO SABADO'
 
 /**
  * Figma 01 · Bienvenida — Crear ronda. A donde llega quien entra por primera vez sin link (HU-01)
  * y quien toca "Armar otra ronda" en Mis rondas.
- * HU-03: con un nombre, "Armar la ronda" la crea y la pantalla pasa al estado del Figma con el link.
- * Copiar, Invitar por WhatsApp y Ya se sumaron son HU-04.
+ * HU-03: con un nombre, "Armar la ronda" la crea y te lleva a Mis rondas, con la ronda nueva destacada.
+ * El link se saca desde ahí con INVITAR (Figma 09c, HU-04).
  */
 export default function ArmaLaRonda() {
   const perfil = usePerfil()
+  const navigate = useNavigate()
   const [nombre, setNombre] = useState('')
   const [armando, setArmando] = useState(false)
   const [error, setError] = useState(false)
-  const [creada, setCreada] = useState<RondaCreada | null>(null)
   const yo = perfil?.nombre.trim().split(/\s+/)[0].toUpperCase() ?? ''
   const nombreValido = nombre.trim().length > 0
 
@@ -27,16 +27,14 @@ export default function ArmaLaRonda() {
     setError(false)
     setArmando(true)
     try {
-      setCreada(await crearRonda(nombre))
+      await crearRonda(nombre)
+      // Siempre una navegación nueva a "/", aunque ya estés ahí: Inicio vuelve a cargar y muestra Mis rondas
+      navigate('/', { replace: true })
     } catch {
       setError(true)
-    } finally {
       setArmando(false)
     }
   }
-
-  const nombreEnCartel = creada?.nombre ?? nombre.trim()
-  const link = creada ? `${window.location.host}/r/${creada.codigo_invitacion}` : ''
 
   return (
     <main className="pantalla arma">
@@ -44,8 +42,8 @@ export default function ArmaLaRonda() {
 
       <Cartel className="arma__cartel">
         <p className="mono-s cartel__rotulo">DISQUERÍA DE LA RONDA</p>
-        <p className={`cartel-l cartel__titulo arma__nombre${nombreEnCartel ? '' : ' arma__nombre--vacio'}`} aria-hidden="true">
-          {nombreEnCartel || NOMBRE_DE_EJEMPLO}
+        <p className={`cartel-l cartel__titulo arma__nombre${nombre.trim() ? '' : ' arma__nombre--vacio'}`} aria-hidden="true">
+          {nombre.trim() || NOMBRE_DE_EJEMPLO}
         </p>
         <p className="mono-s cartel__integrantes">{yo}</p>
       </Cartel>
@@ -59,9 +57,8 @@ export default function ArmaLaRonda() {
           <span className="mono-s rotulo-campo">NOMBRE DE LA RONDA</span>
           <input
             className="campo-texto"
-            value={creada?.nombre ?? nombre}
+            value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            readOnly={creada !== null}
             maxLength={40}
             placeholder={NOMBRE_DE_EJEMPLO}
             autoComplete="off"
@@ -69,29 +66,13 @@ export default function ArmaLaRonda() {
           />
         </label>
 
-        {creada && (
-          <div className="arma__invitar">
-            <span className="mono-s rotulo-campo" id="rotulo-link">INVITÁ A LA BANDA</span>
-            <p className="campo-link" aria-labelledby="rotulo-link">
-              <span className="campo-link__texto">{link}</span>
-            </p>
-          </div>
-        )}
-
         {error && <p role="alert" className="error arma__error">No pudimos armar la ronda. Probá de nuevo.</p>}
 
         <div className="arma__espacio" aria-hidden="true" />
 
-        {creada ? (
-          // El exhibidor llega con HU-05 / HU-11: mientras tanto lleva a Mis rondas, donde ya aparece la ronda
-          <Link className="boton boton--ancho arma__boton" to="/">
-            Abrir el exhibidor <span className="flecha" aria-hidden="true">→</span>
-          </Link>
-        ) : (
-          <button className="boton boton--ancho arma__boton" type="submit" disabled={!nombreValido || armando} aria-busy={armando}>
-            Armar la ronda
-          </button>
-        )}
+        <button className="boton boton--ancho arma__boton" type="submit" disabled={!nombreValido || armando} aria-busy={armando}>
+          Armar la ronda
+        </button>
       </form>
     </main>
   )
