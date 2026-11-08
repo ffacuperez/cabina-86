@@ -40,7 +40,7 @@ export default function ArmaLaRonda() {
     <main className="pantalla arma">
       <p className="mono-s suave">CABINA 86 · DISCOS &amp; CDs</p>
 
-      <Cartel className="arma__cartel">
+      <Cartel className="cartel--ronda arma__cartel">
         <p className="mono-s cartel__rotulo">DISQUERÍA DE LA RONDA</p>
         <p className={`cartel-l cartel__titulo arma__nombre${nombre.trim() ? '' : ' arma__nombre--vacio'}`} aria-hidden="true">
           {nombre.trim() || NOMBRE_DE_EJEMPLO}

@@ -52,11 +52,14 @@
 .entrar__aclaracion { margin-top: var(--esp-3); max-width: 330px; }
 .entrar__link { margin-top: 31px; max-width: 330px; }
 
+/* Cartel con el nombre de la ronda (01 · Bienvenida y 00b · Te invitaron) */
+.cartel--ronda { margin: 0 calc(-1 * var(--esp-2)); min-height: 176px; padding-bottom: 23px; }
+.cartel--ronda .cartel__titulo { margin: 7px 0 var(--esp-4); }
+.cartel--ronda .cartel__integrantes { margin-top: auto; }
+
 /* ── 01 · Bienvenida — Crear ronda ── */
-.arma__cartel { margin: 11px calc(-1 * var(--esp-2)) 0; min-height: 176px; padding-bottom: 23px; }
-.arma__nombre { margin: 7px 0 var(--esp-4); }
+.arma__cartel { margin-top: 11px; }
 .arma__nombre--vacio { opacity: 0.35; }
-.arma__cartel .cartel__integrantes { margin-top: auto; }
 .arma__intro { margin-top: 18px; max-width: 330px; }
 .arma__form { flex: 1; display: flex; flex-direction: column; }
 .arma__campo { display: flex; flex-direction: column; gap: 5px; margin-top: var(--esp-4); }
@@ -71,3 +74,16 @@ a.boton { text-decoration: none; }
 .mis-rondas__armar { margin-top: 58px; }
 .mis-rondas__link { margin-top: var(--esp-4); }
 .mis-rondas__ayuda { margin-top: 41px; }
+
+/* ── 00b · Te invitaron ── */
+.invitado__titulo { margin-top: 7px; overflow-wrap: anywhere; }
+.invitado__cartel { margin-top: 18px; }
+.invitado__discos { align-self: flex-start; margin-top: var(--esp-6); }
+.invitado__vista { display: flex; gap: var(--esp-3); margin-top: var(--esp-4); }
+.invitado__vista .caja-cd { --caja-ancho: 101.2px; }
+.invitado__texto { margin-top: 18px; max-width: 330px; font: var(--texto-m); }
+.invitado__cartel + .invitado__texto { margin-top: var(--esp-6); }
+/* El botón cae a la altura del Figma (620 en 844) y en pantallas chicas se acomoda */
+.invitado__acciones { display: flex; flex-direction: column; margin-top: auto; padding: 40px 0 min(116px, 14dvh); }
+.invitado__acciones .error { margin-top: var(--esp-3); }
+.invitado__aclaracion { margin-top: var(--esp-3); max-width: 330px; }

@@ -8,6 +8,7 @@ import tapaTpab from '../assets/tapas/to-pimp-a-butterfly.svg'
 import { BotonGoogle } from '../componentes/BotonGoogle'
 import { CajaCD } from '../componentes/CajaCD'
 import { Cartel } from '../componentes/Cartel'
+import { borrarInvitacionPendiente, leerInvitacionPendiente } from '../datos/invitacion'
 
 const MENSAJE_ERROR = 'No pudimos entrar. Probá de nuevo.'
 
@@ -27,15 +28,23 @@ export default function Entrar() {
   const [enviando, setEnviando] = useState(false)
   const [falloAlAbrir, setFalloAlAbrir] = useState(false)
 
-  // Una vez resuelta la sesión, saca ?error= / ?code= de la URL (antes no: Supabase todavía puede estar canjeando el código)
+  // Si el login empezó en un link de invitación (HU-02), se vuelve a /r/<codigo>:
+  // con sesión para sumarse, o con el error de Google para mostrarlo en Te invitaron.
+  const invitacion = leerInvitacionPendiente()
+  const volverAInvitacion = invitacion !== null && (Boolean(session) || falloElIngreso)
+
+  // Una vez resuelta la sesión, saca ?error= / ?code= de la URL (antes no: Supabase todavía puede estar canjeando el código).
+  // No mientras se vuelve a la invitación: limpiar la URL de /entrar pisaría esa navegación.
   const urlSucia = params.size > 0 || window.location.hash.includes('error=')
   useEffect(() => {
-    if (session === null && urlSucia) setParams({}, { replace: true })
-  }, [session, urlSucia, setParams])
+    if (!volverAInvitacion && session === null && urlSucia) setParams({}, { replace: true })
+  }, [volverAInvitacion, session, urlSucia, setParams])
 
+  if (volverAInvitacion) return <Navigate to={`/r/${invitacion}`} replace />
   if (session) return <Navigate to="/" replace />
 
   async function continuar() {
+    borrarInvitacionPendiente()
     setFalloAlAbrir(false)
     setEnviando(true)
     try {
