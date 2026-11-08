@@ -1,0 +1,25 @@
+name: Pruebas de las Edge Functions
+
+# Corre las pruebas de Deno de supabase/functions (Deezer y la base simulados).
+on:
+  pull_request:
+    paths:
+      - 'supabase/functions/**'
+      - '.github/workflows/pruebas-funciones.yml'
+  workflow_dispatch:
+
+jobs:
+  deno:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: supabase/functions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5.x
+      - name: Revisar tipos y lint
+        run: deno check --no-lock */index.ts && deno lint
+      - name: Correr pruebas
+        run: deno test --no-lock

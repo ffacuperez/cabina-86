@@ -20,4 +20,5 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Historias de usuario y criterios (Dado / Cuando / Entonces): doc "Cabina 86 — Historias de usuario".
 - Una rama por issue y un PR que diga `Closes #N`.
 - Cambios de base en `supabase/migrations/` con su prueba pgTAP en `supabase/tests/`.
+- Edge Functions en `supabase/functions/` (Deno, `_shared/` para lo común), con pruebas `deno test` al lado (`index.test.ts`). Deezer y la base se inyectan para poder simularlos. Cada función nueva va en `config.toml` con `verify_jwt = false` (el token se valida adentro).
 - `rondas` se lee con permisos por columna: una columna nueva hay que sumarla al `grant select (...)` para que la app la vea.
