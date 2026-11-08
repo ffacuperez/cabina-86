@@ -51,3 +51,21 @@ export async function clienteDeQuienLlama(req: Request): Promise<{ db: SupabaseC
   if (fallo || !data.user) return null
   return { db, uid: data.user.id }
 }
+
+/**
+ * Cliente con la clave secreta: saltea RLS. Solo para guardar en discos, que la app no puede escribir
+ * (el catálogo lo arma la función con datos de Deezer, no con lo que mande el navegador).
+ */
+export function clienteDeServicio(): SupabaseClient {
+  const url = Deno.env.get('SUPABASE_URL')
+  let clave = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  if (!clave) {
+    try {
+      clave = (JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}') as Record<string, string>).default
+    } catch {
+      // queda sin clave
+    }
+  }
+  if (!url || !clave) throw new Error('Faltan SUPABASE_URL o la clave secreta en la función')
+  return createClient(url, clave, { auth: { persistSession: false, autoRefreshToken: false } })
+}

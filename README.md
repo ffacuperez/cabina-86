@@ -48,6 +48,7 @@ Viven en `supabase/functions/` (Deno). Lo compartido está en `_shared/`.
 | Función | Para qué |
 |---|---|
 | `buscar_discos` | Busca álbumes en Deezer para Pasar y marca los que ya se pasaron en esa ronda (T-09, HU-07) |
+| `pasar_disco` | Guarda el disco desde Deezer (una sola vez) y crea el pase con la tarjetita y su número de catálogo (T-10, HU-08) |
 
 ```bash
 cd supabase/functions && deno test --no-lock   # pruebas, con Deezer y la base simulados
@@ -58,7 +59,7 @@ Al llegar a `main`, el workflow *Edge Functions de Supabase* las publica (necesi
 
 ```bash
 npx supabase login
-npx supabase functions deploy buscar_discos --remote=xoxuewxwxkfgeiioileh --use-api
+npx supabase functions deploy --remote=xoxuewxwxkfgeiioileh --use-api   # todas
 ```
 
 Cada PR que toca `supabase/functions/` corre sus pruebas (workflow *Pruebas de las Edge Functions*).

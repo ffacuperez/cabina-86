@@ -5,6 +5,14 @@
 
 const API = 'https://api.deezer.com'
 
+/** Deezer no tiene ese álbum (código 800, "no data"). */
+export class DeezerNoLoTiene extends Error {
+  constructor() {
+    super('Deezer no tiene ese disco')
+    this.name = 'DeezerNoLoTiene'
+  }
+}
+
 /** Deezer no contesta, contesta con error o se pasó del límite (50 pedidos cada 5 segundos). */
 export class DeezerNoResponde extends Error {
   constructor(detalle: string) {
@@ -58,6 +66,7 @@ async function pedirJson<T>(ruta: string, pedir: Pedir): Promise<T> {
     throw new DeezerNoResponde('respuesta que no es JSON')
   }
   const error = (cuerpo as { error?: { code?: number; message?: string } }).error
+  if (error?.code === 800) throw new DeezerNoLoTiene()
   if (error) throw new DeezerNoResponde(`${error.code ?? '?'} ${error.message ?? ''}`.trim())
   return cuerpo as T
 }
@@ -109,6 +118,60 @@ export async function buscarAlbumes(texto: string, limite: number, pedir: Pedir 
       cantidad_temas: typeof a.nb_tracks === 'number' ? a.nb_tracks : null,
     }
   })
+}
+
+/** Un tema del disco, en el orden de Deezer */
+export type Tema = { titulo: string; duracion_seg: number }
+
+/** Lo que se guarda en discos al pasarlo (HU-08, RN-09, RN-10) */
+export type DiscoCompleto = {
+  deezer_id: number
+  titulo: string
+  artista: string
+  anio: number | null
+  /** Tapa de 500 px para el detalle */
+  tapa_url: string | null
+  cantidad_temas: number
+  duracion_seg: number
+  temas: Tema[]
+  link_spotify: string
+  link_ytm: string
+}
+
+/** RN-10: links de búsqueda del álbum (título y artista), no de un tema. */
+export function linksDeBusqueda(titulo: string, artista: string) {
+  const q = encodeURIComponent(`${titulo} ${artista}`.trim())
+  return {
+    link_spotify: `https://open.spotify.com/search/${q}/albums`,
+    link_ytm: `https://music.youtube.com/search?q=${q}`,
+  }
+}
+
+/**
+ * El álbum completo para guardarlo: datos, duración y lista de temas.
+ * El detalle trae los temas; si vienen menos que nb_tracks (discos largos), se piden aparte.
+ */
+export async function traerAlbum(id: number, pedir: Pedir = fetch): Promise<DiscoCompleto> {
+  const album = await pedirJson<AlbumCompleto>(`/album/${id}`, pedir)
+  let pistas = album.tracks?.data ?? []
+  if (typeof album.nb_tracks === 'number' && pistas.length < album.nb_tracks) {
+    const todas = await pedirJson<{ data?: { title: string; duration: number }[] }>(`/album/${id}/tracks?limit=200`, pedir)
+    pistas = todas.data ?? pistas
+  }
+  const temas = pistas.map((t) => ({ titulo: t.title, duracion_seg: Math.max(0, Math.round(t.duration ?? 0)) }))
+  const titulo = album.title
+  const artista = album.artist?.name ?? ''
+  return {
+    deezer_id: album.id,
+    titulo,
+    artista,
+    anio: anioDe(album.release_date),
+    tapa_url: tapa(album.cover_big),
+    cantidad_temas: temas.length || album.nb_tracks || 0,
+    duracion_seg: album.duration ?? temas.reduce((total, t) => total + t.duracion_seg, 0),
+    temas,
+    ...linksDeBusqueda(titulo, artista),
+  }
 }
 
 /** Solo para las pruebas: arranca sin años guardados. */
