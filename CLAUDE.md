@@ -8,7 +8,7 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Página *Cabina 86 · Prototipo* (`12:1292`): las pantallas. Página *Cabina 86 · Componentes* (`12:1293`): Caja CD, Tapa, Botón, Chip, LCD, etc.
 - Cada pantalla se implementa leyendo su frame del Figma. No inventar diseños propios; si el Figma no cubre un estado, preguntar.
 - Frames ya implementados: `00a · Entrar` (20:2582), `00b · Te invitaron` (20:2752), `01 · Bienvenida — Crear ronda` (15:1292), `09 · Mis rondas` (20:2894), `09c · Mis rondas — hoja Invitá a la banda` (95:1747, sección "Invitar a la ronda").
-- Invitar: el link vive solo en la hoja 09c, que se abre con el chip INVITAR (en Mis rondas y, con HU-17, en La Ronda). Después de "Armar la ronda" se vuelve a Mis rondas.
+- Invitar: solo quien creó la ronda (#52). El link vive solo en la hoja 09c, que se abre con el chip INVITAR (en Mis rondas y, con HU-17, en La Ronda); en las rondas que no creaste no hay chip. Los integrantes no leen `codigo_invitacion`: el creador lo obtiene con `mis_codigos_de_invitacion()`. Después de "Armar la ronda" se vuelve a Mis rondas.
 - Link de invitación: `/r/<codigo>`. Sin sesión muestra 00b; con sesión te suma solo ("abrilo y te suma solo"). Si el login arranca ahí, el código se guarda y /entrar lo retoma al volver de Google.
 - Estilos con los tokens de `src/estilos/tokens.css` y los componentes de `src/estilos/base.css` (sin Tailwind).
 - El botón de Google es el oficial (blanco, Roboto, logo oficial): es lo único que no toma la estética de la app.
@@ -19,3 +19,4 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Historias de usuario y criterios (Dado / Cuando / Entonces): doc "Cabina 86 — Historias de usuario".
 - Una rama por issue y un PR que diga `Closes #N`.
 - Cambios de base en `supabase/migrations/` con su prueba pgTAP en `supabase/tests/`.
+- `rondas` se lee con permisos por columna: una columna nueva hay que sumarla al `grant select (...)` para que la app la vea.

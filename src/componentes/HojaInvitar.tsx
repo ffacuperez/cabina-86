@@ -1,12 +1,12 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { linkDeInvitacion, mensajeDeInvitacion } from '../datos/invitacion'
-import type { RondaMia } from '../datos/rondas'
+import type { RondaQueInvito } from '../datos/rondas'
 
 /**
  * Figma 09c · Hoja "Invitá a la banda": sube sobre Mis rondas al tocar INVITAR (y desde La Ronda, HU-17).
- * Link con COPIAR, Invitar por WhatsApp y quiénes ya se sumaron (HU-04).
+ * Solo la abre quien creó la ronda (#52). Link con COPIAR, Invitar por WhatsApp y quiénes ya se sumaron (HU-04).
  */
-export function HojaInvitar({ ronda, onCerrar }: { ronda: RondaMia; onCerrar: () => void }) {
+export function HojaInvitar({ ronda, onCerrar }: { ronda: RondaQueInvito; onCerrar: () => void }) {
   const idTitulo = useId()
   const titulo = useRef<HTMLHeadingElement>(null)
   const textoLink = useRef<HTMLSpanElement>(null)
