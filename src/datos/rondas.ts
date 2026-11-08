@@ -10,13 +10,16 @@ export type RondaMia = {
   integrantes: string[]
   /** Los demás integrantes (sin mí): "Ya se sumaron" en la hoja de invitar (HU-04) */
   sumados: string[]
-  /** Código del link de invitación: /r/<codigo> */
-  codigo: string
+  /** Código del link de invitación (/r/<codigo>): solo en las rondas que creé; si no, null y no hay INVITAR (#52) */
+  codigo: string | null
   /** Mis pendientes en esta ronda (RN-05) */
   deuda: number
   /** Cuándo entré a esta ronda por última vez (la registra entrar_a_ronda, HU-05) */
   ultimaEntrada: string
 }
+
+/** Una ronda que creé: tiene link para invitar */
+export type RondaQueInvito = RondaMia & { codigo: string }
 
 type Estado =
   | { tipo: 'cargando' }
@@ -29,7 +32,6 @@ type FilaMiembro = {
   rondas: {
     id: string
     nombre: string
-    codigo_invitacion: string
     miembros_ronda: { se_unio_en: string; usuario_id: string; usuarios: { nombre: string } | null }[]
   }
 }
@@ -64,16 +66,21 @@ export function useMisRondas() {
     Promise.all([
       supabase
         .from('miembros_ronda')
-        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, codigo_invitacion, miembros_ronda(se_unio_en, usuario_id, usuarios(nombre)))')
+        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, miembros_ronda(se_unio_en, usuario_id, usuarios(nombre)))')
         .eq('usuario_id', uid),
       supabase.from('deuda').select('ronda_id, pendientes').eq('usuario_id', uid),
       supabase.from('deuda_total').select('pendientes').eq('usuario_id', uid).maybeSingle(),
-    ]).then(([miembros, deudas, total]) => {
+      // Los integrantes no leen el código: solo quien creó la ronda lo obtiene (#52)
+      supabase.rpc('mis_codigos_de_invitacion'),
+    ]).then(([miembros, deudas, total, codigos]) => {
       if (!vigente) return
-      if (miembros.error || deudas.error || total.error) return setEstado({ tipo: 'error' })
+      if (miembros.error || deudas.error || total.error || codigos.error) return setEstado({ tipo: 'error' })
 
       const deudaPorRonda = new Map(
         (deudas.data as { ronda_id: string; pendientes: number }[]).map((d) => [d.ronda_id, d.pendientes]),
+      )
+      const codigoPorRonda = new Map(
+        (codigos.data as { ronda_id: string; codigo: string }[]).map((c) => [c.ronda_id, c.codigo]),
       )
       const rondas = (miembros.data as unknown as FilaMiembro[])
         .sort(porFecha)
@@ -83,7 +90,7 @@ export function useMisRondas() {
           return {
             id: r.id,
             nombre: r.nombre,
-            codigo: r.codigo_invitacion,
+            codigo: codigoPorRonda.get(r.id) ?? null,
             integrantes: miembros.map(pila),
             sumados: miembros.filter((m) => m.usuario_id !== uid).map(pila),
             deuda: deudaPorRonda.get(r.id) ?? 0,
