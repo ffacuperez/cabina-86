@@ -428,3 +428,6 @@ enabled = true
 # ─────────────────────────────────────────────────────────────
 [functions.buscar_discos]
 verify_jwt = false
+
+[functions.pasar_disco]
+verify_jwt = false
