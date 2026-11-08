@@ -5,6 +5,7 @@ import ArmaLaRonda from './pantallas/ArmaLaRonda'
 import Entrar from './pantallas/Entrar'
 import Inicio from './pantallas/Inicio'
 import Muestrario from './pantallas/Muestrario'
+import TeInvitaron from './pantallas/TeInvitaron'
 import { faltaConfiguracion } from './lib/supabase'
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/entrar" element={<Entrar />} />
+          <Route path="/r/:codigo" element={<TeInvitaron />} />
           <Route path="/muestrario" element={<Muestrario />} />
           <Route element={<RequiereSesion />}>
             <Route path="/" element={<Inicio />} />

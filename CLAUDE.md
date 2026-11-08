@@ -7,8 +7,9 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Figma: [La Bandeja — Prototipo](https://www.figma.com/design/10Q6td2G6pVRUsEjCfa4VZ/La-Bandeja-%E2%80%94-Prototipo?node-id=12-1292) (fileKey `10Q6td2G6pVRUsEjCfa4VZ`)
 - Página *Cabina 86 · Prototipo* (`12:1292`): las pantallas. Página *Cabina 86 · Componentes* (`12:1293`): Caja CD, Tapa, Botón, Chip, LCD, etc.
 - Cada pantalla se implementa leyendo su frame del Figma. No inventar diseños propios; si el Figma no cubre un estado, preguntar.
-- Frames ya implementados: `00a · Entrar` (20:2582), `01 · Bienvenida — Crear ronda` (15:1292), `09 · Mis rondas` (20:2894), `09c · Mis rondas — hoja Invitá a la banda` (95:1747, sección "Invitar a la ronda").
+- Frames ya implementados: `00a · Entrar` (20:2582), `00b · Te invitaron` (20:2752), `01 · Bienvenida — Crear ronda` (15:1292), `09 · Mis rondas` (20:2894), `09c · Mis rondas — hoja Invitá a la banda` (95:1747, sección "Invitar a la ronda").
 - Invitar: el link vive solo en la hoja 09c, que se abre con el chip INVITAR (en Mis rondas y, con HU-17, en La Ronda). Después de "Armar la ronda" se vuelve a Mis rondas.
+- Link de invitación: `/r/<codigo>`. Sin sesión muestra 00b; con sesión te suma solo ("abrilo y te suma solo"). Si el login arranca ahí, el código se guarda y /entrar lo retoma al volver de Google.
 - Estilos con los tokens de `src/estilos/tokens.css` y los componentes de `src/estilos/base.css` (sin Tailwind).
 - El botón de Google es el oficial (blanco, Roboto, logo oficial): es lo único que no toma la estética de la app.
 - Grano de película y luz de rollo van en E-01 (semana 3).
