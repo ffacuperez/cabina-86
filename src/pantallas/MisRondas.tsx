@@ -9,7 +9,7 @@ const dosCifras = (n: number) => String(n).padStart(2, '0')
  * Figma 09 · Mis rondas (inicio, fuera de toda ronda): a donde vuelve quien ya entró antes
  * y está en al menos una ronda (HU-01). Sin botonera (RN-08).
  * INVITAR abre la hoja con el link de esa ronda (Figma 09c, HU-04). Solo en las rondas que creaste (#52).
- * Tocar una ronda para entrar a su exhibidor es HU-05.
+ * Tocar una ronda entra a su exhibidor (HU-05).
  */
 export default function MisRondas({ rondas, deudaTotal }: { rondas: RondaMia[]; deudaTotal: number }) {
   const [invitando, setInvitando] = useState<RondaQueInvito | null>(null)
@@ -29,7 +29,10 @@ export default function MisRondas({ rondas, deudaTotal }: { rondas: RondaMia[]; 
               <span className="tarjeta-ronda__luz" aria-hidden="true" />
               RONDA {i + 1}
             </p>
-            <h2 className="cartel-m tarjeta-ronda__nombre">{r.nombre}</h2>
+            <h2 className="cartel-m tarjeta-ronda__nombre">
+              {/* El link cubre toda la tarjeta; INVITAR queda por encima */}
+              <Link className="tarjeta-ronda__entrar" to={`/ronda/${r.id}`}>{r.nombre}</Link>
+            </h2>
             <p className="mono-s tarjeta-ronda__integrantes">{r.integrantes.join(' · ').toUpperCase()}</p>
             <p className="tarjeta-ronda__deuda">LE DEBÉS {dosCifras(r.deuda)}</p>
             {r.codigo !== null && (
