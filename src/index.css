@@ -87,3 +87,13 @@ a.boton { text-decoration: none; }
 .invitado__acciones { display: flex; flex-direction: column; margin-top: auto; padding: 40px 0 min(116px, 14dvh); }
 .invitado__acciones .error { margin-top: var(--esp-3); }
 .invitado__aclaracion { margin-top: var(--esp-3); max-width: 330px; }
+
+/* ── Adentro de una ronda (Figma 02 · Tu exhibidor): encabezado y lugar para la botonera ── */
+.en-ronda { padding-bottom: calc(var(--alto-botonera) + var(--esp-6)); }
+.encabezado-ronda { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-4); margin-top: -4px; min-height: 16px; }
+.encabezado-ronda__volver { flex: none; color: var(--texto); text-decoration: none; }
+.encabezado-ronda__nombre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.6; }
+
+/* ── 02 · Tu exhibidor ── */
+.exhibidor__titulo { margin-top: var(--esp-2); }
+.exhibidor__deuda { align-self: flex-start; margin-top: var(--esp-3); }

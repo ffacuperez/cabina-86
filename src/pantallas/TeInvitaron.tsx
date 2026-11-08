@@ -45,7 +45,7 @@ function PantallaLinkInvalido() {
   )
 }
 
-/** Ya con sesión: me sumo y voy a la ronda. El exhibidor llega con HU-05 / HU-11: mientras tanto, Mis rondas. */
+/** Ya con sesión: me sumo (o, si ya estaba, solo entro) y voy al exhibidor de esa ronda. */
 function Sumarse({ codigo }: { codigo: string }) {
   const navigate = useNavigate()
   const [estado, setEstado] = useState<'sumando' | 'invalido' | 'error'>('sumando')
@@ -54,9 +54,9 @@ function Sumarse({ codigo }: { codigo: string }) {
   useEffect(() => {
     let vigente = true
     sumarseARonda(codigo)
-      .then(() => {
+      .then((ronda) => {
         borrarInvitacionPendiente()
-        if (vigente) navigate('/', { replace: true })
+        if (vigente) navigate(`/ronda/${ronda}`, { replace: true })
       })
       .catch((e) => {
         if (e instanceof LinkInvalido) borrarInvitacionPendiente()

@@ -78,6 +78,7 @@
   --esp-8: 32px;
   --margen-pantalla: var(--esp-6);
   --ancho-max: 430px;           /* el diseño es de 390px; en pantallas grandes se centra */
+  --alto-botonera: calc(62px + max(36px, env(safe-area-inset-bottom))); /* teclas de 52 + zona del indicador de inicio */
 
   /* ── Radios ────────────────────────────────────────── */
   --radio-xs: 3px;              /* LCD, rótulos, stickers */
