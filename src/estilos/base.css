@@ -235,6 +235,29 @@ button { font: inherit; color: inherit; }
   letter-spacing: var(--lcd-tracking);
 }
 
+/* ── C86/CD: disco de 180; con tapa, la tapa en círculo; sin tapa, el título impreso ── */
+.cd { container-type: inline-size; position: relative; aspect-ratio: 1; }
+.cd__disco { display: block; width: 100%; height: 100%; }
+.cd__plata { fill: var(--acrilico-claro); }
+.cd__surco { stroke: var(--acrilico-oscuro); }
+.cd__impresion { fill: var(--mostaza); }
+.cd__media-luna { fill: var(--magenta); }
+.cd__centro { fill: var(--acrilico); }
+.cd__agujero { stroke: var(--negro); }
+.cd__titulo { /* Figma: Mono/S, 92 de ancho centrado sobre el centro */
+  position: absolute;
+  left: calc(44 / 180 * 100%);
+  top: calc(46 / 180 * 100%);
+  width: calc(92 / 180 * 100%);
+  overflow: hidden;
+  color: var(--negro);
+  font: 500 calc(11 / 180 * 100cqw) / 1.2 var(--fuente-mono);
+  letter-spacing: calc(0.8 / 180 * 100cqw);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* ── C86/Sticker pendiente: estrella de 20 puntas; el tamaño va con --sticker ── */
 .sticker {
   --sticker: 74px;
