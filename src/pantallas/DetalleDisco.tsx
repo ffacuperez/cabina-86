@@ -18,7 +18,8 @@ const SIN_MARCO = { encabezado: false, botonera: false }
  * Abajo, quiénes de la ronda ya lo calificaron, con la nota tapada hasta que lo califique (RN-01).
  * Trae su encabezado ("← EXHIBIDOR" y el catálogo) y no lleva botonera.
  * Figma 03c (126:1911), HU-18: después de calificar, o si lo pasé yo, las notas de la ronda en mini tickets.
- * Pendientes: la caja que se abre y el CD que gira (E-02), luz de rollo (E-01) y "Editar puntaje" (HU-15).
+ * Figma 03d (HU-15): si ya lo califiqué, mi nota primero y "Editar puntaje" abajo.
+ * Pendientes: la caja que se abre y el CD que gira (E-02) y la luz de rollo (E-01).
  */
 export default function DetalleDisco() {
   useMarco(SIN_MARCO)
@@ -51,7 +52,14 @@ function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) 
   const temas = duracion(d.cantidadTemas, d.duracionSeg)
   const lePuedoVerLaNota = d.esMio || d.miPuntaje !== null
   // HU-18: después de calificar (o si lo pasé yo), las notas de los demás a la vista
-  const { notas } = useNotasDeLaRonda(ronda, d)
+  const { notas, error: sinNotas } = useNotasDeLaRonda(ronda, d)
+  // HU-15 (Figma 03d): la mía primero, como "VOS". Se muestran juntas cuando llegan las de los demás.
+  const notasConLaMia = notas === null && !sinNotas ? [] : [
+    ...(d.mia
+      ? [{ de: { ...ronda.yo, nombre: 'Vos' }, nota: { puntaje: d.mia.puntaje, reaccion: d.mia.reaccion, comentario: d.mia.comentario, editadaEn: null } }]
+      : []),
+    ...(notas ?? []),
+  ]
   return (
     <>
       <article className="detalle" aria-labelledby="detalle-titulo">
@@ -92,19 +100,23 @@ function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) 
           </section>
         )}
 
-        {notas && notas.length > 0 && (
+        {notasConLaMia.length > 0 && (
           <section className="detalle__ronda" aria-labelledby="detalle-ronda">
             <h2 id="detalle-ronda" className="mono-s">LO QUE DIJO LA RONDA</h2>
-            <NotasDeLaRonda notas={notas} />
+            <NotasDeLaRonda notas={notasConLaMia} />
           </section>
         )}
       </article>
 
-      {!d.esMio && d.miPuntaje === null && (
+      {!d.esMio && (
         <BarraInferior>
-          <Link className="boton boton--mostaza" to="calificar">
-            Bancalo o bardealo <span className="flecha" aria-hidden="true">→</span>
-          </Link>
+          {d.mia ? (
+            <Link className="boton boton--contorno" to="calificar">Editar puntaje</Link>
+          ) : (
+            <Link className="boton boton--mostaza" to="calificar">
+              Bancalo o bardealo <span className="flecha" aria-hidden="true">→</span>
+            </Link>
+          )}
         </BarraInferior>
       )}
     </>

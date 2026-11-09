@@ -45,6 +45,30 @@ export async function calificar(paseId: string, c: Calificacion) {
   if (error) throw error
 }
 
+/**
+ * HU-15 / RN-02: cambia mi calificación (puntaje, tema, reacción o comentario).
+ * La base marca editada_en y los demás ven "(editado)"; los promedios salen de las vistas y se recalculan solos.
+ */
+export async function editarCalificacion(paseId: string, usuarioId: string, c: Calificacion) {
+  const comentario = c.comentario.trim().slice(0, LARGO_COMENTARIO)
+  const { error } = await supabase
+    .from('calificaciones')
+    .update({ puntaje: c.puntaje, tema_favorito: c.temaFavorito, reaccion: c.reaccion, comentario: comentario || null })
+    .eq('pase_id', paseId)
+    .eq('usuario_id', usuarioId)
+  if (error) throw error
+}
+
+/** ¿Cambió algo respecto de lo que ya estaba? Si no, reimprimir no toca la base (ni marca "editado"). */
+export function cambio(antes: { puntaje: number; temaFavorito: string | null; reaccion: string | null; comentario: string | null }, c: Calificacion) {
+  return (
+    antes.puntaje !== c.puntaje ||
+    antes.temaFavorito !== c.temaFavorito ||
+    antes.reaccion !== c.reaccion ||
+    (antes.comentario ?? '') !== c.comentario.trim().slice(0, LARGO_COMENTARIO)
+  )
+}
+
 /** Lo que debo en esta ronda después de calificar (renglón "LE DEBÉS" del ticket) */
 export function useDeuda(rondaId: string, usuarioId: string) {
   const [deuda, setDeuda] = useState<number | null>(null)

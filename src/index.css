@@ -437,5 +437,5 @@ a.boton { text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: none; }
 }
-.ticket-pantalla__acciones { margin-top: auto; padding-top: var(--esp-6); }
+.ticket-pantalla__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
 .ticket-pantalla__acciones .boton { text-decoration: none; }

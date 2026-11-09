@@ -3,9 +3,9 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router'
 import { BarraInferior } from '../componentes/BarraInferior'
 import { CajaCD } from '../componentes/CajaCD'
 import { DisplayPuntaje } from '../componentes/DisplayPuntaje'
-import { type CodigoReaccion, calificar, LARGO_COMENTARIO, moverPuntaje, REACCIONES } from '../datos/calificar'
+import { type CodigoReaccion, calificar, cambio, editarCalificacion, LARGO_COMENTARIO, moverPuntaje, REACCIONES } from '../datos/calificar'
 import { type Detalle, useDetalle } from '../datos/detalle'
-import { useMarco, useRondaActual } from '../datos/ronda'
+import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras } from '../lib/texto'
 
 const SIN_MARCO = { encabezado: false, botonera: false }
@@ -15,7 +15,8 @@ const YA_CALIFICADO = '23505'
 /**
  * Figma 04 · Calificar — Artaud (16:1830), HU-14: puntaje con − y + (obligatorio),
  * tema favorito, reacción y una línea para la ronda (opcionales). "Imprimir el ticket" guarda y
- * pasa al ticket (04b/04c). Si ya lo califiqué, va al ticket; editar es HU-15.
+ * pasa al ticket (04b/04c). Si ya lo califiqué (HU-15, Figma 04e), se abre con lo mío cargado,
+ * el botón dice "Reimprimir el ticket" y guardar edita (RN-02: los demás ven "editado").
  */
 export default function Calificar() {
   useMarco(SIN_MARCO)
@@ -26,7 +27,6 @@ export default function Calificar() {
 
   if (estado.tipo === 'no-esta') return <Navigate to={`/ronda/${ronda.id}`} replace />
   if (estado.tipo === 'listo' && estado.detalle.esMio) return <Navigate to={alDetalle} replace />
-  if (estado.tipo === 'listo' && estado.detalle.mia) return <Navigate to={`${alDetalle}/ticket`} replace />
 
   if (estado.tipo !== 'listo') {
     return (
@@ -44,15 +44,17 @@ export default function Calificar() {
       </>
     )
   }
-  return <Formulario detalle={estado.detalle} alDetalle={alDetalle} />
+  return <Formulario ronda={ronda} detalle={estado.detalle} alDetalle={alDetalle} />
 }
 
-function Formulario({ detalle: d, alDetalle }: { detalle: Detalle; alDetalle: string }) {
+function Formulario({ ronda, detalle: d, alDetalle }: { ronda: RondaActual; detalle: Detalle; alDetalle: string }) {
   const navigate = useNavigate()
-  const [puntaje, setPuntaje] = useState<number | null>(null)
-  const [tema, setTema] = useState<string | null>(null)
-  const [reaccion, setReaccion] = useState<CodigoReaccion | null>(null)
-  const [comentario, setComentario] = useState('')
+  // HU-15 (Figma 04e): si ya lo califiqué, se abre con lo mío cargado y se reimprime
+  const mia = d.mia
+  const [puntaje, setPuntaje] = useState<number | null>(mia?.puntaje ?? null)
+  const [tema, setTema] = useState<string | null>(mia?.temaFavorito ?? null)
+  const [reaccion, setReaccion] = useState<CodigoReaccion | null>((mia?.reaccion as CodigoReaccion | null) ?? null)
+  const [comentario, setComentario] = useState(mia?.comentario ?? '')
   const [imprimiendo, setImprimiendo] = useState(false)
   const [error, setError] = useState('')
   const ids = { temas: useId(), reaccion: useId(), comentario: useId() }
@@ -61,8 +63,10 @@ function Formulario({ detalle: d, alDetalle }: { detalle: Detalle; alDetalle: st
     if (puntaje === null || imprimiendo) return
     setError('')
     setImprimiendo(true)
+    const datos = { puntaje, temaFavorito: tema, reaccion, comentario }
     try {
-      await calificar(d.paseId, { puntaje, temaFavorito: tema, reaccion, comentario })
+      if (!mia) await calificar(d.paseId, datos)
+      else if (cambio(mia, datos)) await editarCalificacion(d.paseId, ronda.yo.id, datos)
     } catch (e) {
       if ((e as { code?: string }).code !== YA_CALIFICADO) {
         setImprimiendo(false)
@@ -160,7 +164,7 @@ function Formulario({ detalle: d, alDetalle }: { detalle: Detalle; alDetalle: st
           aria-busy={imprimiendo}
           onClick={imprimir}
         >
-          Imprimir el ticket <span className="flecha" aria-hidden="true">→</span>
+          {mia ? 'Reimprimir el ticket' : 'Imprimir el ticket'} <span className="flecha" aria-hidden="true">→</span>
         </button>
       </BarraInferior>
     </>
