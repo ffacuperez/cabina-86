@@ -6,9 +6,10 @@ import { useRondaActual } from '../datos/ronda'
 import { dosCifras } from '../lib/texto'
 
 /**
- * Figma 02 · Tu exhibidor (15:1336) y 02c (15:1608): a donde se llega al entrar a una ronda (HU-05, HU-11).
- * Un pasillo por integrante que me pasó discos, con su estante que se desliza. Pendiente: sticker PENDIENTE;
- * ya calificado: sigue en el estante con el talón de mi puntaje. El LCD muestra mi deuda en esta ronda.
+ * Figma 02 · Tu exhibidor (vigente, 111:1595) y 02c (15:1608): a donde se llega al entrar a una ronda (HU-05, HU-11).
+ * Un pasillo por integrante que me pasó discos, con su estante que se desliza. Debajo de cada caja, título y artista.
+ * Pendiente: sticker PENDIENTE; ya calificado: sigue en el estante con el talón de mi puntaje.
+ * Cada pasillo con pendientes lleva pegada la tarjetita del último. El LCD muestra mi deuda en esta ronda.
  */
 export default function Exhibidor() {
   const ronda = useRondaActual()
@@ -34,28 +35,25 @@ export default function Exhibidor() {
 }
 
 function Estantes({ exhibidor }: { exhibidor: ExhibidorDatos }) {
-  const { pasillos, ultimaTarjetita } = exhibidor
+  const { pasillos } = exhibidor
   if (pasillos.length === 0) {
     return <p className="texto-m exhibidor__aviso">Nadie te pasó nada todavía. Qué ronda tranquila.</p>
   }
   return (
     <>
-      {pasillos.map((p) => {
-        const conTarjetita = ultimaTarjetita !== null && p.discos.some((d) => d.paseId === ultimaTarjetita.paseId)
-        return (
-          <div key={p.de.id} className={`pasillo${conTarjetita ? ' pasillo--con-tarjetita' : ''}`}>
-            <h2 className="rotulo pasillo__rotulo">
-              Pasillo de {p.de.nombre} <span className="lcd-s">{dosCifras(p.discos.length)}</span>
-            </h2>
-            <ul className="estante" aria-label={`Lo que te pasó ${p.de.nombre}`}>
-              {p.discos.map((d) => <DiscoEnEstante key={d.paseId} disco={d} />)}
-            </ul>
-            {conTarjetita && (
-              <TarjetaRecomendado por={ultimaTarjetita.por} nota={ultimaTarjetita.nota} className="tarjeta-recomendado--estante" />
-            )}
-          </div>
-        )
-      })}
+      {pasillos.map((p) => (
+        <div key={p.de.id} className={`pasillo${p.tarjetita !== null ? ' pasillo--con-tarjetita' : ''}`}>
+          <h2 className="rotulo pasillo__rotulo">
+            Pasillo de {p.de.nombre} <span className="lcd-s">{dosCifras(p.discos.length)}</span>
+          </h2>
+          <ul className="estante" aria-label={`Lo que te pasó ${p.de.nombre}`}>
+            {p.discos.map((d) => <DiscoEnEstante key={d.paseId} disco={d} />)}
+          </ul>
+          {p.tarjetita !== null && (
+            <TarjetaRecomendado por={p.de.nombre} nota={p.tarjetita} className="tarjeta-recomendado--estante" />
+          )}
+        </div>
+      ))}
       <p className="mono-s exhibidor__pista">DESLIZÁ CADA ESTANTE</p>
     </>
   )
@@ -67,6 +65,9 @@ function DiscoEnEstante({ disco }: { disco: DiscoEnEstante }) {
   return (
     <li className="disco-estante" aria-label={`${datos}. ${estado}.`}>
       <CajaCD tapa={disco.tapa} titulo="" />
+      {/* Las tapas reales muchas veces no traen texto: título y artista abajo, como etiqueta de batea */}
+      <p className="disco-estante__titulo" aria-hidden="true">{disco.titulo}</p>
+      <p className="mono-s disco-estante__artista" aria-hidden="true">{disco.artista.toUpperCase()}</p>
       {disco.puntaje === null ? (
         <Sticker texto={'PEN-\nDIENTE'} className="disco-estante__sticker" />
       ) : (
