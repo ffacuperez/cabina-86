@@ -18,7 +18,7 @@ export function textoDeReaccion(codigo: string | null) {
 /** S-06: "una línea para la ronda" */
 export const LARGO_COMENTARIO = 140
 
-/** Teclas − y +: antes de tocar nada no hay puntaje; el primer toque arranca desde 5 */
+/** Teclas − y +: antes de tocar nada no hay puntaje (05 en espera); el primer toque arranca desde 5 */
 export function moverPuntaje(actual: number | null, paso: 1 | -1) {
   return Math.min(10, Math.max(1, (actual ?? 5) + paso))
 }

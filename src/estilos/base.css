@@ -276,6 +276,7 @@ button { font: inherit; color: inherit; }
 .display-puntaje__fantasma,
 .display-puntaje__valor { left: calc(var(--d) * 73); top: calc(var(--d) * 20); font-size: calc(var(--d) * 96); line-height: 0.85; }
 .display-puntaje__fantasma { opacity: 0.1; }
+.display-puntaje__valor--espera { opacity: 0.25; }
 .display-puntaje__tecla {
   top: calc(var(--d) * 130);
   width: calc(var(--d) * 48); height: calc(var(--d) * 44);

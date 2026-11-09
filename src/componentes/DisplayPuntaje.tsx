@@ -1,14 +1,17 @@
 import { dosCifras } from '../lib/texto'
 
-/** Ángulo de la aguja desde la vertical: del 1 (−45°) al 10 (+45°), de a 10°. Sin puntaje, en reposo. */
-function anguloAguja(valor: number | null) {
-  return valor === null ? -50 : (valor - 5.5) * 10
+/** Antes de elegir, aguja y display esperan en el medio: el primer toque mueve de a uno (05 → 06 o 04) */
+const EN_ESPERA = 5
+
+/** Ángulo de la aguja desde la vertical: del 1 (−45°) al 10 (+45°), de a 10°. */
+function anguloAguja(valor: number) {
+  return (valor - 5.5) * 10
 }
 
 /**
  * C86/Display puntaje (Figma, set 14:1591): vúmetro de aguja, display de 7 segmentos y teclas − y +.
  * Escala del vúmetro exportada del Figma; la aguja gira según el puntaje (las variantes valor=1…10).
- * Antes de elegir, el display queda apagado ("88" fantasma) y la aguja en reposo.
+ * Antes de elegir, la aguja y un 05 tenue esperan en el medio, sin puntaje elegido.
  */
 export function DisplayPuntaje({
   valor,
@@ -44,7 +47,7 @@ export function DisplayPuntaje({
             y2="28"
             stroke="#1F231C"
             strokeWidth="1.6"
-            style={{ transform: `rotate(${anguloAguja(valor)}deg)` }}
+            style={{ transform: `rotate(${anguloAguja(valor ?? EN_ESPERA)}deg)` }}
           />
           <circle cx="75" cy="110" r="9" fill="#33392D" />
         </svg>
@@ -54,7 +57,9 @@ export function DisplayPuntaje({
       <div className="display-puntaje__lcd" role="status" aria-label={valor === null ? 'Sin puntaje todavía' : `Puntaje: ${valor} de 10`}>
         <span className="display-puntaje__rotulo" aria-hidden="true">PUNTAJE</span>
         <span className="display-puntaje__fantasma" aria-hidden="true">88</span>
-        {valor !== null && <span className="display-puntaje__valor" aria-hidden="true">{dosCifras(valor)}</span>}
+        <span className={`display-puntaje__valor${valor === null ? ' display-puntaje__valor--espera' : ''}`} aria-hidden="true">
+          {dosCifras(valor ?? EN_ESPERA)}
+        </span>
         <span className="display-puntaje__sobre" aria-hidden="true">/10</span>
       </div>
 
