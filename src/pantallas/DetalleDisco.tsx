@@ -50,7 +50,7 @@ function Disco({ detalle: d }: { detalle: Detalle }) {
   return (
     <article className="detalle" aria-labelledby="detalle-titulo">
       <div className="detalle__vitrina" aria-hidden="true">
-        <CD className="detalle__cd" />
+        <CD className="detalle__cd" tapa={d.tapa} titulo={d.titulo} />
         <CajaCD tapa={d.tapa} titulo="" />
       </div>
 
