@@ -288,7 +288,6 @@ a.boton { text-decoration: none; }
   top: calc(20 / 390 * 100cqw);
   width: calc(180 / 390 * 100cqw);
   height: calc(180 / 390 * 100cqw);
-  max-width: none;
   transform: rotate(160deg);
 }
 /* Tarjetita a la izquierda (la misma tarjeta, al 95 % y torcida) y los datos del disco a la derecha */
