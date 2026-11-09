@@ -89,11 +89,109 @@ a.boton { text-decoration: none; }
 .invitado__aclaracion { margin-top: var(--esp-3); max-width: 330px; }
 
 /* ── Adentro de una ronda (Figma 02 · Tu exhibidor): encabezado y lugar para la botonera ── */
-.en-ronda { padding-bottom: calc(var(--alto-botonera) + var(--esp-6)); }
+/* Con botonera, lo último de la pantalla queda 16 por encima de las teclas (como el CTA de 05a y 05b) */
+.en-ronda--con-botonera { padding-bottom: calc(var(--alto-botonera) + var(--esp-4)); }
 .encabezado-ronda { display: flex; align-items: center; justify-content: space-between; gap: var(--esp-4); margin-top: -4px; min-height: 16px; }
-.encabezado-ronda__volver { flex: none; color: var(--texto); text-decoration: none; }
+.encabezado-ronda__volver { flex: none; padding: 0; border: 0; background: none; color: var(--texto); text-decoration: none; cursor: pointer; }
 .encabezado-ronda__nombre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.6; }
 
 /* ── 02 · Tu exhibidor ── */
 .exhibidor__titulo { margin-top: var(--esp-2); }
 .exhibidor__deuda { align-self: flex-start; margin-top: var(--esp-3); }
+
+/* ── 05a · Pasar — elegir disco (HU-07) ── */
+.pasar__titulo { margin-top: var(--esp-2); }
+.pasar__intro { margin-top: 10px; max-width: 330px; }
+.pasar__campo { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.pasar__rotulo { margin-top: 25px; }
+.pasar__aviso { margin-top: var(--esp-6); }
+.resultados { display: flex; flex-direction: column; gap: 10px; margin: 7px 0 0; padding: 0; list-style: none; }
+.resultado {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 83px;
+  padding: 10px 12px 10px 10px;
+  border: 1px solid var(--negro);
+  border-radius: var(--radio-m);
+  background: transparent;
+  color: var(--texto);
+  text-align: left;
+  cursor: pointer;
+}
+.resultado .caja-cd { --caja-ancho: 66px; }
+.resultado--elegido { border-width: 1.5px; padding: 9.5px 11.5px 9.5px 9.5px; background: var(--acrilico-claro); }
+.resultado:disabled { opacity: 0.55; cursor: default; }
+.resultado__datos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.resultado__titulo { font: var(--texto-m-fuerte); overflow-wrap: anywhere; }
+.resultado__repetido { color: var(--naranja); font: var(--mono-tecla); letter-spacing: var(--mono-s-tracking); }
+.resultado__este { --sticker: 59px; position: absolute; top: -14px; right: 7px; }
+/* Lugar para el sticker: así no tapa el título del elegido */
+.resultado--elegido .resultado__datos { padding-right: 40px; }
+/* El botón queda siempre a mano, 16 por encima de la botonera */
+.pasar__accion {
+  position: sticky;
+  bottom: calc(var(--alto-botonera) + var(--esp-4));
+  margin-top: auto;
+  padding-top: var(--esp-6);
+}
+
+/* ── 05b · Pasar — tarjetita y pista (HU-08) ── */
+.en-ronda > .encabezado-ronda:first-child:has(button) { margin-top: 0; }
+.elegido { display: flex; align-items: flex-start; gap: 19px; margin-top: 14px; }
+.elegido__datos { display: flex; flex-direction: column; gap: 6px; min-width: 0; margin-top: var(--esp-2); }
+.elegido__datos .cartel-s { overflow-wrap: anywhere; }
+.tarjetita__rotulo { margin-top: 18px; }
+.tarjetita__destino { align-self: flex-start; margin-top: 5px; }
+.tarjetita__aclaracion { margin-top: var(--esp-1); }
+.tarjetita__aclaracion + .tarjetita__rotulo { margin-top: var(--esp-3); }
+.tarjetita__nota { display: flex; align-items: flex-start; gap: 22px; margin-top: 18px; }
+.tarjetita__nota > .texto-s { margin-top: 28px; max-width: 140px; }
+.tarjetita__rotulo-vista { margin-top: var(--esp-3); }
+.vista-previa {
+  position: relative;
+  flex: none;
+  height: 146px;
+  margin-top: 7px;
+  border: 1.5px solid var(--acrilico-oscuro);
+  border-radius: var(--radio-m);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--acrilico-luz), var(--acrilico));
+  overflow: hidden;
+}
+.vista-previa::after { /* Repisa */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 8px;
+  background: var(--acrilico-oscuro);
+}
+.vista-previa__rotulo { position: absolute; left: 12px; top: 10px; padding: 4px var(--esp-2); }
+.vista-previa__caja { position: absolute; left: 14px; top: 44px; }
+.vista-previa__caja .caja-cd { --caja-ancho: 92px; }
+.vista-previa__sticker { --sticker: 41px; position: absolute; left: 68px; top: -8px; transform: rotate(12deg); }
+.vista-previa__texto { position: absolute; left: 134px; right: 12px; top: 52px; }
+
+/* ── 05c · Pasado — en exhibición (HU-08): sin encabezado ni botonera ── */
+.pasado { flex: 1; display: flex; flex-direction: column; }
+/* Medidas del Figma sobre un ancho de 342: en pantallas más angostas todo se achica junto (cqw) */
+.pasado__vitrina { container-type: inline-size; position: relative; aspect-ratio: 342 / 250; margin-top: 25px; }
+.pasado__vitrina > * { position: absolute; }
+.pasado__vitrina .caja-cd { --caja-ancho: calc(242 / 342 * 100cqw); left: calc(20 / 342 * 100cqw); top: 0; transform: rotate(4deg); }
+.pasado__sticker { --sticker: calc(74 / 342 * 100cqw); left: calc(238 / 342 * 100cqw); top: calc(-12 / 342 * 100cqw); transform: rotate(12deg); }
+.pasado__fecha {
+  left: calc(238 / 342 * 100cqw);
+  top: calc(194 / 342 * 100cqw);
+  color: var(--naranja);
+  font: var(--lcd-m);
+  letter-spacing: var(--lcd-tracking);
+  text-shadow: 0 0 4px rgb(255 122 26 / 0.6);
+  white-space: nowrap;
+}
+.pasado__titulo { margin-top: 26px; outline: none; }
+.pasado__texto { margin-top: 10px; max-width: 330px; }
+.pasado__lcd { align-self: flex-start; margin-top: 10px; }
+.pasado__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
