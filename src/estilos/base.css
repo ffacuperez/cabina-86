@@ -214,6 +214,102 @@ button { font: inherit; color: inherit; }
     rgb(255 255 242 / 0.08) 85.714%);
 }
 
+/* Sin tapa en Deezer: S/T sobre acrílico (Figma 05a "Sin tapa"), adentro de la caja */
+.caja-cd__sin-tapa {
+  display: block;
+  padding: calc(var(--u) * 10) calc(var(--u) * 13);
+  background: var(--acrilico-oscuro);
+  color: rgb(31 35 28 / 0.6);
+  font: 400 calc(var(--u) * 30) / 1 var(--fuente-lcd);
+}
+/* Sin tapa suelta (lista de resultados de 05a): sin caja */
+.sin-tapa {
+  flex: none;
+  width: 66px;
+  height: 61px;
+  padding: 6px 8px;
+  border-radius: 2px;
+  background: var(--acrilico-oscuro);
+  color: rgb(31 35 28 / 0.6);
+  font: var(--lcd-s);
+  letter-spacing: var(--lcd-tracking);
+}
+
+/* ── C86/Sticker pendiente: estrella de 20 puntas; el tamaño va con --sticker ── */
+.sticker {
+  --sticker: 74px;
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: var(--sticker);
+  height: var(--sticker);
+  color: var(--naranja);
+  pointer-events: none;
+}
+.sticker__estrella { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sticker__estrella path { fill: currentColor; }
+.sticker__estrella circle { fill: none; stroke: var(--negro); stroke-width: 1; }
+.sticker__texto {
+  position: relative;
+  color: var(--negro);
+  font: 700 calc(var(--sticker) * 11 / 74) / 1.2 var(--fuente-mono);
+  letter-spacing: calc(var(--sticker) * 0.8 / 74);
+  text-align: center;
+  white-space: pre-line;
+}
+
+/* ── C86/Tarjeta recomendado: cartulina con cinta, torcida 2° ── */
+.tarjeta-recomendado {
+  position: relative;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 180px;
+  padding: 18px 12px 14px;
+  background: var(--cartulina);
+  box-shadow: 1px 3px 4px rgb(31 36 28 / 0.25);
+  transform: rotate(-2deg);
+}
+.tarjeta-recomendado__cinta {
+  position: absolute;
+  left: 58px;
+  top: -8px;
+  width: 64px;
+  height: 18px;
+  background: var(--cinta);
+  transform: rotate(-4deg);
+}
+.tarjeta-recomendado__encabezado { color: var(--magenta); }
+.tarjeta-recomendado__nota {
+  width: 100%;
+  min-height: 100px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--marino);
+  font: 400 17px/1.18 var(--fuente-mano);
+  overflow-wrap: anywhere;
+  resize: none;
+  field-sizing: content;
+}
+.tarjeta-recomendado__nota::placeholder { color: var(--marino); opacity: 0.4; }
+.tarjeta-recomendado__nota:focus-visible { outline: 1px dashed var(--marino); outline-offset: 3px; }
+
+/* LCD chico sin marco ("11 TEMAS" en 05b) */
+.lcd-chip {
+  align-self: flex-start;
+  padding: 2px 6px;
+  border-radius: var(--radio-xs);
+  background: var(--lcd);
+  color: var(--lcd-tinta);
+  font: var(--lcd-s);
+  letter-spacing: var(--lcd-tracking);
+  text-transform: uppercase;
+}
+
 /* ── Botón oficial de Google (claro): no usa la estética de la app ── */
 .boton-google {
   display: flex;
@@ -353,6 +449,7 @@ button { font: inherit; color: inherit; }
   box-shadow: 0 4px 0 rgb(0 0 0 / 0.5), inset 0 2px 0 rgb(255 255 229 / 0.1);
   color: var(--acrilico);
   font: var(--mono-tecla);
+  font-size: clamp(9px, 2.9vw, 11px); /* "EXHIBIDOR" entra en la tecla también a 320 */
   letter-spacing: var(--mono-s-tracking);
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;

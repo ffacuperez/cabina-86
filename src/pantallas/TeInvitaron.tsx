@@ -12,16 +12,13 @@ import {
   verInvitacion,
   type Invitacion,
 } from '../datos/invitacion'
+import { enLista } from '../lib/texto'
 
 const MENSAJE_LINK_INVALIDO = 'Este link no lleva a ninguna ronda. Pedile uno nuevo a quien te invitó.'
 const dosCifras = (n: number) => String(n).padStart(2, '0')
 const nombreDePila = (nombre: string) => nombre.trim().split(/\s+/)[0]
 
 /** "Maxi", "Maxi y Manu", "Maxi, Manu y Nico" */
-function enLista(nombres: string[]) {
-  return nombres.length <= 1 ? (nombres[0] ?? '') : `${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]}`
-}
-
 /**
  * /r/<codigo>: el link de invitación (HU-02).
  * - Sin sesión: Figma 00b · Te invitaron, con el botón de Google.

@@ -6,6 +6,7 @@ import Entrar from './pantallas/Entrar'
 import Exhibidor from './pantallas/Exhibidor'
 import Inicio from './pantallas/Inicio'
 import Muestrario from './pantallas/Muestrario'
+import Pasar from './pantallas/Pasar'
 import Ronda from './pantallas/Ronda'
 import TeInvitaron from './pantallas/TeInvitaron'
 import { faltaConfiguracion } from './lib/supabase'
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="/armar" element={<ArmaLaRonda />} />
             <Route path="/ronda/:id" element={<Ronda />}>
               <Route index element={<Exhibidor />} />
+              <Route path="pasar" element={<Pasar />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
