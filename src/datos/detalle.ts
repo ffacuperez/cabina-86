@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { dosCifras } from '../lib/texto'
+import { linksDeBusqueda, type Plataforma } from './plataforma'
 import type { Integrante, RondaActual } from './ronda'
 
 /** Un disco abierto (HU-12): el disco, quién lo pasó y su tarjetita, y quiénes ya lo calificaron */
@@ -14,6 +15,8 @@ export type Detalle = {
   tapa: string | null
   cantidadTemas: number | null
   duracionSeg: number | null
+  /** RN-10: búsqueda del álbum en cada plataforma (HU-13) */
+  links: Record<Plataforma, string>
   tarjetita: string
   creadoEn: string
   de: Integrante
@@ -38,6 +41,8 @@ type FilaPase = {
     tapa_url: string | null
     cantidad_temas: number | null
     duracion_seg: number | null
+    link_spotify: string | null
+    link_ytm: string | null
   } | null
   calificaciones: { puntaje: number }[]
 }
@@ -58,7 +63,7 @@ export function useDetalle(ronda: RondaActual, paseId: string) {
         .from('pases')
         .select(
           'id, numero, tarjetita, creado_en, pasado_por, ' +
-            'discos(titulo, artista, anio, tapa_url, cantidad_temas, duracion_seg), calificaciones(puntaje)',
+            'discos(titulo, artista, anio, tapa_url, cantidad_temas, duracion_seg, link_spotify, link_ytm), calificaciones(puntaje)',
         )
         .eq('id', paseId)
         .eq('ronda_id', ronda.id)
@@ -90,6 +95,8 @@ export function armar(f: FilaPase, calificaron: { usuario_id: string }[], ronda:
   const integrantes = new Map([ronda.yo, ...ronda.otros].map((i) => [i.id, i]))
   const quien = (id: string): Integrante => integrantes.get(id) ?? { id, nombre: '?', sigla: '???' }
   const de = quien(f.pasado_por)
+  // Los links se guardan al pasar el disco; si faltan, se arman igual con título y artista
+  const armados = linksDeBusqueda(f.discos?.titulo ?? '', f.discos?.artista ?? '')
   return {
     paseId: f.id,
     catalogo: `${de.sigla}-${dosCifras(f.numero)}`,
@@ -99,6 +106,7 @@ export function armar(f: FilaPase, calificaron: { usuario_id: string }[], ronda:
     tapa: f.discos?.tapa_url ?? null,
     cantidadTemas: f.discos?.cantidad_temas ?? null,
     duracionSeg: f.discos?.duracion_seg ?? null,
+    links: { spotify: f.discos?.link_spotify || armados.spotify, youtube: f.discos?.link_ytm || armados.youtube },
     tarjetita: f.tarjetita,
     creadoEn: f.creado_en,
     de,

@@ -14,7 +14,7 @@ const SIN_MARCO = { encabezado: false, botonera: false }
  * La caja abierta con el CD afuera, la tarjetita de quien lo pasó, los datos del disco y la cabina de escucha.
  * Abajo, quiénes de la ronda ya lo calificaron, con la nota tapada hasta que lo califique (RN-01).
  * Trae su encabezado ("← EXHIBIDOR" y el catálogo) y no lleva botonera.
- * Pendientes: la caja que se abre y el CD que gira (E-02), luz de rollo (E-01), Spotify/YouTube (HU-13),
+ * Pendientes: la caja que se abre y el CD que gira (E-02), luz de rollo (E-01),
  * "Bancalo o bardealo" (HU-14) y las notas a la vista después de calificar (HU-18).
  */
 export default function DetalleDisco() {
@@ -68,7 +68,7 @@ function Disco({ detalle: d }: { detalle: Detalle }) {
         </div>
       </div>
 
-      <CabinaDeEscucha />
+      <CabinaDeEscucha links={d.links} />
 
       {!lePuedoVerLaNota && d.calificaron.length > 0 && (
         <section className="detalle__ronda" aria-labelledby="detalle-ronda">
