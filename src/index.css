@@ -333,16 +333,20 @@ a.boton { text-decoration: none; }
 .detalle__nota { display: flex; align-items: center; gap: var(--esp-3); }
 .detalle__tapada { max-width: 150px; }
 
-/* ── Barra inferior (03b, 04): fija abajo, de borde a borde, con el botón de la acción ── */
+/* ── Barra inferior (03b, 04): fija abajo, de borde a borde, con el botón de la acción (componentes/BarraInferior) ── */
 .barra-inferior {
   position: sticky;
   bottom: 0;
   z-index: 2;
   margin: auto calc(-1 * var(--margen-pantalla)) calc(-1 * max(env(safe-area-inset-bottom), var(--esp-6)));
   padding: 7px var(--margen-pantalla) max(env(safe-area-inset-bottom), 11px);
-  border-top: 1px solid var(--negro);
+  border-top: 1px solid transparent;
   background: var(--acrilico);
+  transition: border-color var(--duracion-media);
 }
+/* La línea solo cuando hay contenido pasando por debajo */
+.barra-inferior--tapa { border-top-color: var(--negro); }
+.barra-inferior__marca { display: block; height: 1px; margin-top: var(--esp-2); } /* al final, un poco de aire antes del botón */
 .barra-inferior .boton { width: 100%; text-decoration: none; }
 
 /* ── 04 · Calificar (HU-14) ── */

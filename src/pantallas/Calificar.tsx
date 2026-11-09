@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router'
+import { BarraInferior } from '../componentes/BarraInferior'
 import { CajaCD } from '../componentes/CajaCD'
 import { DisplayPuntaje } from '../componentes/DisplayPuntaje'
 import { type CodigoReaccion, calificar, LARGO_COMENTARIO, moverPuntaje, REACCIONES } from '../datos/calificar'
@@ -151,7 +152,7 @@ function Formulario({ detalle: d, alDetalle }: { detalle: Detalle; alDetalle: st
         {error && <p role="alert" className="error">{error}</p>}
       </div>
 
-      <div className="barra-inferior">
+      <BarraInferior>
         <button
           className="boton boton--ancho"
           type="button"
@@ -161,7 +162,7 @@ function Formulario({ detalle: d, alDetalle }: { detalle: Detalle; alDetalle: st
         >
           Imprimir el ticket <span className="flecha" aria-hidden="true">→</span>
         </button>
-      </div>
+      </BarraInferior>
     </>
   )
 }
