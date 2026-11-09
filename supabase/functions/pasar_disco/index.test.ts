@@ -88,7 +88,7 @@ Deno.test('HU-08 Se guardan los datos del disco desde Deezer: título, artista, 
     cantidad_temas: 2,
     duracion_seg: 410,
     temas: [{ titulo: 'El magnetismo', duracion_seg: 200 }, { titulo: 'Chica de oro', duracion_seg: 210 }],
-    link_spotify: 'https://open.spotify.com/search/La%20Dinast%C3%ADa%20Scorpio%20El%20Mat%C3%B3%20a%20un%20Polic%C3%ADa%20Motorizado/albums',
+    link_spotify: 'https://open.spotify.com/search/La%20Dinast%C3%ADa%20Scorpio%20El%20Mat%C3%B3%20a%20un%20Polic%C3%ADa%20Motorizado',
     link_ytm: 'https://music.youtube.com/search?q=La%20Dinast%C3%ADa%20Scorpio%20El%20Mat%C3%B3%20a%20un%20Polic%C3%ADa%20Motorizado',
   }])
 })
@@ -165,7 +165,7 @@ Deno.test('Catálogo: sigla y número con dos cifras', () => {
 
 Deno.test('RN-10: links de búsqueda del álbum en Spotify y YouTube Music', () => {
   assert.deepEqual(linksDeBusqueda('Artaud', 'Pescado Rabioso'), {
-    link_spotify: 'https://open.spotify.com/search/Artaud%20Pescado%20Rabioso/albums',
+    link_spotify: 'https://open.spotify.com/search/Artaud%20Pescado%20Rabioso',
     link_ytm: 'https://music.youtube.com/search?q=Artaud%20Pescado%20Rabioso',
   })
 })

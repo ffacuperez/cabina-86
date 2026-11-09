@@ -30,7 +30,7 @@ export function usePlataforma() {
 export function linksDeBusqueda(titulo: string, artista: string): Record<Plataforma, string> {
   const q = encodeURIComponent(`${titulo} ${artista}`.trim())
   return {
-    spotify: `https://open.spotify.com/search/${q}/albums`,
+    spotify: `https://open.spotify.com/search/${q}`,
     youtube: `https://music.youtube.com/search?q=${q}`,
   }
 }

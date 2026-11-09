@@ -138,11 +138,14 @@ export type DiscoCompleto = {
   link_ytm: string
 }
 
-/** RN-10: links de búsqueda del álbum (título y artista), no de un tema. */
+/**
+ * RN-10: links de búsqueda del álbum (título y artista), no de un tema.
+ * Spotify: sin "/albums" al final; la app del teléfono toma el último tramo como la búsqueda.
+ */
 export function linksDeBusqueda(titulo: string, artista: string) {
   const q = encodeURIComponent(`${titulo} ${artista}`.trim())
   return {
-    link_spotify: `https://open.spotify.com/search/${q}/albums`,
+    link_spotify: `https://open.spotify.com/search/${q}`,
     link_ytm: `https://music.youtube.com/search?q=${q}`,
   }
 }
