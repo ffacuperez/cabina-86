@@ -20,6 +20,8 @@ export type RondaActual = {
   deuda: number
   /** Yo */
   yo: Integrante
+  /** Cuándo me sumé: lo pasado antes no es mío (RN-06) */
+  unidoEn: string
   /** Los demás integrantes, en el orden en que se sumaron */
   otros: Integrante[]
 }
@@ -75,7 +77,8 @@ export function useRonda(id: string) {
         .sort((a, b) => a.se_unio_en.localeCompare(b.se_unio_en))
         .map((m) => ({ id: m.usuario_id, nombre: nombreDePila(m.usuarios?.nombre ?? '') || '?', sigla: m.sigla }))
       const yo = integrantes.find((i) => i.id === uid)
-      if (!yo) return setEstado({ tipo: 'no-esta' })
+      const miFila = fila.miembros_ronda.find((m) => m.usuario_id === uid)
+      if (!yo || !miFila) return setEstado({ tipo: 'no-esta' })
 
       setEstado({
         tipo: 'lista',
@@ -84,6 +87,7 @@ export function useRonda(id: string) {
           nombre: fila.nombre,
           deuda: (deuda.data as { pendientes: number } | null)?.pendientes ?? 0,
           yo,
+          unidoEn: miFila.se_unio_en,
           otros: integrantes.filter((i) => i.id !== uid),
         },
       })

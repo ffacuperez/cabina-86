@@ -95,9 +95,73 @@ a.boton { text-decoration: none; }
 .encabezado-ronda__volver { flex: none; padding: 0; border: 0; background: none; color: var(--texto); text-decoration: none; cursor: pointer; }
 .encabezado-ronda__nombre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; opacity: 0.6; }
 
-/* ── 02 · Tu exhibidor ── */
+/* ── 02 · Tu exhibidor (HU-11): de borde a borde, hasta la botonera ── */
 .exhibidor__titulo { margin-top: var(--esp-2); }
 .exhibidor__deuda { align-self: flex-start; margin-top: var(--esp-3); }
+.exhibidor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin: var(--esp-2) calc(-1 * var(--margen-pantalla)) calc(-1 * (var(--alto-botonera) + var(--esp-4)));
+  padding: var(--esp-3) 0 calc(var(--alto-botonera) + var(--esp-6));
+  border-top: 1px solid var(--acrilico-oscuro);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, var(--acrilico-luz), var(--acrilico));
+  overflow: hidden;
+}
+.exhibidor__aviso { display: flex; flex-direction: column; align-items: flex-start; gap: var(--esp-3); margin: var(--esp-6) var(--margen-pantalla) 0; max-width: 330px; }
+.exhibidor__pista { margin: 14px var(--margen-pantalla) 0; opacity: 0.75; }
+
+/* Pasillo: rótulo, estante que se desliza y repisa. Debajo del estante del último pendiente va su tarjetita. */
+.pasillo { position: relative; display: flex; flex-direction: column; padding-bottom: 10px; }
+.pasillo + .pasillo { margin-top: var(--esp-6); }
+.pasillo--con-tarjetita { margin-bottom: 102px; }
+.pasillo::after { /* Repisa con su brillo */
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  background: linear-gradient(var(--acrilico-claro) 0 1px, var(--acrilico-oscuro) 1px);
+  box-shadow: 0 4px 6px rgb(31 36 28 / 0.3);
+}
+.pasillo__rotulo { align-self: flex-start; margin-left: var(--esp-4); }
+.estante {
+  display: flex;
+  gap: var(--esp-4);
+  height: 134px;
+  margin: 2px 0 0;
+  padding: 4px 40px 0 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  list-style: none;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.estante::-webkit-scrollbar { display: none; }
+.disco-estante { position: relative; flex: none; width: 140px; height: 128px; padding-top: 4px; scroll-snap-align: start; scroll-margin-left: 18px; }
+.disco-estante .caja-cd { --caja-ancho: 132px; }
+.disco-estante__sticker { --sticker: 49px; position: absolute; left: 90px; top: -4px; transform: rotate(12deg); }
+.disco-estante__talon {
+  position: absolute;
+  left: 72px;
+  top: 0;
+  padding: 4px var(--esp-2);
+  background: var(--talon);
+  box-shadow: 0 2px 2px rgb(0 0 0 / 0.25);
+  font: var(--mono-m);
+  letter-spacing: var(--mono-m-tracking);
+  transform: rotate(-8deg);
+}
+/* La tarjetita pegada al estante: la misma tarjeta, al 80 % y torcida 3° */
+.tarjeta-recomendado--estante {
+  position: absolute;
+  left: 22px;
+  top: calc(100% - 6px);
+  transform: rotate(-3deg) scale(0.8);
+  transform-origin: top left;
+}
+.tarjeta-recomendado--estante .tarjeta-recomendado__nota { min-height: 0; font-size: 17px; }
 
 /* ── 05a · Pasar — elegir disco (HU-07) ── */
 .pasar__titulo { margin-top: var(--esp-2); }
