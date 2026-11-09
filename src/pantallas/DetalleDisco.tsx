@@ -1,4 +1,5 @@
 import { Link, Navigate, useParams } from 'react-router'
+import { BarraInferior } from '../componentes/BarraInferior'
 import { CabinaDeEscucha } from '../componentes/CabinaDeEscucha'
 import { CajaCD } from '../componentes/CajaCD'
 import { CD } from '../componentes/CD'
@@ -89,11 +90,11 @@ function Disco({ detalle: d }: { detalle: Detalle }) {
       </article>
 
       {!d.esMio && d.miPuntaje === null && (
-        <div className="barra-inferior">
+        <BarraInferior>
           <Link className="boton boton--mostaza" to="calificar">
             Bancalo o bardealo <span className="flecha" aria-hidden="true">→</span>
           </Link>
-        </div>
+        </BarraInferior>
       )}
     </>
   )
