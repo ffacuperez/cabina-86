@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AuthProvider } from './auth/AuthProvider'
 import { RequiereSesion } from './auth/RequiereSesion'
 import ArmaLaRonda from './pantallas/ArmaLaRonda'
+import DetalleDisco from './pantallas/DetalleDisco'
 import Entrar from './pantallas/Entrar'
 import Exhibidor from './pantallas/Exhibidor'
 import Inicio from './pantallas/Inicio'
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/ronda/:id" element={<Ronda />}>
               <Route index element={<Exhibidor />} />
               <Route path="pasar" element={<Pasar />} />
+              <Route path="disco/:pase" element={<DetalleDisco />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
