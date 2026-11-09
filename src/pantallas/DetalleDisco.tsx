@@ -3,9 +3,11 @@ import { BarraInferior } from '../componentes/BarraInferior'
 import { CabinaDeEscucha } from '../componentes/CabinaDeEscucha'
 import { CajaCD } from '../componentes/CajaCD'
 import { CD } from '../componentes/CD'
+import { NotasDeLaRonda } from '../componentes/NotasDeLaRonda'
 import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
 import { type Detalle, duracion, useDetalle } from '../datos/detalle'
-import { useMarco, useRondaActual } from '../datos/ronda'
+import { useNotasDeLaRonda } from '../datos/notas'
+import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { haceCuanto } from '../lib/texto'
 
 const SIN_MARCO = { encabezado: false, botonera: false }
@@ -15,8 +17,8 @@ const SIN_MARCO = { encabezado: false, botonera: false }
  * La caja abierta con el CD afuera, la tarjetita de quien lo pasó, los datos del disco y la cabina de escucha.
  * Abajo, quiénes de la ronda ya lo calificaron, con la nota tapada hasta que lo califique (RN-01).
  * Trae su encabezado ("← EXHIBIDOR" y el catálogo) y no lleva botonera.
- * Pendientes: la caja que se abre y el CD que gira (E-02), luz de rollo (E-01),
- * las notas a la vista después de calificar (HU-18) y "Editar puntaje" (HU-15).
+ * Figma 03c (126:1911), HU-18: después de calificar, o si lo pasé yo, las notas de la ronda en mini tickets.
+ * Pendientes: la caja que se abre y el CD que gira (E-02), luz de rollo (E-01) y "Editar puntaje" (HU-15).
  */
 export default function DetalleDisco() {
   useMarco(SIN_MARCO)
@@ -40,14 +42,16 @@ export default function DetalleDisco() {
           <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
         </div>
       )}
-      {estado.tipo === 'listo' && <Disco detalle={estado.detalle} />}
+      {estado.tipo === 'listo' && <Disco ronda={ronda} detalle={estado.detalle} />}
     </>
   )
 }
 
-function Disco({ detalle: d }: { detalle: Detalle }) {
+function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) {
   const temas = duracion(d.cantidadTemas, d.duracionSeg)
   const lePuedoVerLaNota = d.esMio || d.miPuntaje !== null
+  // HU-18: después de calificar (o si lo pasé yo), las notas de los demás a la vista
+  const { notas } = useNotasDeLaRonda(ronda, d)
   return (
     <>
       <article className="detalle" aria-labelledby="detalle-titulo">
@@ -85,6 +89,13 @@ function Disco({ detalle: d }: { detalle: Detalle }) {
                 </li>
               ))}
             </ul>
+          </section>
+        )}
+
+        {notas && notas.length > 0 && (
+          <section className="detalle__ronda" aria-labelledby="detalle-ronda">
+            <h2 id="detalle-ronda" className="mono-s">LO QUE DIJO LA RONDA</h2>
+            <NotasDeLaRonda notas={notas} />
           </section>
         )}
       </article>
