@@ -332,3 +332,95 @@ a.boton { text-decoration: none; }
 .detalle__notas { display: flex; flex-direction: column; gap: var(--esp-2); margin: 0; padding: 0; list-style: none; }
 .detalle__nota { display: flex; align-items: center; gap: var(--esp-3); }
 .detalle__tapada { max-width: 150px; }
+
+/* ── Barra inferior (03b, 04): fija abajo, de borde a borde, con el botón de la acción ── */
+.barra-inferior {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin: auto calc(-1 * var(--margen-pantalla)) calc(-1 * max(env(safe-area-inset-bottom), var(--esp-6)));
+  padding: 7px var(--margen-pantalla) max(env(safe-area-inset-bottom), 11px);
+  border-top: 1px solid var(--negro);
+  background: var(--acrilico);
+}
+.barra-inferior .boton { width: 100%; text-decoration: none; }
+
+/* ── 04 · Calificar (HU-14) ── */
+.calificar__cabeza { position: relative; }
+.calificar__volver { max-width: calc(100% - 92px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.calificar__titulo { margin-top: 6px; }
+/* Mini caja torcida arriba a la derecha (Figma: 74.8 × 69.4, −6°) */
+.calificar__caja { position: absolute; top: 4px; right: -2px; transform: rotate(-6deg); }
+.calificar__caja .caja-cd { --caja-ancho: 74.8px; }
+.calificar__columna { display: flex; flex-direction: column; gap: var(--esp-5); margin-top: var(--esp-6); padding-bottom: var(--esp-8); }
+.calificar__seccion { display: flex; flex-direction: column; gap: var(--esp-2); }
+.calificar__reacciones { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+.calificar__campo { display: flex; flex-direction: column; gap: 6px; }
+.calificar__comentario { resize: none; }
+
+/* Lista de temas: una fila por tema; el favorito en negro con FAV */
+.temas { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.tema {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  padding: 11px var(--esp-3);
+  border: 0;
+  border-bottom: 1px solid var(--negro);
+  background: none;
+  color: var(--negro);
+  text-align: left;
+  cursor: pointer;
+}
+.tema__numero { flex: none; font: var(--lcd-m); letter-spacing: var(--lcd-tracking); }
+.tema__titulo { flex: 1; min-width: 0; font: var(--texto-m-fuerte); }
+.tema[aria-pressed='true'] { border-bottom-color: transparent; border-radius: var(--radio-xs); background: var(--negro); }
+.tema[aria-pressed='true'] .tema__numero { color: var(--mostaza); }
+.tema[aria-pressed='true'] .tema__titulo { color: var(--acrilico-claro); }
+.tema__fav { flex: none; padding: 2px 6px; border-radius: 3px; background: var(--naranja); color: var(--negro); font: var(--mono-tecla); letter-spacing: var(--mono-s-tracking); }
+
+/* ── 04b / 04c · Ticket (HU-14): la impresora arriba y el ticket que sale por la ranura ── */
+.ticket-pantalla__estado { opacity: 0.75; }
+.ticket-pantalla { display: flex; flex-direction: column; align-items: center; margin-top: 7px; }
+.impresora {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  height: 58px;
+  margin: 0 -8px;
+  border-radius: var(--radio-l);
+  background: var(--negro-2);
+}
+.impresora__luz { position: absolute; left: 10px; top: 8px; }
+.impresora__texto { position: absolute; left: 32px; top: 10px; color: var(--acrilico); }
+.impresora__ranura { position: absolute; left: 33px; right: 33px; top: 42px; height: 6px; border-radius: 3px; background: var(--negro); }
+/* La salida empieza debajo de la impresora y recorta el ticket mientras sale */
+.ticket-salida { width: 280px; margin-top: -12px; padding: 0 7px 12px; overflow: hidden; }
+.ticket { filter: drop-shadow(0 4px 3px rgb(31 36 28 / 0.25)); }
+.ticket__papel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px var(--esp-4) 10px;
+  overflow: hidden;
+  background: var(--ticket);
+  color: var(--negro);
+}
+.ticket__dentado { display: block; }
+.ticket__corte { margin-right: calc(-1 * var(--esp-4)); overflow: hidden; white-space: nowrap; opacity: 0.5; }
+.ticket__fila { display: flex; align-items: baseline; justify-content: space-between; gap: var(--esp-3); }
+.ticket__fila > span { min-width: 0; overflow-wrap: anywhere; }
+.ticket__fila > b { font-weight: 700; text-align: right; }
+.ticket__puntaje { align-items: center; }
+.ticket__barras { display: block; }
+.ticket__fecha { color: var(--naranja); font: var(--lcd-m); letter-spacing: var(--lcd-tracking); text-shadow: 0 0 4px rgb(255 122 26 / 0.6); }
+.ticket--imprimiendo { animation: ticket-sale 1.8s cubic-bezier(0.4, 0, 0.3, 1) both; }
+.ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: luz-imprimiendo 0.3s steps(2) 6; }
+@keyframes ticket-sale { from { transform: translateY(-100%); } to { transform: none; } }
+@keyframes luz-imprimiendo { 50% { opacity: 0.3; } }
+@media (prefers-reduced-motion: reduce) {
+  .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: none; }
+}
+.ticket-pantalla__acciones { margin-top: auto; padding-top: var(--esp-6); }
+.ticket-pantalla__acciones .boton { text-decoration: none; }

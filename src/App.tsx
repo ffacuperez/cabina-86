@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AuthProvider } from './auth/AuthProvider'
 import { RequiereSesion } from './auth/RequiereSesion'
 import ArmaLaRonda from './pantallas/ArmaLaRonda'
+import Calificar from './pantallas/Calificar'
 import DetalleDisco from './pantallas/DetalleDisco'
 import Entrar from './pantallas/Entrar'
 import Exhibidor from './pantallas/Exhibidor'
@@ -10,6 +11,7 @@ import Muestrario from './pantallas/Muestrario'
 import Pasar from './pantallas/Pasar'
 import Ronda from './pantallas/Ronda'
 import TeInvitaron from './pantallas/TeInvitaron'
+import Ticket from './pantallas/Ticket'
 import { faltaConfiguracion } from './lib/supabase'
 
 export default function App() {
@@ -37,6 +39,8 @@ export default function App() {
               <Route index element={<Exhibidor />} />
               <Route path="pasar" element={<Pasar />} />
               <Route path="disco/:pase" element={<DetalleDisco />} />
+              <Route path="disco/:pase/calificar" element={<Calificar />} />
+              <Route path="disco/:pase/ticket" element={<Ticket />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

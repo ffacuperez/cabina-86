@@ -15,7 +15,7 @@ const SIN_MARCO = { encabezado: false, botonera: false }
  * Abajo, quiénes de la ronda ya lo calificaron, con la nota tapada hasta que lo califique (RN-01).
  * Trae su encabezado ("← EXHIBIDOR" y el catálogo) y no lleva botonera.
  * Pendientes: la caja que se abre y el CD que gira (E-02), luz de rollo (E-01),
- * "Bancalo o bardealo" (HU-14) y las notas a la vista después de calificar (HU-18).
+ * las notas a la vista después de calificar (HU-18) y "Editar puntaje" (HU-15).
  */
 export default function DetalleDisco() {
   useMarco(SIN_MARCO)
@@ -48,43 +48,53 @@ function Disco({ detalle: d }: { detalle: Detalle }) {
   const temas = duracion(d.cantidadTemas, d.duracionSeg)
   const lePuedoVerLaNota = d.esMio || d.miPuntaje !== null
   return (
-    <article className="detalle" aria-labelledby="detalle-titulo">
-      <div className="detalle__vitrina" aria-hidden="true">
-        <CD className="detalle__cd" tapa={d.tapa} titulo={d.titulo} />
-        <CajaCD tapa={d.tapa} titulo="" />
-      </div>
-
-      <div className="detalle__fila">
-        <TarjetaRecomendado por={d.de.nombre} nota={d.tarjetita} className="tarjeta-recomendado--detalle" />
-        <div className="detalle__info">
-          <h1 id="detalle-titulo" className="cartel-m detalle__titulo">{d.titulo}</h1>
-          <p className="texto-s">{[d.artista, d.anio].filter(Boolean).join(' · ')}</p>
-          {temas && <p className="lcd-chip">{temas}</p>}
-          <p className="mono-s detalle__quien">
-            {d.esMio ? 'LO PASASTE VOS' : `TE LO PASÓ ${d.de.nombre.toUpperCase()}`}
-            <br />
-            {haceCuanto(d.creadoEn)}
-          </p>
+    <>
+      <article className="detalle" aria-labelledby="detalle-titulo">
+        <div className="detalle__vitrina" aria-hidden="true">
+          <CD className="detalle__cd" tapa={d.tapa} titulo={d.titulo} />
+          <CajaCD tapa={d.tapa} titulo="" />
         </div>
-      </div>
 
-      <CabinaDeEscucha links={d.links} />
+        <div className="detalle__fila">
+          <TarjetaRecomendado por={d.de.nombre} nota={d.tarjetita} className="tarjeta-recomendado--detalle" />
+          <div className="detalle__info">
+            <h1 id="detalle-titulo" className="cartel-m detalle__titulo">{d.titulo}</h1>
+            <p className="texto-s">{[d.artista, d.anio].filter(Boolean).join(' · ')}</p>
+            {temas && <p className="lcd-chip">{temas}</p>}
+            <p className="mono-s detalle__quien">
+              {d.esMio ? 'LO PASASTE VOS' : `TE LO PASÓ ${d.de.nombre.toUpperCase()}`}
+              <br />
+              {haceCuanto(d.creadoEn)}
+            </p>
+          </div>
+        </div>
 
-      {!lePuedoVerLaNota && d.calificaron.length > 0 && (
-        <section className="detalle__ronda" aria-labelledby="detalle-ronda">
-          <h2 id="detalle-ronda" className="mono-s">LO QUE DIJO LA RONDA</h2>
-          <ul className="detalle__notas">
-            {d.calificaron.map((i) => (
-              <li key={i.id} className="detalle__nota">
-                <span className="lcd" aria-label={`${i.nombre} ya lo calificó`}>
-                  {i.nombre.toUpperCase()} · ▒▒/10
-                </span>
-                <span className="texto-s detalle__tapada">Calificá para ver su nota.</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <CabinaDeEscucha links={d.links} />
+
+        {!lePuedoVerLaNota && d.calificaron.length > 0 && (
+          <section className="detalle__ronda" aria-labelledby="detalle-ronda">
+            <h2 id="detalle-ronda" className="mono-s">LO QUE DIJO LA RONDA</h2>
+            <ul className="detalle__notas">
+              {d.calificaron.map((i) => (
+                <li key={i.id} className="detalle__nota">
+                  <span className="lcd" aria-label={`${i.nombre} ya lo calificó`}>
+                    {i.nombre.toUpperCase()} · ▒▒/10
+                  </span>
+                  <span className="texto-s detalle__tapada">Calificá para ver su nota.</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </article>
+
+      {!d.esMio && d.miPuntaje === null && (
+        <div className="barra-inferior">
+          <Link className="boton boton--mostaza" to="calificar">
+            Bancalo o bardealo <span className="flecha" aria-hidden="true">→</span>
+          </Link>
+        </div>
       )}
-    </article>
+    </>
   )
 }

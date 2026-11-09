@@ -29,6 +29,7 @@
   --cartulina: #f1e6c2;         /* tarjetita, vúmetro, ticket */
   --cinta: #e9dfb8;             /* cinta que pega la tarjetita */
   --talon: #f2efdd;             /* talón con el puntaje en el estante (02c) */
+  --ticket: #f2efdd;            /* ticket impreso al calificar (04c) */
 
   /* Luz de rollo (light leak) */
   --luz-rollo: rgb(255 89 38);
@@ -64,6 +65,7 @@
   --mono-tecla: 700 11px/1.2 var(--fuente-mono);
 
   --lcd-xxl: 400 96px/0.85 var(--fuente-lcd);
+  --lcd-l:   400 34px/1 var(--fuente-lcd);
   --lcd-m:   400 24px/1 var(--fuente-lcd);     --lcd-tracking: 0.5px;
   --lcd-s:   400 18px/1 var(--fuente-lcd);
 
