@@ -24,8 +24,22 @@ export type Detalle = {
   esMio: boolean
   /** Mi puntaje si ya lo califiqué */
   miPuntaje: number | null
+  /** Mi calificación completa, para el ticket (HU-14) */
+  mia: MiCalificacion | null
+  /** Lista de temas de Deezer, en orden (para elegir el tema favorito) */
+  temas: Tema[]
   /** RN-01: quiénes lo calificaron, sin puntaje ni comentario, en el orden en que calificaron */
   calificaron: Integrante[]
+}
+
+export type Tema = { titulo: string; duracion_seg?: number }
+
+export type MiCalificacion = {
+  puntaje: number
+  temaFavorito: string | null
+  reaccion: string | null
+  comentario: string | null
+  creadaEn: string
 }
 
 type FilaPase = {
@@ -43,8 +57,9 @@ type FilaPase = {
     duracion_seg: number | null
     link_spotify: string | null
     link_ytm: string | null
+    temas: Tema[] | null
   } | null
-  calificaciones: { puntaje: number }[]
+  calificaciones: { puntaje: number; tema_favorito: string | null; reaccion: string | null; comentario: string | null; creada_en: string }[]
 }
 
 type Estado = { tipo: 'cargando' } | { tipo: 'error' } | { tipo: 'no-esta' } | { tipo: 'listo'; detalle: Detalle }
@@ -63,7 +78,8 @@ export function useDetalle(ronda: RondaActual, paseId: string) {
         .from('pases')
         .select(
           'id, numero, tarjetita, creado_en, pasado_por, ' +
-            'discos(titulo, artista, anio, tapa_url, cantidad_temas, duracion_seg, link_spotify, link_ytm), calificaciones(puntaje)',
+            'discos(titulo, artista, anio, tapa_url, cantidad_temas, duracion_seg, link_spotify, link_ytm, temas), ' +
+            'calificaciones(puntaje, tema_favorito, reaccion, comentario, creada_en)',
         )
         .eq('id', paseId)
         .eq('ronda_id', ronda.id)
@@ -95,6 +111,7 @@ export function armar(f: FilaPase, calificaron: { usuario_id: string }[], ronda:
   const integrantes = new Map([ronda.yo, ...ronda.otros].map((i) => [i.id, i]))
   const quien = (id: string): Integrante => integrantes.get(id) ?? { id, nombre: '?', sigla: '???' }
   const de = quien(f.pasado_por)
+  const mia = f.calificaciones[0]
   // Los links se guardan al pasar el disco; si faltan, se arman igual con título y artista
   const armados = linksDeBusqueda(f.discos?.titulo ?? '', f.discos?.artista ?? '')
   return {
@@ -112,7 +129,11 @@ export function armar(f: FilaPase, calificaron: { usuario_id: string }[], ronda:
     creadoEn: f.creado_en,
     de,
     esMio: f.pasado_por === ronda.yo.id,
-    miPuntaje: f.calificaciones[0]?.puntaje ?? null,
+    miPuntaje: mia?.puntaje ?? null,
+    mia: mia
+      ? { puntaje: mia.puntaje, temaFavorito: mia.tema_favorito, reaccion: mia.reaccion, comentario: mia.comentario, creadaEn: mia.creada_en }
+      : null,
+    temas: Array.isArray(f.discos?.temas) ? f.discos.temas.filter((t) => t && typeof t.titulo === 'string') : [],
     calificaron: calificaron.filter((c) => c.usuario_id !== ronda.yo.id).map((c) => quien(c.usuario_id)),
   }
 }
