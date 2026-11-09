@@ -4,6 +4,7 @@ import bordeDentado from '../assets/ticket/borde-dentado.svg'
 import codigoDeBarras from '../assets/ticket/codigo-de-barras.svg'
 import luz from '../assets/ticket/luz.svg'
 import { textoDeReaccion, useDeuda } from '../datos/calificar'
+import { useNotasDeLaRonda } from '../datos/notas'
 import { type Detalle, useDetalle } from '../datos/detalle'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras, fechaDeCamara } from '../lib/texto'
@@ -14,7 +15,7 @@ const CORTE = '- - - - - - - - - - - - - - - - - - -'
 /**
  * Figma 04b · Imprimiendo (16:2033) y 04c · Ticket impreso (16:1952), HU-14.
  * Recién calificado, el ticket sale de la impresora (04b → 04c); si se vuelve a abrir, ya está afuera.
- * Pendientes: lo que dijo la ronda (HU-18) y "Editar puntaje" (HU-15).
+ * Con HU-18 trae lo que dijo la ronda. Pendiente: "Editar puntaje" (HU-15).
  */
 export default function Ticket() {
   useMarco(SIN_MARCO)
@@ -67,6 +68,10 @@ export default function Ticket() {
 
 function ImpresoraYTicket({ ronda, detalle: d, imprimir }: { ronda: RondaActual; detalle: Detalle; imprimir: boolean }) {
   const deuda = useDeuda(ronda.id, ronda.yo.id)
+  // HU-18: recién calificado, el ticket ya trae lo que dijo la ronda
+  const { notas, error: sinNotas } = useNotasDeLaRonda(ronda, d)
+  // El ticket sale cuando está todo: que no aparezcan renglones mientras sale de la impresora
+  const listo = deuda !== null && (notas !== null || sinNotas)
   const mia = d.mia!
   const numeroTema = mia.temaFavorito ? d.temas.findIndex((t) => t.titulo === mia.temaFavorito) + 1 : 0
   const reaccion = textoDeReaccion(mia.reaccion)
@@ -79,55 +84,81 @@ function ImpresoraYTicket({ ronda, detalle: d, imprimir }: { ronda: RondaActual;
         <span className="impresora__ranura" />
       </div>
 
-      <div className="ticket-salida">
-        <div className={`ticket${imprimir ? ' ticket--imprimiendo' : ''}`}>
-          <article className="ticket__papel" aria-label="Tu ticket">
-            <p className="cartel-m">Cabina 86</p>
-            <p className="mono-s">
-              DISQUERÍA DE LA RONDA
-              <br />
-              {ronda.nombre.toUpperCase()}
-            </p>
-            <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
-            <p className="mono-s ticket__fila">
-              <span>{d.catalogo}</span>
-              <b>{d.titulo.toUpperCase()}</b>
-            </p>
-            <p className="mono-s ticket__fila">
-              <span>{d.artista.toUpperCase()}</span>
-              {d.anio && <b>{d.anio}</b>}
-            </p>
-            <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
-            <p className="ticket__fila ticket__puntaje">
-              <span className="mono-s">TU PUNTAJE</span>
-              <b className="lcd-l">{dosCifras(mia.puntaje)}/10</b>
-            </p>
-            {mia.temaFavorito && (
-              <p className="mono-s ticket__fila">
-                <span>TEMA FAV</span>
-                <b>{numeroTema > 0 ? `${dosCifras(numeroTema)} ` : ''}{mia.temaFavorito.toUpperCase()}</b>
+      {listo && (
+        <div className="ticket-salida">
+          <div className={`ticket${imprimir ? ' ticket--imprimiendo' : ''}`}>
+            <article className="ticket__papel" aria-label="Tu ticket">
+              <p className="cartel-m">Cabina 86</p>
+              <p className="mono-s">
+                DISQUERÍA DE LA RONDA
+                <br />
+                {ronda.nombre.toUpperCase()}
               </p>
-            )}
-            {reaccion && (
+              <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
               <p className="mono-s ticket__fila">
-                <span>REACCIÓN</span>
-                <b>{reaccion.toUpperCase()}</b>
+                <span>{d.catalogo}</span>
+                <b>{d.titulo.toUpperCase()}</b>
               </p>
-            )}
-            {mia.comentario && <p className="mono-s">"{mia.comentario}"</p>}
-            <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
-            {deuda !== null && (
               <p className="mono-s ticket__fila">
-                <span>LE DEBÉS</span>
-                <b>{dosCifras(deuda)} {deuda === 1 ? 'DISCO' : 'DISCOS'}</b>
+                <span>{d.artista.toUpperCase()}</span>
+                {d.anio && <b>{d.anio}</b>}
               </p>
-            )}
-            <img className="ticket__barras" src={codigoDeBarras} alt="" width={234} height={34} />
-            <p className="ticket__fecha">{fechaDeCamara(mia.creadaEn)}</p>
-          </article>
-          <img className="ticket__dentado" src={bordeDentado} alt="" width={266} height={8} />
+              <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
+              <p className="ticket__fila ticket__puntaje">
+                <span className="mono-s">TU PUNTAJE</span>
+                <b className="lcd-l">{dosCifras(mia.puntaje)}/10</b>
+              </p>
+              {mia.temaFavorito && (
+                <p className="mono-s ticket__fila">
+                  <span>TEMA FAV</span>
+                  <b>{numeroTema > 0 ? `${dosCifras(numeroTema)} ` : ''}{mia.temaFavorito.toUpperCase()}</b>
+                </p>
+              )}
+              {reaccion && (
+                <p className="mono-s ticket__fila">
+                  <span>REACCIÓN</span>
+                  <b>{reaccion.toUpperCase()}</b>
+                </p>
+              )}
+              {mia.comentario && <p className="mono-s">"{mia.comentario}"</p>}
+              <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
+              {notas && notas.length > 0 && (
+                <>
+                  <p className="mono-s ticket__titulo-ronda">AHORA VES LO QUE DIJO LA RONDA</p>
+                  {notas.map(({ de, nota }) => {
+                    const suReaccion = nota ? textoDeReaccion(nota.reaccion) : null
+                    return (
+                      <div key={de.id} className="ticket__nota">
+                        <p className="mono-s ticket__fila">
+                          <span>{de.nombre.toUpperCase()}</span>
+                          <b>{nota ? `${dosCifras(nota.puntaje)}/10` : 'TODAVÍA NO LO ESCUCHÓ'}</b>
+                        </p>
+                        {suReaccion && (
+                          <p className="mono-s ticket__fila">
+                            <span>REACCIÓN</span>
+                            <b>{suReaccion.toUpperCase()}</b>
+                          </p>
+                        )}
+                        {nota?.comentario && <p className="mono-s">"{nota.comentario}"</p>}
+                      </div>
+                    )
+                  })}
+                  <p className="mono-s ticket__corte" aria-hidden="true">{CORTE}</p>
+                </>
+              )}
+              {deuda !== null && (
+                <p className="mono-s ticket__fila">
+                  <span>LE DEBÉS</span>
+                  <b>{dosCifras(deuda)} {deuda === 1 ? 'DISCO' : 'DISCOS'}</b>
+                </p>
+              )}
+              <img className="ticket__barras" src={codigoDeBarras} alt="" width={234} height={34} />
+              <p className="ticket__fecha">{fechaDeCamara(mia.creadaEn)}</p>
+            </article>
+            <img className="ticket__dentado" src={bordeDentado} alt="" width={266} height={8} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

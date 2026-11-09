@@ -10,6 +10,8 @@ export type Integrante = {
   nombre: string
   /** FAC de FAC-05 */
   sigla: string
+  /** Cuándo se sumó a la ronda: lo pasado antes no le queda pendiente (RN-06) */
+  unidoEn?: string
 }
 
 /** La ronda en la que estoy: todo lo de adentro (Exhibidor, Pasar, Ronda, Perfil) es de esta ronda (RN-05). */
@@ -75,7 +77,7 @@ export function useRonda(id: string) {
       const fila = ronda.data as unknown as FilaRonda
       const integrantes = [...fila.miembros_ronda]
         .sort((a, b) => a.se_unio_en.localeCompare(b.se_unio_en))
-        .map((m) => ({ id: m.usuario_id, nombre: nombreDePila(m.usuarios?.nombre ?? '') || '?', sigla: m.sigla }))
+        .map((m) => ({ id: m.usuario_id, nombre: nombreDePila(m.usuarios?.nombre ?? '') || '?', sigla: m.sigla, unidoEn: m.se_unio_en }))
       const yo = integrantes.find((i) => i.id === uid)
       const miFila = fila.miembros_ronda.find((m) => m.usuario_id === uid)
       if (!yo || !miFila) return setEstado({ tipo: 'no-esta' })
