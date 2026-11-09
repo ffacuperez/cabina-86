@@ -28,6 +28,7 @@
   /* Papel */
   --cartulina: #f1e6c2;         /* tarjetita, vúmetro, ticket */
   --cinta: #e9dfb8;             /* cinta que pega la tarjetita */
+  --talon: #f2efdd;             /* talón con el puntaje en el estante (02c) */
 
   /* Luz de rollo (light leak) */
   --luz-rollo: rgb(255 89 38);
