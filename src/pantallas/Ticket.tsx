@@ -15,7 +15,7 @@ const CORTE = '- - - - - - - - - - - - - - - - - - -'
 /**
  * Figma 04b · Imprimiendo (16:2033) y 04c · Ticket impreso (16:1952), HU-14.
  * Recién calificado, el ticket sale de la impresora (04b → 04c); si se vuelve a abrir, ya está afuera.
- * Con HU-18 trae lo que dijo la ronda. Pendiente: "Editar puntaje" (HU-15).
+ * Con HU-18 trae lo que dijo la ronda; "Editar puntaje" (HU-15) vuelve a Calificar con lo mío cargado.
  */
 export default function Ticket() {
   useMarco(SIN_MARCO)
@@ -61,6 +61,11 @@ export default function Ticket() {
         <Link className="boton boton--ancho" to={alExhibidor}>
           Volver al exhibidor <span className="flecha" aria-hidden="true">→</span>
         </Link>
+        {estado.tipo === 'listo' && (
+          <Link className="boton boton--ancho boton--contorno" to={`${alDetalle}/calificar`}>
+            Editar puntaje
+          </Link>
+        )}
       </div>
     </>
   )
@@ -131,7 +136,7 @@ function ImpresoraYTicket({ ronda, detalle: d, imprimir }: { ronda: RondaActual;
                       <div key={de.id} className="ticket__nota">
                         <p className="mono-s ticket__fila">
                           <span>{de.nombre.toUpperCase()}</span>
-                          <b>{nota ? `${dosCifras(nota.puntaje)}/10` : 'TODAVÍA NO LO ESCUCHÓ'}</b>
+                          <b>{nota ? `${dosCifras(nota.puntaje)}/10${nota.editadaEn ? ' (EDITADO)' : ''}` : 'TODAVÍA NO LO ESCUCHÓ'}</b>
                         </p>
                         {suReaccion && (
                           <p className="mono-s ticket__fila">
