@@ -106,7 +106,8 @@ export function armar(f: FilaPase, calificaron: { usuario_id: string }[], ronda:
     tapa: f.discos?.tapa_url ?? null,
     cantidadTemas: f.discos?.cantidad_temas ?? null,
     duracionSeg: f.discos?.duracion_seg ?? null,
-    links: { spotify: f.discos?.link_spotify || armados.spotify, youtube: f.discos?.link_ytm || armados.youtube },
+    // Los discos guardados antes de #65 tienen ".../albums" al final: la app de Spotify buscaba "albums"
+    links: { spotify: f.discos?.link_spotify?.replace(/\/albums$/, '') || armados.spotify, youtube: f.discos?.link_ytm || armados.youtube },
     tarjetita: f.tarjetita,
     creadoEn: f.creado_en,
     de,
