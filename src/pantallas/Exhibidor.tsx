@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { CajaCD } from '../componentes/CajaCD'
 import { Sticker } from '../componentes/Sticker'
 import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
@@ -63,11 +64,14 @@ function DiscoEnEstante({ disco }: { disco: DiscoEnEstante }) {
   const datos = [disco.titulo, disco.artista, disco.anio].filter(Boolean).join(', ')
   const estado = disco.puntaje === null ? 'Pendiente' : `Calificado con ${disco.puntaje}`
   return (
-    <li className="disco-estante" aria-label={`${datos}. ${estado}.`}>
-      <CajaCD tapa={disco.tapa} titulo="" />
-      {/* Las tapas reales muchas veces no traen texto: título y artista abajo, como etiqueta de batea */}
-      <p className="disco-estante__titulo" aria-hidden="true">{disco.titulo}</p>
-      <p className="mono-s disco-estante__artista" aria-hidden="true">{disco.artista.toUpperCase()}</p>
+    <li className="disco-estante">
+      {/* Tocar la caja abre el disco (HU-12) */}
+      <Link className="disco-estante__abrir" to={`disco/${disco.paseId}`} aria-label={`${datos}. ${estado}.`}>
+        <CajaCD tapa={disco.tapa} titulo="" />
+        {/* Las tapas reales muchas veces no traen texto: título y artista abajo, como etiqueta de batea */}
+        <span className="disco-estante__titulo" aria-hidden="true">{disco.titulo}</span>
+        <span className="mono-s disco-estante__artista" aria-hidden="true">{disco.artista.toUpperCase()}</span>
+      </Link>
       {disco.puntaje === null ? (
         <Sticker texto={'PEN-\nDIENTE'} className="disco-estante__sticker" />
       ) : (

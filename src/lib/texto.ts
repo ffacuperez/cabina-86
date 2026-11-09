@@ -13,6 +13,17 @@ export function diaYMes(iso: string) {
   return `${dosCifras(f.getDate())}/${dosCifras(f.getMonth() + 1)}`
 }
 
+/** "HOY", "AYER", "HACE 2 DÍAS", "HACE 1 MES": días de calendario en la hora del teléfono */
+export function haceCuanto(iso: string, ahora = new Date()) {
+  const dia = (f: Date) => Date.UTC(f.getFullYear(), f.getMonth(), f.getDate()) / 86_400_000
+  const dias = Math.max(0, dia(ahora) - dia(new Date(iso)))
+  if (dias === 0) return 'HOY'
+  if (dias === 1) return 'AYER'
+  if (dias < 30) return `HACE ${dias} DÍAS`
+  const meses = Math.floor(dias / 30)
+  return meses === 1 ? 'HACE 1 MES' : `HACE ${meses} MESES`
+}
+
 /** Fecha de cámara de rollo: "'26 11 01" */
 export function fechaDeCamara(iso: string) {
   const f = new Date(iso)
