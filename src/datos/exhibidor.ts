@@ -16,14 +16,17 @@ export type DiscoEnEstante = {
 }
 
 /** Un pasillo por integrante que me pasó discos (HU-11) */
-export type Pasillo = { de: { id: string; nombre: string }; discos: DiscoEnEstante[] }
+export type Pasillo = {
+  de: { id: string; nombre: string }
+  discos: DiscoEnEstante[]
+  /** La tarjetita de su último pendiente, pegada debajo del estante; null si no le debo nada */
+  tarjetita: string | null
+}
 
 export type Exhibidor = {
   pasillos: Pasillo[]
   /** RN-05: mis pendientes en esta ronda */
   deuda: number
-  /** La tarjetita del último pendiente: va pegada debajo de su estante */
-  ultimaTarjetita: { paseId: string; por: string; nota: string } | null
 }
 
 type FilaPase = {
@@ -78,15 +81,15 @@ export function armar(filas: FilaPase[], otros: RondaActual['otros']): Exhibidor
   const nombres = new Map(otros.map((o) => [o.id, o.nombre]))
   const pasillos = new Map<string, Pasillo>()
   let deuda = 0
-  let ultimaTarjetita: Exhibidor['ultimaTarjetita'] = null
   for (const f of filas) {
     const puntaje = f.calificaciones[0]?.puntaje ?? null
     const nombre = nombres.get(f.pasado_por) ?? '?'
+    const pasillo = pasillos.get(f.pasado_por) ?? { de: { id: f.pasado_por, nombre }, discos: [], tarjetita: null }
     if (puntaje === null) {
       deuda++
-      ultimaTarjetita ??= { paseId: f.id, por: nombre, nota: f.tarjetita }
+      // Las filas vienen de la más nueva a la más vieja: el primer pendiente es el último que me pasó
+      pasillo.tarjetita ??= f.tarjetita
     }
-    const pasillo = pasillos.get(f.pasado_por) ?? { de: { id: f.pasado_por, nombre }, discos: [] }
     pasillo.discos.push({
       paseId: f.id,
       titulo: f.discos?.titulo ?? '',
@@ -99,5 +102,5 @@ export function armar(filas: FilaPase[], otros: RondaActual['otros']): Exhibidor
     })
     pasillos.set(f.pasado_por, pasillo)
   }
-  return { pasillos: [...pasillos.values()], deuda, ultimaTarjetita }
+  return { pasillos: [...pasillos.values()], deuda }
 }
