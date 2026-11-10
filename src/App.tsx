@@ -9,6 +9,7 @@ import Exhibidor from './pantallas/Exhibidor'
 import Inicio from './pantallas/Inicio'
 import Muestrario from './pantallas/Muestrario'
 import Pasar from './pantallas/Pasar'
+import Perfil from './pantallas/Perfil'
 import Ronda from './pantallas/Ronda'
 import TeInvitaron from './pantallas/TeInvitaron'
 import Ticket from './pantallas/Ticket'
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/ronda/:id" element={<Ronda />}>
               <Route index element={<Exhibidor />} />
               <Route path="pasar" element={<Pasar />} />
+              <Route path="perfil" element={<Perfil />} />
               <Route path="disco/:pase" element={<DetalleDisco />} />
               <Route path="disco/:pase/calificar" element={<Calificar />} />
               <Route path="disco/:pase/ticket" element={<Ticket />} />
