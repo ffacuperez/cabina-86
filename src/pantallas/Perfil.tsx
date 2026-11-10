@@ -29,16 +29,16 @@ export default function Perfil() {
 
       {estado.tipo === 'listo' && (
         <>
-          <dl className="perfil__numeros">
-            <div className="perfil__numero">
+          <dl className="numeros-lcd perfil__numeros">
+            <div className="numero-lcd">
               <dt className="lcd-s">PASASTE</dt>
               <dd className="lcd-l">{dosCifras(estado.perfil.pasados.length)}</dd>
             </div>
-            <div className="perfil__numero">
+            <div className="numero-lcd">
               <dt className="lcd-s">ESCUCHASTE</dt>
               <dd className="lcd-l">{dosCifras(estado.perfil.escuchaste)}</dd>
             </div>
-            <div className="perfil__numero">
+            <div className="numero-lcd">
               <dt className="lcd-s">TE PONEN</dt>
               <dd className="lcd-l">{estado.perfil.tePonen === null ? '--' : conComa(estado.perfil.tePonen)}</dd>
             </div>
