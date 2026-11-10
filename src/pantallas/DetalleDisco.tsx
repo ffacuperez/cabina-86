@@ -1,4 +1,4 @@
-import { Link, Navigate, useParams } from 'react-router'
+import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { BarraInferior } from '../componentes/BarraInferior'
 import { CabinaDeEscucha } from '../componentes/CabinaDeEscucha'
 import { CajaCD } from '../componentes/CajaCD'
@@ -27,13 +27,16 @@ export default function DetalleDisco() {
   const { pase = '' } = useParams()
   const { estado, reintentar } = useDetalle(ronda, pase)
   const alExhibidor = `/ronda/${ronda.id}`
+  // Desde Perfil (HU-16) se vuelve a Perfil; desde el estante, al exhibidor
+  const desdePerfil = (useLocation().state as { volver?: string } | null)?.volver === 'perfil'
+  const volver = desdePerfil ? { a: `/ronda/${ronda.id}/perfil`, texto: '← PERFIL' } : { a: alExhibidor, texto: '← EXHIBIDOR' }
 
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
 
   return (
     <>
       <header className="encabezado-ronda encabezado-ronda--propio">
-        <Link className="mono-m encabezado-ronda__volver" to={alExhibidor}>← EXHIBIDOR</Link>
+        <Link className="mono-m encabezado-ronda__volver" to={volver.a}>{volver.texto}</Link>
         {estado.tipo === 'listo' && <p className="mono-m">{estado.detalle.catalogo}</p>}
       </header>
       {estado.tipo === 'cargando' && <p className="cargando">Cargando…</p>}
