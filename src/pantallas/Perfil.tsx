@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import { CajaCD } from '../componentes/CajaCD'
 import { Sticker } from '../componentes/Sticker'
@@ -10,7 +9,7 @@ import { dosCifras } from '../lib/texto'
  * Figma 07 · Perfil — lo que pasaste a esta ronda (17:2366), HU-16.
  * Tu nombre, tres números de esta ronda y la lista de lo que le pasaste, del más reciente al más viejo.
  * Tocar un disco abre su detalle, con lo que dijo la ronda (HU-18).
- * Arriba de la lista, el estante: un lomo por disco y la caja del último, torcida, con el sticker NUEVO.
+ * Arriba de la lista, el estante: los últimos cinco lomos y la caja del último, torcida, con el sticker ÚLTIMO.
  */
 export default function Perfil() {
   const ronda = useRondaActual()
@@ -120,24 +119,22 @@ const LOMOS = [
   { fondo: 'var(--acrilico-oscuro)', tinta: 'var(--negro)', ancho: 28 },
 ]
 
+/** Lomos que entran en el estante (Figma 07): con el sexto, el más viejo deja lugar */
+const LOMOS_EN_EL_ESTANTE = 5
+
 /**
- * Figma 07, "Estante": un lomo por disco (del más viejo al más nuevo; si no entran, se desliza y arranca
- * en el más nuevo) y la caja del último pasado, torcida, con el sticker NUEVO. Tocar uno abre su disco.
+ * Figma 07, "Estante": los últimos cinco lomos (del más viejo al más nuevo; los anteriores siguen en la
+ * lista de abajo) y la caja del último pasado, torcida, con el sticker ÚLTIMO. Tocar uno abre su disco.
  * Repite lo que ya dice la lista de abajo, así que para lectores de pantalla va oculto.
  */
 function Estante({ pasados, rondaId }: { pasados: Pasado[]; rondaId: string }) {
-  const lomos = useRef<HTMLDivElement>(null)
-  const viejosPrimero = [...pasados].reverse()
+  const enElEstante = pasados.slice(0, LOMOS_EN_EL_ESTANTE).reverse()
   const ultimo = pasados[0]
-  useEffect(() => {
-    const l = lomos.current
-    if (l) l.scrollLeft = l.scrollWidth
-  }, [pasados])
 
   return (
     <div className="estante-perfil" aria-hidden="true">
-      <div className="estante-perfil__lomos" ref={lomos}>
-        {viejosPrimero.map((p) => {
+      <div className="estante-perfil__lomos">
+        {enElEstante.map((p) => {
           const n = Number(p.catalogo.split('-').pop()) || 1
           const c = LOMOS[(n - 1) % LOMOS.length]
           return (
@@ -158,7 +155,7 @@ function Estante({ pasados, rondaId }: { pasados: Pasado[]; rondaId: string }) {
       <Link className="estante-perfil__ultimo" to={`/ronda/${rondaId}/disco/${ultimo.paseId}`} state={{ volver: 'perfil' }} tabIndex={-1}>
         <CajaCD tapa={ultimo.tapa} titulo={ultimo.titulo} />
       </Link>
-      <Sticker texto={'NUE-\nVO'} className="estante-perfil__nuevo" />
+      <Sticker texto={'ÚL-\nTIMO'} className="estante-perfil__sticker" />
       <span className="estante-perfil__repisa" />
     </div>
   )

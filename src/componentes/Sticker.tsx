@@ -1,6 +1,6 @@
 /**
  * C86/Sticker pendiente (Figma 13:1391): estrella naranja de 20 puntas con filete y texto.
- * Se usa con otros textos: ESTE (05a), PEN-DIENTE (exhibidor), NUE-VO (05c).
+ * Se usa con otros textos: ESTE (05a), PEN-DIENTE (exhibidor), NUE-VO (05c), ÚL-TIMO (estante de Perfil).
  * El tamaño va con --sticker (74px de base); el texto escala con él. Un "\n" corta la línea.
  */
 export function Sticker({ texto, className = '' }: { texto: string; className?: string }) {
