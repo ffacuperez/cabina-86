@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useSearchParams } from 'react-router'
+import { Navigate, useLocation, useSearchParams } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
+import { adondeIba, guardarAdondeIba } from '../auth/volverA'
 import tapaArtaud from '../assets/tapas/artaud.svg'
 import tapaBocanada from '../assets/tapas/bocanada.svg'
 import tapaInRainbows from '../assets/tapas/in-rainbows.svg'
@@ -25,6 +26,8 @@ export default function Entrar() {
   // falloElIngreso: cancelaste en Google o el código no se pudo canjear (HU-01, "Cancelo el inicio de sesión")
   const { session, falloElIngreso, entrarConGoogle } = useAuth()
   const [params, setParams] = useSearchParams()
+  // Si llegaste desde un link de adentro sin sesión (RequiereSesion lo manda en el state), se vuelve ahí
+  const desde = (useLocation().state as { desde?: string } | null)?.desde
   const [enviando, setEnviando] = useState(false)
   const [falloAlAbrir, setFalloAlAbrir] = useState(false)
 
@@ -41,10 +44,11 @@ export default function Entrar() {
   }, [volverAInvitacion, session, urlSucia, setParams])
 
   if (volverAInvitacion) return <Navigate to={`/r/${invitacion}`} replace />
-  if (session) return <Navigate to="/" replace />
+  if (session) return <Navigate to={desde ?? adondeIba() ?? '/'} replace />
 
   async function continuar() {
     borrarInvitacionPendiente()
+    guardarAdondeIba(desde)
     setFalloAlAbrir(false)
     setEnviando(true)
     try {

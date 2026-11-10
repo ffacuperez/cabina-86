@@ -14,6 +14,7 @@ import {
   type YaPasado,
   YaSePaso,
 } from '../datos/pasar'
+import { linkAlDisco, linkDeWhatsApp, mensajeDeAviso } from '../datos/aviso'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { diaYMes, enLista, fechaDeCamara } from '../lib/texto'
 
@@ -333,7 +334,7 @@ function Tarjetita({
   )
 }
 
-/* ── 05c · Pasado — en exhibición (HU-08) ── */
+/* ── 05c · Pasado — en exhibición (HU-08), con "Avisar en el grupo" (HU-09) ── */
 
 function Pasado({ ronda, hecho, onPasarOtro }: { ronda: RondaActual; hecho: PaseHecho; onPasarOtro: () => void }) {
   const titulo = useRef<HTMLHeadingElement>(null)
@@ -346,6 +347,8 @@ function Pasado({ ronda, hecho, onPasarOtro }: { ronda: RondaActual; hecho: Pase
       : nombres.length === 1
         ? `Ya está en el exhibidor de ${nombres[0]}. Ahora te debe uno.`
         : `Ya está en el exhibidor de ${enLista(nombres.map((n) => `de ${n}`)).replace(/^de /, '')}. Ahora te deben uno cada uno.`
+  // HU-09: el aviso para el grupo, con el link directo al disco
+  const whatsapp = linkDeWhatsApp(mensajeDeAviso(ronda.yo.nombre, disco.titulo, ronda.nombre, linkAlDisco(ronda.id, pase.id)))
 
   return (
     <div className="pasado">
@@ -361,8 +364,12 @@ function Pasado({ ronda, hecho, onPasarOtro }: { ronda: RondaActual; hecho: Pase
       <p className="lcd pasado__lcd">PASADO · {pase.catalogo}</p>
 
       <div className="pasado__acciones">
+        <a className="boton boton--ancho" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          Avisar en el grupo <span className="flecha" aria-hidden="true">→</span>
+        </a>
         <Link className="boton boton--secundario boton--ancho" to={`/ronda/${ronda.id}`}>Volver al exhibidor</Link>
         <button className="boton boton--contorno boton--ancho" type="button" onClick={onPasarOtro}>Pasar otro</button>
+        <p className="texto-s pasado__ayuda">Abre WhatsApp con el mensaje escrito. Vos elegís el grupo.</p>
       </div>
     </div>
   )

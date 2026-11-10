@@ -267,6 +267,8 @@ a.boton { text-decoration: none; }
 .pasado__texto { margin-top: 10px; max-width: 330px; }
 .pasado__lcd { align-self: flex-start; margin-top: 10px; }
 .pasado__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
+.pasado__acciones .boton { text-decoration: none; }
+.pasado__ayuda { margin-top: 0; opacity: 0.75; }
 
 /* ── 03b · Disco abierto (HU-12): trae su encabezado y no lleva botonera ── */
 .encabezado-ronda--propio { margin-top: 0; }
