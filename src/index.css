@@ -442,6 +442,68 @@ a.boton { text-decoration: none; }
 .ticket-pantalla__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
 .ticket-pantalla__acciones .boton { text-decoration: none; }
 
+/* ── 02e · Al fondo del pasillo: la tarjeta del archivo (T-11) ── */
+.archivo__pila {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  box-sizing: border-box;
+  width: 132px;
+  height: 122px;
+  padding: 0 0 12px 12px;
+  border: 1.5px dashed var(--acrilico-oscuro);
+  border-radius: var(--radio-xs);
+  background: rgb(221 230 191 / 0.45);
+}
+.archivo__lomo { flex: none; height: 92px; border: 1px solid rgb(255 255 242 / 0.35); border-radius: 1.5px; }
+.archivo__lomo:nth-child(2) { border-color: var(--acrilico-oscuro); }
+.archivo__lomo:nth-child(4) { transform: rotate(9deg); transform-origin: bottom left; }
+.archivo__cuantos { position: absolute; left: 82px; top: 24px; display: flex; flex-direction: column; gap: 2px; color: var(--lcd-tinta); }
+
+/* ── 02f · Pasillo entero (T-11): de frente de a dos por estante y el archivo de lomo ── */
+.pasillo-entero { display: flex; flex-direction: column; padding-bottom: var(--esp-6); }
+.pasillo-entero__titulo { margin-top: var(--esp-2); overflow-wrap: anywhere; }
+.pasillo-entero__total { align-self: flex-start; margin-top: var(--esp-3); }
+.pasillo-entero__vacio { margin-top: var(--esp-6); }
+.pasillo-entero__estantes { display: flex; flex-direction: column; gap: 30px; margin-top: 26px; }
+/* Cada estante va de borde a borde, con su repisa abajo, como en el exhibidor */
+.estante-entero {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 140px);
+  justify-content: space-evenly;
+  margin: 0 calc(-1 * var(--margen-pantalla));
+  padding: 4px var(--margen-pantalla) 16px;
+  list-style: none;
+}
+.estante-entero::after,
+.repisa-lomos::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  background: linear-gradient(var(--acrilico-claro) 0 1px, var(--acrilico-oscuro) 1px);
+  box-shadow: 0 4px 6px rgb(31 36 28 / 0.3);
+}
+.pasillo-entero__archivo { display: flex; flex-direction: column; gap: 14px; margin-top: 36px; }
+.pasillo-entero__rotulo { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2) 10px; }
+.pasillo-entero__rotulo .rotulo { margin: 0; }
+.repisa-lomos {
+  --e: 1px;
+  position: relative;
+  display: flex;
+  gap: 3px;
+  height: 170px;
+  margin: 0 calc(-1 * var(--margen-pantalla));
+  padding: 0 var(--margen-pantalla) 10px;
+}
+.repisa-lomos + .repisa-lomos { margin-top: 18px; }
+.repisa-lomos .lomo__titulo { max-height: 96px; }
+.pasillo-entero__pista { margin-top: 26px; opacity: 0.75; }
+
 /* ── 06 · La Ronda — pared de exhibidores (HU-17) ── */
 .la-ronda { display: flex; flex-direction: column; }
 .la-ronda__titulo { margin-top: var(--esp-2); }
@@ -460,7 +522,11 @@ a.boton { text-decoration: none; }
   background: radial-gradient(ellipse at center, #f2f7db, var(--acrilico));
 }
 .ficha__rotulo { display: flex; align-items: center; gap: var(--esp-2); margin: 0; min-width: 0; }
-.ficha__rotulo .rotulo { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ficha { position: relative; }
+.ficha__rotulo .rotulo { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+/* Toda la ficha se toca: el link del rótulo la cubre (como las tarjetas de Mis rondas) */
+.ficha__abrir::after { content: ''; position: absolute; inset: 0; border-radius: var(--radio-m); }
+.ficha:active { transform: translateY(1px); }
 .ficha__sigla { flex: none; color: var(--negro); }
 .ficha__frase { margin: 0; }
 

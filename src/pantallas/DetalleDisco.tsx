@@ -27,9 +27,14 @@ export default function DetalleDisco() {
   const { pase = '' } = useParams()
   const { estado, reintentar } = useDetalle(ronda, pase)
   const alExhibidor = `/ronda/${ronda.id}`
-  // Desde Perfil (HU-16) se vuelve a Perfil; desde el estante, al exhibidor
-  const desdePerfil = (useLocation().state as { volver?: string } | null)?.volver === 'perfil'
-  const volver = desdePerfil ? { a: `/ronda/${ronda.id}/perfil`, texto: '← PERFIL' } : { a: alExhibidor, texto: '← EXHIBIDOR' }
+  // Desde Perfil (HU-16) se vuelve a Perfil; desde el pasillo entero (T-11), al pasillo; desde el estante, al exhibidor
+  const desde = useLocation().state as { volver?: string; de?: string } | null
+  const volver =
+    desde?.volver === 'perfil'
+      ? { a: `/ronda/${ronda.id}/perfil`, texto: '← PERFIL' }
+      : desde?.volver === 'pasillo' && desde.de
+        ? { a: `/ronda/${ronda.id}/pasillo/${desde.de}`, texto: '← PASILLO' }
+        : { a: alExhibidor, texto: '← EXHIBIDOR' }
 
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
 

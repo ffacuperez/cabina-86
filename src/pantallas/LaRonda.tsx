@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { Link } from 'react-router'
 import { HojaInvitar } from '../componentes/HojaInvitar'
 import { conComa } from '../datos/loQuePasaste'
 import { useRondaActual } from '../datos/ronda'
@@ -9,6 +10,7 @@ import { dosCifras } from '../lib/texto'
  * Figma 06 · La Ronda — pared de exhibidores (17:2077), HU-17.
  * Cuántos discos van y cuántos son, INVITAR (solo quien creó la ronda, #52) y una ficha por integrante:
  * PASÓ, ESCUCHÓ, PROM y DEBE (en naranja si debe algo). Solo esta ronda (RN-05).
+ * Tocar una ficha abre ese pasillo entero (T-11); la tuya, Perfil.
  * Ranking, compatibilidad y el más polémico (abajo en el Figma) quedan para después del MVP.
  */
 export default function LaRonda() {
@@ -45,7 +47,7 @@ export default function LaRonda() {
         )}
         {estado.tipo === 'listo' && (
           <ul className="fichas">
-            {estado.tablero.fichas.map((f) => <FichaIntegrante key={f.integrante.id} ficha={f} />)}
+            {estado.tablero.fichas.map((f) => <FichaIntegrante key={f.integrante.id} ficha={f} rondaId={ronda.id} />)}
           </ul>
         )}
       </section>
@@ -60,12 +62,16 @@ export default function LaRonda() {
   )
 }
 
-function FichaIntegrante({ ficha: f }: { ficha: Ficha }) {
+/** Tocar una ficha abre ese pasillo entero (T-11, Figma 02f); la mía, lo que pasé (Perfil) */
+function FichaIntegrante({ ficha: f, rondaId }: { ficha: Ficha; rondaId: string }) {
   const id = `ficha-${f.integrante.id}`
+  const destino = f.esMia ? `/ronda/${rondaId}/perfil` : `/ronda/${rondaId}/pasillo/${f.integrante.id}`
   return (
     <li className="ficha" aria-labelledby={id}>
       <h3 id={id} className="ficha__rotulo">
-        <span className="rotulo">Pasillo de {f.integrante.nombre}</span>
+        <Link className="rotulo ficha__abrir" to={destino} state={f.esMia ? undefined : { volver: 'ronda' }}>
+          Pasillo de {f.integrante.nombre}
+        </Link>
         <span className="lcd-s ficha__sigla" aria-hidden="true">{f.integrante.sigla}</span>
       </h3>
       <dl className="numeros-lcd">

@@ -1,8 +1,8 @@
 import { Link } from 'react-router'
-import { CajaCD } from '../componentes/CajaCD'
-import { Sticker } from '../componentes/Sticker'
+import { DiscoEnEstante } from '../componentes/DiscoEnEstante'
 import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
-import { type DiscoEnEstante, type Exhibidor as ExhibidorDatos, useExhibidor } from '../datos/exhibidor'
+import { type Exhibidor as ExhibidorDatos, type Pasillo, rangoDeCatalogo, useExhibidor } from '../datos/exhibidor'
+import { COLORES_LOMO } from '../lib/lomos'
 import { useRondaActual } from '../datos/ronda'
 import { dosCifras } from '../lib/texto'
 
@@ -29,13 +29,13 @@ export default function Exhibidor() {
             <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
           </div>
         )}
-        {estado.tipo === 'listo' && <Estantes exhibidor={estado.exhibidor} />}
+        {estado.tipo === 'listo' && <Estantes exhibidor={estado.exhibidor} rondaId={ronda.id} />}
       </section>
     </>
   )
 }
 
-function Estantes({ exhibidor }: { exhibidor: ExhibidorDatos }) {
+function Estantes({ exhibidor, rondaId }: { exhibidor: ExhibidorDatos; rondaId: string }) {
   const { pasillos } = exhibidor
   if (pasillos.length === 0) {
     return <p className="texto-m exhibidor__aviso">Nadie te pasó nada todavía. Qué ronda tranquila.</p>
@@ -48,7 +48,8 @@ function Estantes({ exhibidor }: { exhibidor: ExhibidorDatos }) {
             Pasillo de {p.de.nombre} <span className="lcd-s">{dosCifras(p.discos.length)}</span>
           </h2>
           <ul className="estante" aria-label={`Lo que te pasó ${p.de.nombre}`}>
-            {p.discos.map((d) => <DiscoEnEstante key={d.paseId} disco={d} />)}
+            {p.discos.map((d) => <DiscoEnEstante key={d.paseId} disco={d} rondaId={rondaId} />)}
+            {p.archivados.length > 0 && <TarjetaArchivo pasillo={p} rondaId={rondaId} />}
           </ul>
           {p.tarjetita !== null && (
             <TarjetaRecomendado por={p.de.nombre} nota={p.tarjetita} className="tarjeta-recomendado--estante" />
@@ -60,23 +61,30 @@ function Estantes({ exhibidor }: { exhibidor: ExhibidorDatos }) {
   )
 }
 
-function DiscoEnEstante({ disco }: { disco: DiscoEnEstante }) {
-  const datos = [disco.titulo, disco.artista, disco.anio].filter(Boolean).join(', ')
-  const estado = disco.puntaje === null ? 'Pendiente' : `Calificado con ${disco.puntaje}`
+/**
+ * Figma 02e: al fondo del pasillo, si hay calificados archivados (T-11), una tarjeta del tamaño de una caja
+ * con la pila de lomos y "+N EN EL ARCHIVO". Abre el pasillo entero (02f).
+ */
+function TarjetaArchivo({ pasillo: p, rondaId }: { pasillo: Pasillo; rondaId: string }) {
   return (
     <li className="disco-estante">
-      {/* Tocar la caja abre el disco (HU-12) */}
-      <Link className="disco-estante__abrir" to={`disco/${disco.paseId}`} aria-label={`${datos}. ${estado}.`}>
-        <CajaCD tapa={disco.tapa} titulo="" />
-        {/* Las tapas reales muchas veces no traen texto: título y artista abajo, como etiqueta de batea */}
-        <span className="disco-estante__titulo" aria-hidden="true">{disco.titulo}</span>
-        <span className="mono-s disco-estante__artista" aria-hidden="true">{disco.artista.toUpperCase()}</span>
+      <Link
+        className="disco-estante__abrir archivo"
+        to={`/ronda/${rondaId}/pasillo/${p.de.id}`}
+        aria-label={`El pasillo entero de ${p.de.nombre}: ${p.archivados.length} más en el archivo`}
+      >
+        <span className="archivo__pila" aria-hidden="true">
+          {COLORES_LOMO.slice(0, 4).map((c, i) => (
+            <span key={i} className="archivo__lomo" style={{ background: c.fondo, width: `${Math.round(c.ancho / 2)}px` }} />
+          ))}
+          <span className="archivo__cuantos">
+            <span className="lcd-l">+{p.archivados.length}</span>
+            <span className="mono-s">EN EL<br />ARCHIVO</span>
+          </span>
+        </span>
+        <span className="disco-estante__titulo" aria-hidden="true">El pasillo entero →</span>
+        <span className="mono-s disco-estante__artista" aria-hidden="true">{rangoDeCatalogo(p.archivados)}</span>
       </Link>
-      {disco.puntaje === null ? (
-        <Sticker texto={'PEN-\nDIENTE'} className="disco-estante__sticker" />
-      ) : (
-        <span className="disco-estante__talon" aria-hidden="true">{dosCifras(disco.puntaje)}/10</span>
-      )}
     </li>
   )
 }
