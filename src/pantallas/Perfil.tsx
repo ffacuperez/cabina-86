@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { CajaCD } from '../componentes/CajaCD'
+import { Lomo } from '../componentes/Lomo'
 import { Sticker } from '../componentes/Sticker'
 import { conComa, enumerar, type Pasado, useLoQuePasaste } from '../datos/loQuePasaste'
 import { useRondaActual } from '../datos/ronda'
@@ -110,15 +111,6 @@ function FilaPasado({ pasado: p, rondaId }: { pasado: Pasado; rondaId: string })
   )
 }
 
-/** Colores de los lomos del Figma (07), en orden: fondo y tinta, y ancho sobre 342 */
-const LOMOS = [
-  { fondo: 'var(--negro-2)', tinta: 'var(--mostaza)', ancho: 28 },
-  { fondo: 'var(--acrilico-claro)', tinta: 'var(--negro)', ancho: 24 },
-  { fondo: 'var(--naranja)', tinta: 'var(--negro)', ancho: 26 },
-  { fondo: 'var(--magenta)', tinta: 'var(--acrilico-claro)', ancho: 30 },
-  { fondo: 'var(--acrilico-oscuro)', tinta: 'var(--negro)', ancho: 28 },
-]
-
 /** Lomos que entran en el estante (Figma 07): con el sexto, el más viejo deja lugar */
 const LOMOS_EN_EL_ESTANTE = 5
 
@@ -134,23 +126,9 @@ function Estante({ pasados, rondaId }: { pasados: Pasado[]; rondaId: string }) {
   return (
     <div className="estante-perfil" aria-hidden="true">
       <div className="estante-perfil__lomos">
-        {enElEstante.map((p) => {
-          const n = Number(p.catalogo.split('-').pop()) || 1
-          const c = LOMOS[(n - 1) % LOMOS.length]
-          return (
-            <Link
-              key={p.paseId}
-              className="lomo"
-              to={`/ronda/${rondaId}/disco/${p.paseId}`}
-              state={{ volver: 'perfil' }}
-              tabIndex={-1}
-              style={{ '--lomo-fondo': c.fondo, '--lomo-tinta': c.tinta, '--lomo-ancho': c.ancho } as React.CSSProperties}
-            >
-              <span className="lomo__titulo">{p.titulo.toUpperCase()}</span>
-              <span className="lomo__catalogo">{p.catalogo}</span>
-            </Link>
-          )
-        })}
+        {enElEstante.map((p) => (
+          <Lomo key={p.paseId} paseId={p.paseId} catalogo={p.catalogo} titulo={p.titulo} rondaId={rondaId} volver={{ volver: 'perfil' }} decorativo />
+        ))}
       </div>
       <Link className="estante-perfil__ultimo" to={`/ronda/${rondaId}/disco/${ultimo.paseId}`} state={{ volver: 'perfil' }} tabIndex={-1}>
         <CajaCD tapa={ultimo.tapa} titulo={ultimo.titulo} />
