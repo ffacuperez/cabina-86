@@ -440,24 +440,33 @@ a.boton { text-decoration: none; }
 .ticket-pantalla__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
 .ticket-pantalla__acciones .boton { text-decoration: none; }
 
+/* ── 06 · La Ronda — pared de exhibidores (HU-17) ── */
+.la-ronda { display: flex; flex-direction: column; }
+.la-ronda__titulo { margin-top: var(--esp-2); }
+/* Si no entran en una línea (320 px), INVITAR baja abajo del LCD */
+.la-ronda__total { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2) var(--esp-3); margin-top: var(--esp-3); }
+.la-ronda__pared { display: flex; flex-direction: column; gap: 14px; margin-top: 22px; padding-bottom: var(--esp-6); }
+.fichas { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+/* Cada ficha es un exhibidor chiquito: el mismo acrílico que el estante de Perfil */
+.ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1.5px solid var(--acrilico-oscuro);
+  border-radius: var(--radio-m);
+  background: radial-gradient(ellipse at center, #f2f7db, var(--acrilico));
+}
+.ficha__rotulo { display: flex; align-items: center; gap: var(--esp-2); margin: 0; min-width: 0; }
+.ficha__rotulo .rotulo { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ficha__sigla { flex: none; color: var(--negro); }
+.ficha__frase { margin: 0; }
+
 /* ── 07 · Perfil — lo que pasaste a esta ronda (HU-16) ── */
 .perfil { display: flex; flex-direction: column; }
 .perfil__nombre { margin-top: var(--esp-2); overflow-wrap: anywhere; }
-/* Tres pantallitas LCD: PASASTE · ESCUCHASTE · TE PONEN */
-.perfil__numeros { display: flex; gap: 9px; margin: 14px 0 0; }
-.perfil__numero {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-  padding: var(--esp-1) var(--esp-2);
-  border-radius: var(--radio-xs);
-  background: var(--lcd);
-  box-shadow: inset 0 2px 4px rgb(31 41 23 / 0.4);
-  color: var(--lcd-tinta);
-}
-.perfil__numero dt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.perfil__numero dd { margin: 0; }
+/* Tres pantallitas LCD: PASASTE · ESCUCHASTE · TE PONEN (.numeros-lcd, en base.css) */
+.perfil__numeros { gap: 9px; margin-top: 14px; }
 .perfil__pasados { display: flex; flex-direction: column; gap: 6px; margin-top: 36px; padding-bottom: var(--esp-6); }
 .perfil__vacio { display: flex; flex-direction: column; align-items: flex-start; gap: var(--esp-3); margin-top: var(--esp-4); }
 .perfil__vacio .boton { text-decoration: none; }

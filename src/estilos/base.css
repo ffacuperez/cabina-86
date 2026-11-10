@@ -576,3 +576,21 @@ button { font: inherit; color: inherit; }
 
 /* Solo para lectores de pantalla */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ── Pantallitas LCD con rótulo y número (Perfil, fichas de La Ronda) ── */
+.numeros-lcd { display: flex; gap: var(--esp-2); margin: 0; }
+.numero-lcd {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--esp-1) var(--esp-2);
+  border-radius: var(--radio-xs);
+  background: var(--lcd);
+  box-shadow: inset 0 2px 4px rgb(31 41 23 / 0.4);
+  color: var(--lcd-tinta);
+}
+.numero-lcd dt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.numero-lcd dd { margin: 0; white-space: nowrap; }
+/* Deuda destacada (HU-17) */
+.numero-lcd--debe { background: var(--naranja); }
