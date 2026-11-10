@@ -463,7 +463,7 @@ a.boton { text-decoration: none; }
 .perfil__vacio .boton { text-decoration: none; }
 
 /* Estante (Figma 07): medidas sobre 342 × 264, se achica junto (cqw) */
-.estante {
+.estante-perfil {
   --e: calc(100cqw / 342);
   container-type: inline-size;
   position: relative;
@@ -475,18 +475,19 @@ a.boton { text-decoration: none; }
   border-radius: var(--radio-m);
   background: radial-gradient(ellipse at center, #f2f7db, var(--acrilico));
 }
-.estante > * { position: absolute; }
-.estante__lomos {
-  left: calc(var(--e) * 15); top: calc(var(--e) * 33);
-  width: calc(var(--e) * 152); height: calc(var(--e) * 216);
+.estante-perfil > * { position: absolute; }
+.estante-perfil__lomos {
+  left: calc(var(--e) * 18); top: calc(var(--e) * 36);
+  width: calc(var(--e) * 152); height: calc(var(--e) * 214);
   display: flex; gap: calc(var(--e) * 3);
   overflow-x: auto;
   scrollbar-width: none;
 }
-.estante__lomos::-webkit-scrollbar { display: none; }
+.estante-perfil__lomos::-webkit-scrollbar { display: none; }
 .lomo {
   flex: none;
-  display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+  /* En vertical-rl la fila corre de arriba a abajo: título arriba, catálogo abajo */
+  display: flex; flex-direction: row; justify-content: space-between; align-items: center;
   width: calc(var(--e) * var(--lomo-ancho));
   height: 100%;
   padding: calc(var(--e) * 9) 0 calc(var(--e) * 10);
@@ -508,10 +509,10 @@ a.boton { text-decoration: none; }
   white-space: nowrap;
 }
 .lomo__catalogo { font: 400 calc(var(--e) * 18) / 1 var(--fuente-lcd); letter-spacing: calc(var(--e) * 0.5); white-space: nowrap; }
-.estante__ultimo { left: calc(var(--e) * 180); top: calc(var(--e) * 102); transform: rotate(6deg); filter: drop-shadow(0 calc(var(--e) * 4) calc(var(--e) * 3.5) rgb(31 36 28 / 0.35)); }
-.estante__ultimo .caja-cd { --caja-ancho: calc(var(--e) * 154); }
-.estante__nuevo { --sticker: calc(var(--e) * 59); left: calc(var(--e) * 293); top: calc(var(--e) * 66); transform: rotate(-12deg); }
-.estante__repisa { left: 0; right: 0; top: calc(var(--e) * 248); height: calc(var(--e) * 14); background: var(--acrilico-oscuro); }
+.estante-perfil__ultimo { left: calc(var(--e) * 181); top: calc(var(--e) * 104); transform: rotate(6deg); filter: drop-shadow(0 calc(var(--e) * 4) calc(var(--e) * 3.5) rgb(31 36 28 / 0.35)); }
+.estante-perfil__ultimo .caja-cd { --caja-ancho: calc(var(--e) * 154); }
+.estante-perfil__nuevo { --sticker: calc(var(--e) * 59); left: calc(var(--e) * 294); top: calc(var(--e) * 67); transform: rotate(-12deg); }
+.estante-perfil__repisa { left: 0; right: 0; top: calc(var(--e) * 250); height: calc(var(--e) * 12); background: var(--acrilico-oscuro); }
 
 /* Una fila por disco: catálogo, título y estado, y a la derecha 0/2 (naranja) o el promedio (LCD) */
 .filas-pasados { display: flex; flex-direction: column; margin: var(--esp-3) 0 0; padding: 0; list-style: none; }

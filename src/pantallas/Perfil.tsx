@@ -135,8 +135,8 @@ function Estante({ pasados, rondaId }: { pasados: Pasado[]; rondaId: string }) {
   }, [pasados])
 
   return (
-    <div className="estante" aria-hidden="true">
-      <div className="estante__lomos" ref={lomos}>
+    <div className="estante-perfil" aria-hidden="true">
+      <div className="estante-perfil__lomos" ref={lomos}>
         {viejosPrimero.map((p) => {
           const n = Number(p.catalogo.split('-').pop()) || 1
           const c = LOMOS[(n - 1) % LOMOS.length]
@@ -155,11 +155,11 @@ function Estante({ pasados, rondaId }: { pasados: Pasado[]; rondaId: string }) {
           )
         })}
       </div>
-      <Link className="estante__ultimo" to={`/ronda/${rondaId}/disco/${ultimo.paseId}`} state={{ volver: 'perfil' }} tabIndex={-1}>
+      <Link className="estante-perfil__ultimo" to={`/ronda/${rondaId}/disco/${ultimo.paseId}`} state={{ volver: 'perfil' }} tabIndex={-1}>
         <CajaCD tapa={ultimo.tapa} titulo={ultimo.titulo} />
       </Link>
-      <Sticker texto={'NUE-\nVO'} className="estante__nuevo" />
-      <span className="estante__repisa" />
+      <Sticker texto={'NUE-\nVO'} className="estante-perfil__nuevo" />
+      <span className="estante-perfil__repisa" />
     </div>
   )
 }
