@@ -11,7 +11,7 @@ const LOMOS_POR_REPISA = 8
 
 /**
  * Figma 02f · Pasillo de Maxi — entero (T-11): todo lo que me pasó alguien en esta ronda.
- * Arriba, de frente y de a dos por estante, lo que sigue en mi exhibidor (pendientes y los últimos 6 calificados).
+ * Arriba, de frente y de a dos por estante, lo que sigue en mi exhibidor (pendientes y los últimos 9 calificados).
  * Abajo, bajo el rótulo ARCHIVO, los calificados más viejos guardados de lomo. Tocar una caja o un lomo abre el disco.
  * Se llega desde la tarjeta del archivo al fondo del pasillo (02e) o desde la ficha de La Ronda (HU-17).
  */

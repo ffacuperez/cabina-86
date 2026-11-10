@@ -18,13 +18,13 @@ export type DiscoEnEstante = {
   puntaje: number | null
 }
 
-/** S-04 / T-11: por pasillo quedan todos los pendientes y los últimos 6 calificados; el resto se archiva */
-export const QUEDAN_CALIFICADOS = 6
+/** S-04 / T-11: por pasillo quedan todos los pendientes y los últimos 9 calificados; el resto se archiva */
+export const QUEDAN_CALIFICADOS = 9
 
 /** Un pasillo por integrante que me pasó discos (HU-11) */
 export type Pasillo = {
   de: { id: string; nombre: string; sigla: string }
-  /** Los del estante del exhibidor, del más nuevo al más viejo: pendientes y los últimos 6 calificados */
+  /** Los del estante del exhibidor, del más nuevo al más viejo: pendientes y los últimos 9 calificados */
   discos: DiscoEnEstante[]
   /** Los calificados más viejos, del más viejo al más nuevo (de lomo en el pasillo entero, Figma 02f) */
   archivados: DiscoEnEstante[]
@@ -88,7 +88,7 @@ export function useExhibidor(ronda: RondaActual) {
 
 /**
  * Agrupa por quién lo pasó; el pasillo de quien me pasó algo más recientemente va primero.
- * Los pendientes nunca se archivan; de los calificados quedan los 6 más nuevos (por fecha en que se pasaron).
+ * Los pendientes nunca se archivan; de los calificados quedan los 9 más nuevos (por fecha en que se pasaron).
  */
 export function armar(filas: FilaPase[], otros: RondaActual['otros']): Exhibidor {
   const integrantes = new Map(otros.map((o) => [o.id, o]))
