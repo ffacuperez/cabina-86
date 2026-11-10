@@ -9,6 +9,7 @@ export type Pasado = {
   /** FAC-05 */
   catalogo: string
   titulo: string
+  tapa: string | null
   creadoEn: string
   /** Cuántos ya lo calificaron */
   escucharon: number
@@ -30,7 +31,7 @@ type FilaPase = {
   id: string
   numero: number
   creado_en: string
-  discos: { titulo: string } | null
+  discos: { titulo: string; tapa_url: string | null } | null
   calificaciones: { usuario_id: string; puntaje: number }[]
 }
 
@@ -49,7 +50,7 @@ export function useLoQuePasaste(ronda: RondaActual) {
     Promise.all([
       supabase
         .from('pases')
-        .select('id, numero, creado_en, discos(titulo), calificaciones(usuario_id, puntaje)')
+        .select('id, numero, creado_en, discos(titulo, tapa_url), calificaciones(usuario_id, puntaje)')
         .eq('ronda_id', ronda.id)
         .eq('pasado_por', ronda.yo.id)
         .order('creado_en', { ascending: false }),
@@ -85,6 +86,7 @@ export function armarPerfil(ronda: RondaActual, filas: FilaPase[], escuchaste: n
       paseId: f.id,
       catalogo: `${ronda.yo.sigla}-${dosCifras(f.numero)}`,
       titulo: f.discos?.titulo ?? '',
+      tapa: f.discos?.tapa_url ?? null,
       creadoEn: f.creado_en,
       escucharon: puntajes.length,
       faltan,
