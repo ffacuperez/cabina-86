@@ -188,7 +188,7 @@ function Buscar({
         {discos.length > 0 && (
           <>
             <p className="mono-s rotulo-campo pasar__rotulo">
-              {discos.length} {discos.length === 1 ? 'RESULTADO' : 'RESULTADOS'}
+              {discos.length} {discos.length === 1 ? 'RESULTADO' : 'RESULTADOS'} · DE DEEZER
             </p>
             <ul className="resultados">
               {discos.map((d) => {

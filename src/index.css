@@ -51,6 +51,8 @@
 .entrar__acciones .error { margin-top: var(--esp-3); }
 .entrar__aclaracion { margin-top: var(--esp-3); max-width: 330px; }
 .entrar__link { margin-top: 31px; max-width: 330px; }
+/* T-12: uso privado y origen de los datos (Figma 00a, sección Tanda técnica) */
+.entrar__privado { margin-top: 14px; max-width: 342px; font-size: 10px; opacity: 0.6; }
 
 /* Cartel con el nombre de la ronda (01 · Bienvenida y 00b · Te invitaron) */
 .cartel--ronda { margin: 0 calc(-1 * var(--esp-2)); min-height: 176px; padding-bottom: 23px; }

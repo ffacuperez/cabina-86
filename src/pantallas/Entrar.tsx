@@ -83,6 +83,8 @@ export default function Entrar() {
         {error && <p role="alert" className="error">{MENSAJE_ERROR}</p>}
         <p className="texto-s entrar__aclaracion">Usamos tu cuenta de Google solo para saber quién sos en cada ronda.</p>
         <p className="mono-s suave entrar__link">¿TE PASARON UN LINK? ABRILO Y ENTRÁS DIRECTO A ESA RONDA.</p>
+        {/* T-12: la API de Deezer es para uso no comercial */}
+        <p className="mono-s entrar__privado">USO PRIVADO ENTRE AMIGOS, SIN FINES COMERCIALES. DATOS DE LOS DISCOS: DEEZER.</p>
       </div>
     </main>
   )
