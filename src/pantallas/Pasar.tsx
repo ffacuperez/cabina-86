@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
 import { CajaCD } from '../componentes/CajaCD'
+import { HojaOtraRonda } from '../componentes/HojaOtraRonda'
 import { Sticker } from '../componentes/Sticker'
 import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
 import {
@@ -15,6 +16,7 @@ import {
   YaSePaso,
 } from '../datos/pasar'
 import { linkAlDisco, linkDeWhatsApp, mensajeDeAviso } from '../datos/aviso'
+import { type OtraRonda, useOtrasRondas } from '../datos/otrasRondas'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { diaYMes, enLista, fechaDeCamara } from '../lib/texto'
 
@@ -34,13 +36,24 @@ type Paso = 'buscar' | 'tarjetita' | 'pasado'
  * /ronda/:id/pasar · Pasar un disco a toda la ronda (RN-03: sin destinatario).
  * HU-07 · Figma 05a: buscar en Deezer y elegir (los repetidos de esta ronda, bloqueados: RN-11).
  * HU-08 · Figma 05b: tarjetita y vista previa → "Pasárselo a la ronda"; Figma 05c: Pasado.
+ * HU-10: desde "Pasado" se puede pasar el mismo disco a otra ronda; se llega acá con el disco ya
+ * elegido (en el state del link) y se arranca en la tarjetita, vacía.
  */
 export default function Pasar() {
+  // Cada navegación arranca de cero (pasar a otra ronda reusa esta misma ruta)
+  return <PasarUnDisco key={useLocation().key} />
+}
+
+/** Lo que viaja en el state de /ronda/:id/pasar cuando se pasa el mismo disco a otra ronda (HU-10) */
+type DesdeOtraRonda = { disco?: DiscoEncontrado }
+
+function PasarUnDisco() {
   const ronda = useRondaActual()
-  const [paso, setPaso] = useState<Paso>('buscar')
+  const traido = (useLocation().state as DesdeOtraRonda | null)?.disco ?? null
+  const [paso, setPaso] = useState<Paso>(traido ? 'tarjetita' : 'buscar')
   const [texto, setTexto] = useState('')
   const [busqueda, setBusqueda] = useState<Busqueda>({ tipo: 'vacia' })
-  const [elegido, setElegido] = useState<DiscoEncontrado | null>(null)
+  const [elegido, setElegido] = useState<DiscoEncontrado | null>(traido)
   const [hecho, setHecho] = useState<PaseHecho | null>(null)
 
   // 05b lleva su propio encabezado ("← BUSCAR" y el catálogo); 05c no tiene encabezado ni botonera
@@ -334,12 +347,23 @@ function Tarjetita({
   )
 }
 
-/* ── 05c · Pasado — en exhibición (HU-08), con "Avisar en el grupo" (HU-09) ── */
+/* ── 05c · Pasado — en exhibición (HU-08), con "Avisar en el grupo" (HU-09) y "También a…" (HU-10) ── */
 
 function Pasado({ ronda, hecho, onPasarOtro }: { ronda: RondaActual; hecho: PaseHecho; onPasarOtro: () => void }) {
   const titulo = useRef<HTMLHeadingElement>(null)
   useEffect(() => titulo.current?.focus(), [])
   const { pase, disco } = hecho
+  const navigate = useNavigate()
+  // HU-10: con una sola ronda más, "También a <esa ronda>"; con dos o más, "También a otra ronda" abre la hoja (05d).
+  // Solo si queda alguna donde ese disco no se pasó (RN-11); al encadenar, ya no ofrece las que lo tienen.
+  const otras = useOtrasRondas(ronda.id, disco.id) ?? []
+  const libres = otras.filter((r) => !r.yaPasado)
+  const [eligiendo, setEligiendo] = useState(false)
+  const cerrarHoja = useCallback(() => setEligiendo(false), [])
+  const pasarA = (r: OtraRonda) => {
+    const llevado: DiscoEncontrado = { ...disco, cantidad_temas: null, ya_pasado: null }
+    navigate(`/ronda/${r.id}/pasar`, { state: { disco: llevado } satisfies DesdeOtraRonda })
+  }
   const nombres = ronda.otros.map((o) => o.nombre)
   const texto =
     nombres.length === 0
@@ -367,10 +391,20 @@ function Pasado({ ronda, hecho, onPasarOtro }: { ronda: RondaActual; hecho: Pase
         <a className="boton boton--ancho" href={whatsapp} target="_blank" rel="noopener noreferrer">
           Avisar en el grupo <span className="flecha" aria-hidden="true">→</span>
         </a>
+        {libres.length > 0 && (
+          <button
+            className="boton boton--contorno boton--ancho"
+            type="button"
+            onClick={() => (otras.length === 1 ? pasarA(libres[0]) : setEligiendo(true))}
+          >
+            {otras.length === 1 ? `También a ${libres[0].nombre}` : 'También a otra ronda'} <span className="flecha" aria-hidden="true">→</span>
+          </button>
+        )}
         <Link className="boton boton--secundario boton--ancho" to={`/ronda/${ronda.id}`}>Volver al exhibidor</Link>
         <button className="boton boton--contorno boton--ancho" type="button" onClick={onPasarOtro}>Pasar otro</button>
         <p className="texto-s pasado__ayuda">Abre WhatsApp con el mensaje escrito. Vos elegís el grupo.</p>
       </div>
+      {eligiendo && <HojaOtraRonda titulo={disco.titulo} rondas={otras} onElegir={pasarA} onCerrar={cerrarHoja} />}
     </div>
   )
 }

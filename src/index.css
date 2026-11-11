@@ -275,6 +275,28 @@ a.boton { text-decoration: none; }
 .pasado__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
 .pasado__acciones .boton { text-decoration: none; }
 .pasado__ayuda { margin-top: 0; opacity: 0.75; }
+/* Figma 05d (HU-10): las otras rondas en la hoja; las que ya tienen el disco, bloqueadas (RN-11) */
+.otras-rondas { display: flex; flex-direction: column; gap: var(--esp-3); margin: var(--esp-1) 0 0; padding: 0; list-style: none; align-self: stretch; }
+.otra-ronda {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+  width: 100%;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: var(--radio-m);
+  background: var(--marino);
+  color: var(--acrilico-claro);
+  text-align: left;
+  cursor: pointer;
+}
+.otra-ronda:active { transform: translateY(1px); }
+.otra-ronda__datos { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
+.otra-ronda__datos .mono-s { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.otra-ronda__nombre { font: var(--cartel-s); letter-spacing: var(--cartel-s-tracking); text-transform: uppercase; color: var(--mostaza); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.otra-ronda__flecha { font: 400 24px/1 var(--fuente-lcd); color: var(--mostaza); }
+.otra-ronda--bloqueada { background: var(--acrilico-oscuro); color: var(--negro); opacity: 0.6; cursor: default; }
+.otra-ronda--bloqueada .otra-ronda__nombre, .otra-ronda--bloqueada .otra-ronda__flecha { color: var(--negro); }
 
 /* ── 03b · Disco abierto (HU-12): trae su encabezado y no lleva botonera ── */
 .encabezado-ronda--propio { margin-top: 0; }
