@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AuthProvider } from './auth/AuthProvider'
 import { RequiereSesion } from './auth/RequiereSesion'
+import { Pelicula } from './componentes/Pelicula'
 import ArmaLaRonda from './pantallas/ArmaLaRonda'
 import Calificar from './pantallas/Calificar'
 import DetalleDisco from './pantallas/DetalleDisco'
@@ -31,6 +32,7 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <Pelicula />
         <Routes>
           <Route path="/entrar" element={<Entrar />} />
           <Route path="/r/:codigo" element={<TeInvitaron />} />

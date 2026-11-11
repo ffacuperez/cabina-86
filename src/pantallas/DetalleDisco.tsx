@@ -19,7 +19,7 @@ const SIN_MARCO = { encabezado: false, botonera: false }
  * Trae su encabezado ("← EXHIBIDOR" y el catálogo) y no lleva botonera.
  * Figma 03c (126:1911), HU-18: después de calificar, o si lo pasé yo, las notas de la ronda en mini tickets.
  * Figma 03d (HU-15): si ya lo califiqué, mi nota primero y "Editar puntaje" abajo.
- * Pendientes: la caja que se abre y el CD que gira (E-02) y la luz de rollo (E-01).
+ * Pendiente: la caja que se abre y el CD que gira (E-02).
  */
 export default function DetalleDisco() {
   useMarco(SIN_MARCO)
