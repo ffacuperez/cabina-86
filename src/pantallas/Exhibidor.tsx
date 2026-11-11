@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import { AvisoIphone } from '../componentes/AvisoIphone'
 import { DiscoEnEstante } from '../componentes/DiscoEnEstante'
 import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
 import { type Exhibidor as ExhibidorDatos, type Pasillo, rangoDeCatalogo, useExhibidor } from '../datos/exhibidor'
@@ -21,6 +22,7 @@ export default function Exhibidor() {
     <>
       <h1 className="cartel-xl exhibidor__titulo">Tu<br />exhibidor</h1>
       <p className="lcd exhibidor__deuda">LE DEBÉS {dosCifras(deuda)} {deuda === 1 ? 'DISCO' : 'DISCOS'}</p>
+      <AvisoIphone />
 
       <section className="exhibidor" aria-label="Tu exhibidor" aria-busy={estado.tipo === 'cargando'}>
         {estado.tipo === 'error' && (

@@ -98,6 +98,10 @@ a.boton { text-decoration: none; }
 /* ── 02 · Tu exhibidor (HU-11): de borde a borde, hasta la botonera ── */
 .exhibidor__titulo { margin-top: var(--esp-2); }
 .exhibidor__deuda { align-self: flex-start; margin-top: var(--esp-3); }
+/* Figma 02g (#59): aviso en Safari de iPhone */
+.aviso-iphone { display: flex; flex-direction: column; align-items: flex-start; gap: var(--esp-2); margin-top: var(--esp-3); padding: 12px 14px; border-radius: var(--radio-m); background: var(--negro); color: var(--acrilico-claro); }
+.aviso-iphone__rotulo { margin: 0; color: var(--mostaza); }
+.aviso-iphone__texto { margin: 0; font: 400 14px/1.4 var(--fuente-texto); }
 .exhibidor {
   flex: 1;
   display: flex;
