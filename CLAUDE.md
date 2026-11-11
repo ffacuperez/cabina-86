@@ -16,6 +16,7 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Sin sesión, un link de adentro (el disco del aviso) pasa por /entrar y, después de Google, vuelve ahí (`auth/volverA.ts`, vence a la hora como la invitación).
 - Link de invitación: `/r/<codigo>`. Sin sesión muestra 00b; con sesión te suma solo ("abrilo y te suma solo"). Si el login arranca ahí, el código se guarda y /entrar lo retoma al volver de Google.
 - Estilos con los tokens de `src/estilos/tokens.css` y los componentes de `src/estilos/base.css` (sin Tailwind).
+- Uso privado (T-12): Deezer es para uso no comercial y no deja guardar imágenes (se guarda solo el link de la tapa, RN-09). Entrar dice "USO PRIVADO ENTRE AMIGOS, SIN FINES COMERCIALES. DATOS DE LOS DISCOS: DEEZER." y Pasar, "N RESULTADOS · DE DEEZER" (frames 143:2492 y 143:2527).
 - El botón de Google es el oficial (blanco, Roboto, logo oficial): es lo único que no toma la estética de la app.
 - Grano de película y luz de rollo van en E-01 (semana 3).
 
