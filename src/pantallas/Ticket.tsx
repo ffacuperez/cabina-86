@@ -8,7 +8,7 @@ import { useNotasDeLaRonda } from '../datos/notas'
 import { type Detalle, useDetalle } from '../datos/detalle'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras, fechaDeCamara } from '../lib/texto'
-import { sinReducirMovimiento, volverConElTicket } from '../lib/volar'
+import { guardarTicketEnElTalon, sePuedeVolarCon, sinReducirMovimiento } from '../lib/volar'
 
 /** Al volver al disco, la caja ya está abierta (E-02) */
 const YA_ABIERTO = { yaAbierto: true }
@@ -22,7 +22,8 @@ const CORTE = '- - - - - - - - - - - - - - - - - - -'
  * Con HU-18 trae lo que dijo la ronda; "Editar puntaje" (HU-15) vuelve a Calificar con lo mío cargado.
  * E-04: sale a los saltitos, como una impresora térmica (0,3 s de espera y 1,4 s, como el smart animate del Figma),
  * y los botones aparecen cuando terminó de salir. "Volver al exhibidor" lleva el ticket hasta el estante, donde
- * se vuelve el talón de ese disco (lib/volar). "Editar puntaje" lo arranca: se corta y se cae antes de ir a Calificar.
+ * se vuelve el talón de ese disco: primero lo arrancás, queda un instante en la mano y recién ahí vuela (lib/volar).
+ * "Editar puntaje" lo arranca: se corta y se cae antes de ir a Calificar.
  */
 export default function Ticket() {
   useMarco(SIN_MARCO)
@@ -42,19 +43,26 @@ export default function Ticket() {
   const ticket = useRef<HTMLDivElement>(null)
   // Recién calificado, los botones esperan a que el ticket termine de salir (Figma 04b → 04c)
   const [impreso, setImpreso] = useState(() => !imprimir || !sinReducirMovimiento())
-  const [arrancando, setArrancando] = useState(false)
-
-  // E-04: "Editar puntaje" arranca el ticket; cuando terminó de caerse, a Calificar
-  const arrancar = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (!ticket.current || !sinReducirMovimiento() || e.button !== 0 || e.metaKey || e.ctrlKey) return
+  // E-04: el ticket se arranca para ir a Calificar (se cae) o para guardarlo en el estante (queda en la mano y vuela)
+  const [arrancando, setArrancando] = useState<'editar' | 'volver' | null>(null)
+  const arrancarPara = (destino: 'editar' | 'volver') => (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!ticket.current || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
+    // Volver necesita la transición de vista para el vuelo; editar, solo poder moverse
+    if (destino === 'volver' ? !sePuedeVolarCon(e) : !sinReducirMovimiento()) return
     e.preventDefault()
-    setArrancando(true)
+    setArrancando(destino)
   }
+  const alArrancarse = () => {
+    if (arrancando === 'editar') navigate(alCalificar)
+    // Un instante con el papel en la mano y después se guarda en el disco
+    if (arrancando === 'volver') setTimeout(() => ticket.current && guardarTicketEnElTalon(ticket.current, pase, () => navigate(alExhibidor)), 350)
+  }
+  // Por si el navegador no avisa el final de la animación
   useEffect(() => {
     if (!arrancando) return
-    const t = setTimeout(() => navigate(alCalificar), 700)
+    const t = setTimeout(() => navigate(arrancando === 'editar' ? alCalificar : alExhibidor), arrancando === 'editar' ? 700 : 1500)
     return () => clearTimeout(t)
-  }, [arrancando, navigate, alCalificar])
+  }, [arrancando, navigate, alCalificar, alExhibidor])
 
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
   if (estado.tipo === 'listo' && !estado.detalle.mia) {
@@ -85,7 +93,7 @@ export default function Ticket() {
           arrancando={arrancando}
           ticket={ticket}
           onImpreso={() => setImpreso(true)}
-          onArrancado={() => navigate(alCalificar)}
+          onArrancado={alArrancarse}
         />
       )}
 
@@ -93,12 +101,12 @@ export default function Ticket() {
         <Link
           className="boton boton--ancho"
           to={alExhibidor}
-          onClick={(e) => volverConElTicket(e, ticket.current, pase, () => navigate(alExhibidor))}
+          onClick={arrancarPara('volver')}
         >
           Volver al exhibidor <span className="flecha" aria-hidden="true">→</span>
         </Link>
         {estado.tipo === 'listo' && (
-          <Link className="boton boton--ancho boton--contorno" to={alCalificar} onClick={arrancar}>
+          <Link className="boton boton--ancho boton--contorno" to={alCalificar} onClick={arrancarPara('editar')}>
             Editar puntaje
           </Link>
         )}
@@ -119,7 +127,7 @@ function ImpresoraYTicket({
   ronda: RondaActual
   detalle: Detalle
   imprimir: boolean
-  arrancando: boolean
+  arrancando: 'editar' | 'volver' | null
   ticket: RefObject<HTMLDivElement | null>
   onImpreso: () => void
   onArrancado: () => void
@@ -145,11 +153,11 @@ function ImpresoraYTicket({
         <div className={`ticket-salida${arrancando ? ' ticket-salida--arrancando' : ''}`}>
           <div
             ref={ticket}
-            className={`ticket${imprimir ? ' ticket--imprimiendo' : ''}${arrancando ? ' ticket--arrancado' : ''}`}
+            className={`ticket${imprimir ? ' ticket--imprimiendo' : ''}${arrancando === 'editar' ? ' ticket--arrancado' : ''}${arrancando === 'volver' ? ' ticket--en-la-mano' : ''}`}
             onAnimationEnd={(e) => {
               if (e.target !== e.currentTarget) return
               if (e.animationName === 'ticket-sale') onImpreso()
-              if (e.animationName === 'ticket-arrancado') onArrancado()
+              if (e.animationName === 'ticket-arrancado' || e.animationName === 'ticket-en-la-mano') onArrancado()
             }}
           >
             <article className="ticket__papel" aria-label="Tu ticket">

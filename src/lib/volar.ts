@@ -100,12 +100,10 @@ export function abrirVolando(e: MouseEvent<HTMLElement>, navegar: () => void) {
 }
 
 /**
- * E-04: "Volver al exhibidor" lleva el ticket hasta el estante, donde se vuelve el talón con el puntaje
- * en la caja de ese disco. Antes de mostrarlo, corre el estante (y la pantalla) hasta esa caja.
+ * E-04: "Volver al exhibidor" lleva el ticket (ya arrancado) hasta el estante, donde se vuelve el talón con el
+ * puntaje en la caja de ese disco. Antes de mostrarlo, corre el estante (y la pantalla) hasta esa caja.
  */
-export function volverConElTicket(e: MouseEvent<HTMLElement>, ticket: HTMLElement | null, paseId: string, navegar: () => void) {
-  if (!ticket || !toqueComun(e) || !sePuedeVolar()) return false
-  e.preventDefault()
+export function guardarTicketEnElTalon(ticket: HTMLElement, paseId: string, navegar: () => void) {
   volar({
     origen: ticket,
     nombre: TICKET_A_TALON,
@@ -117,5 +115,9 @@ export function volverConElTicket(e: MouseEvent<HTMLElement>, ticket: HTMLElemen
       else window.scrollTo(0, 0)
     },
   })
-  return true
+}
+
+/** Se puede hacer el vuelo con este toque (si no, el link navega como siempre) */
+export function sePuedeVolarCon(e: MouseEvent<HTMLElement>) {
+  return toqueComun(e) && sePuedeVolar()
 }
