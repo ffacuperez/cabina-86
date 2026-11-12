@@ -6,7 +6,8 @@ export const CAJA_QUE_VUELA = 'caja-que-vuela'
 /** Lo que el detalle necesita para mostrar la caja apenas llega, antes de traer el resto (E-02) */
 export type CajaEnVuelo = { tapa: string | null; titulo: string; catalogo: string }
 
-type DocumentoConTransicion = Document & { startViewTransition?: (cb: () => Promise<void>) => unknown }
+type Transicion = { finished: Promise<void> }
+type DocumentoConTransicion = Document & { startViewTransition?: (cb: () => Promise<void>) => Transicion }
 
 /** Hay transiciones de vista (Safari 18, Chrome 111) y no pidieron reducir el movimiento */
 export function sePuedeVolar() {
@@ -27,7 +28,8 @@ export function abrirVolando(e: MouseEvent<HTMLElement>, navegar: () => void) {
   if (!caja) return false
   e.preventDefault()
   caja.style.viewTransitionName = CAJA_QUE_VUELA
-  ;(document as DocumentoConTransicion).startViewTransition!(
+  let aterrizada: HTMLElement | null = null
+  const transicion = (document as DocumentoConTransicion).startViewTransition!(
     () =>
       new Promise<void>((listo) => {
         // React Router actualiza en una transición: esperar a que aparezca la caja del detalle (o 400 ms).
@@ -38,6 +40,9 @@ export function abrirVolando(e: MouseEvent<HTMLElement>, navegar: () => void) {
           terminado = true
           observador.disconnect()
           clearTimeout(reloj)
+          // La caja del detalle toma el nombre solo para el vuelo
+          aterrizada = document.querySelector<HTMLElement>('.detalle--vuela .caja-cd')
+          if (aterrizada) aterrizada.style.viewTransitionName = CAJA_QUE_VUELA
           // El detalle arranca arriba aunque el exhibidor estuviera scrolleado: ahí aterriza la caja
           window.scrollTo(0, 0)
           listo()
@@ -50,5 +55,10 @@ export function abrirVolando(e: MouseEvent<HTMLElement>, navegar: () => void) {
         navegar()
       }),
   )
+  // Al aterrizar se lo saca: con el nombre puesto, Safari la sigue pintando aparte mientras se abre (#93)
+  const sacarNombre = () => {
+    if (aterrizada) aterrizada.style.viewTransitionName = ''
+  }
+  transicion.finished.then(sacarNombre, sacarNombre)
   return true
 }

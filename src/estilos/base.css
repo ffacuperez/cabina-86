@@ -182,7 +182,9 @@ button { font: inherit; color: inherit; }
   height: calc(var(--u) * 102);
   border-radius: calc(var(--u) * 1.5);
   background: var(--negro-2);
-  filter: drop-shadow(0 calc(var(--u) * 3) calc(var(--u) * 2.5) rgb(31 36 28 / 0.35));
+  /* Sombra con box-shadow y no con filter: Safari deja pintada la capa del filtro donde estaba la caja
+     cuando se mueve (al abrirse, E-02, #93). En una caja rectangular se ven iguales. */
+  box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 2.5) rgb(31 36 28 / 0.35);
 }
 .caja-cd::after { /* Borde acrílico */
   content: '';
