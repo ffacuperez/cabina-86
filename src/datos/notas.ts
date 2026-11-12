@@ -8,6 +8,8 @@ export type NotaDeLaRonda = {
   de: Integrante
   nota: {
     puntaje: number
+    /** Tema favorito, si lo eligió (se ve con las mismas reglas que la nota, RN-01) */
+    temaFavorito: string | null
     reaccion: string | null
     comentario: string | null
     /** RN-02: si se editó, se muestra "editado" (HU-15) */
@@ -18,6 +20,7 @@ export type NotaDeLaRonda = {
 type FilaNota = {
   usuario_id: string
   puntaje: number
+  tema_favorito: string | null
   reaccion: string | null
   comentario: string | null
   editada_en: string | null
@@ -41,7 +44,7 @@ export function useNotasDeLaRonda(ronda: RondaActual, d: Detalle | null) {
     let vigente = true
     supabase
       .from('calificaciones')
-      .select('usuario_id, puntaje, reaccion, comentario, editada_en, creada_en')
+      .select('usuario_id, puntaje, tema_favorito, reaccion, comentario, editada_en, creada_en')
       .eq('pase_id', paseId)
       .neq('usuario_id', ronda.yo.id)
       .order('creada_en')
@@ -67,7 +70,7 @@ export function armarNotas(ronda: RondaActual, d: Detalle, filas: FilaNota[]): N
     .filter((f) => f.usuario_id !== ronda.yo.id)
     .map((f) => ({
       de: porId.get(f.usuario_id) ?? { id: f.usuario_id, nombre: '?', sigla: '???' },
-      nota: { puntaje: f.puntaje, reaccion: f.reaccion, comentario: f.comentario, editadaEn: f.editada_en },
+      nota: { puntaje: f.puntaje, temaFavorito: f.tema_favorito ?? null, reaccion: f.reaccion, comentario: f.comentario, editadaEn: f.editada_en },
     }))
   const ya = new Set(filas.map((f) => f.usuario_id))
   const deben = ronda.otros

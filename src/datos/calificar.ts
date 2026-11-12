@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { dosCifras } from '../lib/texto'
 
 /** Figma 04 "¿QUÉ TE PASÓ?": se guarda el código y se muestra el texto */
 export const REACCIONES = [
@@ -13,6 +14,13 @@ export type CodigoReaccion = (typeof REACCIONES)[number]['codigo']
 
 export function textoDeReaccion(codigo: string | null) {
   return REACCIONES.find((r) => r.codigo === codigo)?.texto ?? null
+}
+
+/** El tema favorito como en el ticket: "07 BAJAN" (con su número en el disco si lo encuentra), o null si no eligió */
+export function textoDeTema(tema: string | null, temas: { titulo: string }[]) {
+  if (!tema) return null
+  const numero = temas.findIndex((t) => t.titulo === tema) + 1
+  return `${numero > 0 ? `${dosCifras(numero)} ` : ''}${tema}`.toUpperCase()
 }
 
 /** S-06: "una línea para la ronda" */
