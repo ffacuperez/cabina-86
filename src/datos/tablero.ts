@@ -10,8 +10,8 @@ export type Ficha = {
   paso: number
   escucho: number
   /**
-   * Promedio de lo que le pusieron. De los demás cuenta solo sus discos cerrados (los calificaron todos
-   * los que lo debían), así no adelanta ninguna nota (RN-01); el mío cuenta todo. Null si no hay notas.
+   * Promedio de lo que le pusieron. De los demás cuentan los discos suyos que yo ya califiqué (sus notas
+   * ya las veo, así no adelanta ninguna, RN-01); el mío cuenta todo. Null si no hay notas.
    */
   promedio: number | null
   debe: number

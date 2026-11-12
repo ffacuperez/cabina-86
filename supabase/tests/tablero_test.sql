@@ -1,9 +1,10 @@
 -- Cabina 86 · HU-17 · Tablero de la ronda (pgTAP)
+-- PROM: de los demás, los discos que ya califiqué; el mío, todo.
 -- Correr con: npm run db:test  (necesita Supabase local: npm run db:start)
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(10);
+select plan(12);
 
 -- Ronda con Facu, Maxi y Manu. Lu se suma después de todos los pases (RN-06: no debe nada).
 --   Maxi pasó MAX-1: Manu le puso 3, Facu todavía no.
@@ -49,7 +50,7 @@ select results_eq(
 select is(
   (select promedio from public.tablero where sigla = 'MAX' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
   null,
-  'RN-01: el disco de Maxi no está cerrado (Facu no lo calificó), así que su PROM no adelanta la nota de Manu'
+  'RN-01: Facu no calificó el disco de Maxi, así que su PROM no adelanta la nota de Manu'
 );
 select is(
   (select promedio from public.tablero where sigla = 'FAC' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
@@ -62,12 +63,24 @@ select is(
   'Sin nada pasado no hay PROM'
 );
 
--- Maxi ve mi PROM: mi disco no está cerrado (Manu lo debe)
+-- Maxi ve mi PROM: ya calificó mi disco (aunque Manu todavía lo deba)
 select pg_temp.como('00000000-0000-0000-0000-0000000017bb');
 select is(
   (select promedio from public.tablero where sigla = 'FAC' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
+  8.0,
+  'Maxi ya calificó mi disco: ve mi PROM con esas notas, aunque Manu todavía lo deba'
+);
+-- Manu ve el PROM de Maxi apenas lo califica, sin esperar a Facu
+select pg_temp.como('00000000-0000-0000-0000-0000000017cc');
+select is(
+  (select promedio from public.tablero where sigla = 'MAX' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
+  3.0,
+  'Manu ya calificó el disco de Maxi: ve su PROM sin esperar a que lo califique Facu'
+);
+select is(
+  (select promedio from public.tablero where sigla = 'FAC' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
   null,
-  'RN-01: para los demás, mi PROM espera a que todos califiquen mi disco'
+  'RN-01: Manu no calificó mi disco, así que no ve mi PROM (sería la nota de Maxi)'
 );
 
 -- Facu califica el de Maxi: se cierra
@@ -79,7 +92,7 @@ select pg_temp.como('00000000-0000-0000-0000-0000000017cc');
 select is(
   (select promedio from public.tablero where sigla = 'MAX' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
   6.0,
-  'Cuando lo calificaron todos los que lo debían, el disco cuenta para el PROM (3 y 9: 6,0)'
+  'Cuando Facu también lo califica, el PROM de Maxi junta las dos notas (3 y 9: 6,0)'
 );
 select is(
   (select deuda from public.tablero where sigla = 'FAC' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
@@ -90,8 +103,8 @@ select is(
 select pg_temp.como('00000000-0000-0000-0000-0000000017dd');
 select is(
   (select promedio from public.tablero where sigla = 'MAX' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
-  6.0,
-  'Quien se sumó después no lo debía (RN-06): el disco ya está cerrado para todos'
+  null,
+  'Lu se sumó después y no calificó ese disco (no ve sus notas): sin PROM de Maxi'
 );
 select is(
   (select escuchados from public.tablero where sigla = 'FAC' and ronda_id = '10000000-0000-0000-0000-0000000017aa'),
