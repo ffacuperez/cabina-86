@@ -34,7 +34,7 @@ export function DiscoEnEstante({ disco, rondaId, volver }: { disco: Disco; ronda
       {disco.puntaje === null ? (
         <Sticker texto={'PEN-\nDIENTE'} className="disco-estante__sticker" />
       ) : (
-        <span className="disco-estante__talon" aria-hidden="true">{dosCifras(disco.puntaje)}/10</span>
+        <span className="disco-estante__talon" data-pase={disco.paseId} aria-hidden="true">{dosCifras(disco.puntaje)}/10</span>
       )}
     </li>
   )

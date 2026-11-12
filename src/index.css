@@ -471,8 +471,9 @@ a.boton { text-decoration: none; }
 .impresora__texto { position: absolute; left: 32px; top: 10px; color: var(--acrilico); }
 .impresora__ranura { position: absolute; left: 33px; right: 33px; top: 42px; height: 6px; border-radius: 3px; background: var(--negro); }
 /* La salida empieza debajo de la impresora y recorta el ticket mientras sale */
-.ticket-salida { width: 280px; margin-top: -12px; padding: 0 7px 12px; overflow: hidden; }
-.ticket { filter: drop-shadow(0 4px 3px rgb(31 36 28 / 0.25)); }
+.ticket-salida { width: 280px; margin-top: -12px; padding: 0 7px 12px; overflow: hidden; filter: drop-shadow(0 4px 3px rgb(31 36 28 / 0.25)); }
+/* La sombra (con el borde dentado) va en la salida, que no se mueve: el ticket sí se mueve y Safari deja
+   pintada la capa de un filtro que se mueve (#93) */
 .ticket__papel {
   display: flex;
   flex-direction: column;
@@ -493,14 +494,42 @@ a.boton { text-decoration: none; }
 .ticket__nota { display: flex; flex-direction: column; gap: 6px; }
 .ticket__nota + .ticket__nota { margin-top: var(--esp-1); }
 .ticket__fecha { color: var(--naranja); font: var(--lcd-m); letter-spacing: var(--lcd-tracking); text-shadow: 0 0 4px rgb(255 122 26 / 0.6); }
-.ticket--imprimiendo { animation: ticket-sale 1.8s cubic-bezier(0.4, 0, 0.3, 1) both; }
-.ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: luz-imprimiendo 0.3s steps(2) 6; }
-@keyframes ticket-sale { from { transform: translateY(-100%); } to { transform: none; } }
+/*
+ * E-04: como el smart animate de 04b a 04c (0,3 s de espera, 1,4 s, frena al final), pero a los saltitos:
+ * el papel avanza de a tirones cada vez más cortos, como una impresora térmica, con la luz titilando a la par.
+ */
+.ticket--imprimiendo { animation: ticket-sale 1.4s ease-out 0.3s both; }
+.ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: luz-imprimiendo 0.2s steps(2) 0.3s 7; }
+@keyframes ticket-sale {
+  0% { transform: translateY(-100%); }
+  7%, 13% { transform: translateY(-84%); }
+  20%, 26% { transform: translateY(-69%); }
+  33%, 39% { transform: translateY(-55%); }
+  46%, 52% { transform: translateY(-42%); }
+  59%, 65% { transform: translateY(-30%); }
+  72%, 78% { transform: translateY(-19%); }
+  85%, 90% { transform: translateY(-9%); }
+  100% { transform: none; }
+}
 @keyframes luz-imprimiendo { 50% { opacity: 0.3; } }
+/* "Editar puntaje" lo arranca: un tirón para arriba y se cae girando (la salida deja de recortarlo) */
+.ticket-salida--arrancando { position: relative; z-index: 2; overflow: visible; } /* se cae por delante de los botones */
+.ticket--arrancado { animation: ticket-arrancado 520ms cubic-bezier(0.5, 0, 0.8, 0.4) forwards; }
+@keyframes ticket-arrancado {
+  18% { transform: translateY(-6px) rotate(-1.5deg); }
+  100% { transform: translate(40px, 110vh) rotate(10deg); }
+}
+/* El ticket vuela hasta el talón del estante (lib/volar): se achica mientras cruza al talón */
+::view-transition-group(ticket-a-talon) { animation-duration: 650ms; animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+::view-transition-old(ticket-a-talon) { animation-duration: 650ms; }
+::view-transition-new(ticket-a-talon) { animation-duration: 650ms; }
 @media (prefers-reduced-motion: reduce) {
-  .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: none; }
+  .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz, .ticket--arrancado { animation: none; }
 }
 .ticket-pantalla__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
+/* Recién calificado, los botones esperan al ticket y aparecen cuando terminó de salir (Figma 04b → 04c) */
+.ticket-pantalla__acciones--esperando { visibility: hidden; }
+.ticket-pantalla__acciones:not(.ticket-pantalla__acciones--esperando) { animation: aparece 250ms ease-out; }
 .ticket-pantalla__acciones .boton { text-decoration: none; }
 
 /* ── 02e · Al fondo del pasillo: la tarjeta del archivo (T-11) ── */
