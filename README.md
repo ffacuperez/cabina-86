@@ -21,7 +21,9 @@ npm run lint
 
 ## Deploy
 
-Se publica en Vercel automáticamente: cada push a `main` va a producción y cada PR genera una URL de vista previa. La configuración está en `vercel.json`.
+Se publica en **Cloudflare Workers** (solo archivos estáticos, con Workers Builds) en https://cabina86.com: cada push a `main` va a producción y cada PR genera una vista previa en `workers.dev`. Build `npm run build`, deploy `npx wrangler deploy`, Node 22 (`.node-version`). La configuración está en `wrangler.jsonc` (`not_found_handling: single-page-application` para que cualquier ruta sirva `index.html`). Las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` van en **Settings → Build → Variables and secrets** del Worker (se usan al compilar). Los headers del service worker y del manifiesto están en `public/_headers`.
+
+Vercel queda solo para redirigir `cabina-86.vercel.app` → `cabina86.com` (`vercel.json`), así siguen andando los links viejos y las PWA instaladas desde ahí.
 
 ## Supabase local
 
