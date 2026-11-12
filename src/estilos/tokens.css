@@ -40,6 +40,10 @@
   --panel-agujero: color-mix(in srgb, var(--negro) 16%, transparent);
   --panel-paso: 16px;           /* distancia entre agujeritos */
 
+  /* Plateado tornasolado del CD (C86/CD, #95) */
+  --cd-tornasol: conic-gradient(from 20deg, #cfd3c6, #f6f6ee 10%, #c6d3df 20%, #e9d8e5 28%, #f6f6ee 38%, #c9cebe 50%,
+    #f6f6ee 60%, #d2e1cc 70%, #ecd9df 78%, #f6f6ee 88%, #cfd3c6);
+
   /* Roles */
   --fondo: var(--acrilico);
   --texto: var(--negro);
