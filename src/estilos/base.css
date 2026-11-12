@@ -10,7 +10,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   /*
-   * Panel perforado (E-06, Figma C86/Fondo): la luz baja desde arriba y los agujeritos se pierden hacia abajo.
+   * Panel perforado (E-06, Figma C86/Fondo, 149:2750): la luz baja desde arriba y los agujeritos se pierden hacia abajo.
    * La luz es pareja de borde a borde: arriba queda --acrilico-arriba, el mismo color que la franja de la hora (theme-color).
    * Es solo el fondo de la página, se mueve con el scroll: nada de capas fijas ni mix-blend-mode (ver #30).
    */
