@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { dosCifras } from '../lib/texto'
 
 /** Ángulo de la aguja desde la vertical: del 1 (−45°) al 10 (+45°), de a 10°.
@@ -6,10 +7,34 @@ function anguloAguja(valor: number | null) {
   return valor === null ? 0 : (valor - 5.5) * 10
 }
 
+const quieto = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+/**
+ * E-03: la aguja tiene inercia, como un vúmetro de verdad. Pasa un poco el número, vuelve, y se asienta
+ * en unas oscilaciones cada vez más chicas. El rebote es proporcional al salto, hasta 4°.
+ */
+function moverAguja(aguja: SVGLineElement, desde: number, hasta: number) {
+  const salto = hasta - desde
+  const pasa = Math.sign(salto) * Math.min(Math.abs(salto) * 0.4, 4)
+  const rotar = (g: number) => ({ transform: `rotate(${g}deg)` })
+  aguja.animate(
+    [
+      { ...rotar(desde), offset: 0 },
+      { ...rotar(hasta + pasa), offset: 0.4 },
+      { ...rotar(hasta - pasa * 0.45), offset: 0.62 },
+      { ...rotar(hasta + pasa * 0.18), offset: 0.8 },
+      { ...rotar(hasta), offset: 1 },
+    ],
+    { duration: 620, easing: 'ease-out' },
+  )
+}
+
 /**
  * C86/Display puntaje (Figma, set 14:1591): vúmetro de aguja, display de 7 segmentos y teclas − y +.
  * Escala del vúmetro exportada del Figma; la aguja gira según el puntaje (las variantes valor=1…10).
  * Antes de elegir, la aguja espera en la marca del medio y el display queda apagado ("88" fantasma).
+ * E-03: con el primer toque el display se enciende con un parpadeo, como un aparato que arranca, y la aguja
+ * oscila antes de quedarse quieta. Sin nada de eso si piden reducir el movimiento.
  */
 export function DisplayPuntaje({
   valor,
@@ -20,8 +45,25 @@ export function DisplayPuntaje({
   onBajar: () => void
   onSubir: () => void
 }) {
+  const aguja = useRef<SVGLineElement>(null)
+  const antes = useRef(valor)
+  const [encendiendo, setEncendiendo] = useState(false)
+
+  useEffect(() => {
+    const anterior = antes.current
+    antes.current = valor
+    if (anterior === valor || valor === null || quieto()) return
+    if (aguja.current) moverAguja(aguja.current, anguloAguja(anterior), anguloAguja(valor))
+    // Solo cuando se prende: si ya venía con puntaje (04e), arranca prendido
+    if (anterior === null) {
+      setEncendiendo(true)
+      const t = setTimeout(() => setEncendiendo(false), 450)
+      return () => clearTimeout(t)
+    }
+  }, [valor])
+
   return (
-    <div className="display-puntaje">
+    <div className={`display-puntaje${encendiendo ? ' display-puntaje--encendiendo' : ''}`}>
       <div className="display-puntaje__vumetro" aria-hidden="true">
         <svg viewBox="0 0 150 104" fill="none">
           <path d="M17 57.7999C27.7154 45.906 41.831 37.5971 57.4309 34.0013C73.0307 30.4054 89.3592 31.6968 104.2 37.6999" stroke="#1F231C" strokeWidth="1.5" />
@@ -38,6 +80,7 @@ export function DisplayPuntaje({
           <path d="M123.4 48.9L126.6 45" stroke="#C23F78" strokeWidth="1.3" />
           <path d="M133 57.8L139.7 51.8" stroke="#C23F78" strokeWidth="1.3" />
           <line
+            ref={aguja}
             className="display-puntaje__aguja"
             x1="75"
             y1="110"
