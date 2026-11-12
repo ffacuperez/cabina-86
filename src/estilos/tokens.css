@@ -36,6 +36,7 @@
 
   /* Panel perforado del fondo (E-06): la luz de arriba y los agujeritos */
   --panel-luz: color-mix(in srgb, var(--acrilico-luz) 55%, transparent);
+  --acrilico-arriba: #e0e8c2;   /* acrílico con esa luz encima: el borde de arriba y la franja de la hora (theme-color) */
   --panel-agujero: color-mix(in srgb, var(--negro) 16%, transparent);
   --panel-paso: 16px;           /* distancia entre agujeritos */
 
