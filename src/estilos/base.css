@@ -313,10 +313,19 @@ button { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) { .display-puntaje__aguja { transition: none; } }
 
 /* ── C86/CD: disco de 180; con tapa, la tapa en círculo; sin tapa, el título impreso ── */
-.cd { container-type: inline-size; position: relative; aspect-ratio: 1; }
+/* El disco es plateado tornasolado, con borde fino y sombra común (sin filter: Safari, #93), así se separa
+   del panel perforado (#95). Los reflejos giran con el CD cuando sale de la caja. */
+.cd {
+  container-type: inline-size;
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--cd-tornasol);
+  box-shadow: 0 3px 6px rgb(31 36 28 / 0.35), inset 0 0 0 1px rgb(31 36 28 / 0.3);
+}
 .cd__disco { display: block; width: 100%; height: 100%; }
-.cd__plata { fill: var(--acrilico-claro); }
-.cd__surco { stroke: var(--acrilico-oscuro); }
+.cd__plata { fill: transparent; }
+.cd__surco { stroke: rgb(31 36 28 / 0.18); }
 .cd__impresion { fill: var(--mostaza); }
 .cd__media-luna { fill: var(--magenta); }
 .cd__centro { fill: var(--acrilico); }
