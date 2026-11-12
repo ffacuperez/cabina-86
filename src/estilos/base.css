@@ -11,10 +11,12 @@ body {
   min-height: 100dvh;
   /*
    * Panel perforado (E-06, Figma C86/Fondo): la luz baja desde arriba y los agujeritos se pierden hacia abajo.
+   * La luz es pareja de borde a borde: arriba queda --acrilico-arriba, el mismo color que la franja de la hora (theme-color).
    * Es solo el fondo de la página, se mueve con el scroll: nada de capas fijas ni mix-blend-mode (ver #30).
    */
   background:
-    radial-gradient(130% 650px at 25% 0, var(--panel-luz), transparent 75%) no-repeat,
+    linear-gradient(var(--acrilico-arriba), var(--acrilico-arriba)) 0 0 / 100% 6px no-repeat, /* el borde exacto, sin redondeos */
+    linear-gradient(to bottom, var(--panel-luz), transparent 650px),
     linear-gradient(to bottom, transparent 140px, var(--fondo) 760px),
     radial-gradient(circle, var(--panel-agujero) 1.3px, transparent 1.8px) 0 0 / var(--panel-paso) var(--panel-paso),
     var(--fondo);

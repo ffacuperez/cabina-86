@@ -15,7 +15,7 @@ export default defineConfig({
         short_name: 'Cabina 86',
         description: 'Pasate discos con tus amigos, en rondas.',
         lang: 'es-AR',
-        theme_color: '#c9d6a3',
+        theme_color: '#e0e8c2',
         background_color: '#c9d6a3',
         display: 'standalone',
         // #59: toda la app es su alcance, así Android abre en la app instalada los links de cabina-86
