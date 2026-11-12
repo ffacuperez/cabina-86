@@ -19,7 +19,12 @@ body {
     linear-gradient(to bottom, var(--panel-luz), transparent 650px),
     linear-gradient(to bottom, transparent 140px, var(--fondo) 760px),
     radial-gradient(circle, var(--panel-agujero) 1.3px, transparent 1.8px) 0 0 / var(--panel-paso) var(--panel-paso),
-    var(--fondo);
+    linear-gradient(var(--fondo), var(--fondo));
+  /*
+   * Safari 26 (iOS 26) ignora theme-color: pinta la franja de la hora con el background-color del body.
+   * Por eso el color va aparte y es el de arriba; el acrílico de siempre lo pinta la última capa (#90).
+   */
+  background-color: var(--acrilico-arriba);
   color: var(--texto);
   font: var(--texto-m);
   -webkit-font-smoothing: antialiased;
