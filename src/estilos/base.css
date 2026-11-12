@@ -4,9 +4,12 @@
 html {
   color-scheme: light;
   -webkit-text-size-adjust: 100%;
+  /* Sin el rebote del final de la página: en la app instalada arrastraba la botonera */
+  overscroll-behavior: none;
 }
 
 body {
+  overscroll-behavior: none;
   margin: 0;
   min-height: 100dvh;
   background: var(--fondo);
@@ -33,28 +36,32 @@ body {
   background: url('../assets/pelicula/grano.png') 0 0 / 160px 160px repeat;
   image-rendering: pixelated;
 }
-/* Luz de rollo: 180 × 260 arriba a la derecha, dos velados en modo pantalla (se va con el scroll, como en el Figma) */
+/*
+ * Luz de rollo: 180 × 260 arriba a la derecha (se va con el scroll, como en el Figma).
+ * En el Figma son dos velados naranjas en modo pantalla. Acá no se usa mix-blend-mode: en el iPhone hace
+ * que los elementos fijos (la botonera) se muevan con el scroll. Va detrás del contenido, sobre el fondo
+ * verde, con los colores que da el modo pantalla sobre ese verde (rgb 201 214 163), así se ve igual.
+ */
 .luz-rollo {
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 25;
+  z-index: -1;
   width: 180px;
   height: 260px;
   overflow: hidden;
   pointer-events: none;
-  mix-blend-mode: screen;
   background:
-    /* Borde velado: 26 px contra el borde derecho, de arriba hacia abajo */
-    linear-gradient(rgb(255 89 38 / 0.45), rgb(255 89 38 / 0)) right top / 26px 260px no-repeat,
-    /* Velado: el centro afuera de la esquina, 150 × 160 de radio */
-    radial-gradient(150px 160px at 190px 10px, rgb(255 140 51 / 0.75), rgb(255 115 38 / 0.3) 45%, rgb(255 115 38 / 0) 100%);
+    /* Borde velado: 26 px contra el borde derecho, de arriba hacia abajo (naranja 255 89 38 al 45 %) */
+    linear-gradient(rgb(255 228 177 / 0.45), rgb(255 228 177 / 0)) right top / 26px 260px no-repeat,
+    /* Velado: el centro afuera de la esquina, 150 × 160 de radio (naranja 255 140 51 al 75 %) */
+    radial-gradient(150px 160px at 190px 10px, rgb(255 237 181 / 0.75), rgb(255 232 177 / 0.3) 45%, rgb(255 232 177 / 0) 100%);
 }
 /* Avanzar el rollo: al cambiar de pantalla la esquina se vela un instante y se apaga */
 .luz-rollo__destello {
   position: absolute;
   inset: 0;
-  background: radial-gradient(210px 240px at 190px 10px, rgb(255 150 70 / 0.95), rgb(255 115 38 / 0.25) 55%, rgb(255 115 38 / 0) 100%);
+  background: radial-gradient(210px 240px at 190px 10px, rgb(255 238 188 / 0.95), rgb(255 232 177 / 0.25) 55%, rgb(255 232 177 / 0) 100%);
   opacity: 0;
   animation: luz-rollo-destello 900ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
@@ -65,6 +72,18 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .luz-rollo__destello { animation: none; }
+}
+/* iPhone instalada: la hora y la batería van en blanco sobre la app; una viñeta arriba, como el borde
+   quemado de una foto, las deja leer. Solo existe donde hay franja de estado (en el resto mide 0). */
+.vineta {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 26;
+  height: calc(env(safe-area-inset-top, 0px) * 2.4);
+  pointer-events: none;
+  background: linear-gradient(rgb(31 36 28 / 0.5), rgb(31 36 28 / 0.22) 45%, rgb(31 36 28 / 0));
 }
 
 h1, h2, h3, p { margin: 0; }
