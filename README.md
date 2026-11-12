@@ -21,7 +21,9 @@ npm run lint
 
 ## Deploy
 
-Se publica en Vercel automáticamente: cada push a `main` va a producción y cada PR genera una URL de vista previa. La configuración está en `vercel.json`.
+Se publica en **Cloudflare Pages** en https://cabina86.com: cada push a `main` va a producción y cada PR genera una URL de vista previa (`*.cabina-86.pages.dev`). Build `npm run build`, salida `dist`, Node 22 (`.node-version`). Las variables `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` se cargan en el proyecto de Pages. Los headers del service worker y del manifiesto están en `public/_headers`. Sin `404.html`, Pages sirve `index.html` en cualquier ruta (SPA).
+
+Vercel queda solo para redirigir `cabina-86.vercel.app` → `cabina86.com` (`vercel.json`), así siguen andando los links viejos y las PWA instaladas desde ahí.
 
 ## Supabase local
 
