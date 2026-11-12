@@ -556,10 +556,15 @@ a.boton { text-decoration: none; }
 }
 .ticket-pantalla:has(.ticket--en-la-mano, .ticket--arrancado) .impresora__resto { animation: resto-aparece 650ms steps(1, end) forwards; }
 @keyframes resto-aparece { 0% { opacity: 0; } 18%, 100% { opacity: 1; } }
-/* Lo demás se va despacito: primero los botones; la impresora y el rótulo, después del corte */
-.pantalla:has(.ticket--en-la-mano) .ticket-pantalla__acciones { animation: se-va 260ms ease-out forwards; }
-.pantalla:has(.ticket--en-la-mano) .impresora,
-.pantalla:has(.ticket--en-la-mano) .ticket-pantalla__estado { animation: se-va 300ms ease-out 220ms forwards; }
+/* Lo demás se va despacito (al guardarlo o al arrancarlo para editar): primero los botones; la impresora y el rótulo, después del corte */
+.pantalla:has(.ticket--en-la-mano, .ticket--arrancado) .ticket-pantalla__acciones { animation: se-va 260ms ease-out forwards; }
+.pantalla:has(.ticket--en-la-mano, .ticket--arrancado) .impresora,
+.pantalla:has(.ticket--en-la-mano, .ticket--arrancado) .ticket-pantalla__estado { animation: se-va 300ms ease-out 220ms forwards; }
+/* Y Calificar entra suave: la cabeza aparece, el formulario sube y la barra llega última */
+.calificar { display: contents; }
+.calificar--entra .calificar__cabeza { animation: aparece 300ms ease-out backwards; }
+.calificar--entra .calificar__columna { animation: sube-y-aparece 420ms cubic-bezier(0.2, 0.7, 0.2, 1) 80ms backwards; }
+.calificar--entra .barra-inferior { animation: aparece 300ms ease-out 200ms backwards; }
 @keyframes se-va { to { opacity: 0; transform: translateY(6px); } }
 /* El ticket vuela hasta el talón del estante (lib/volar): se achica mientras cruza al talón */
 ::view-transition-group(ticket-a-talon) { animation-duration: 650ms; animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
@@ -568,6 +573,7 @@ a.boton { text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz, .ticket--arrancado, .ticket--en-la-mano { animation: none; }
   .impresora__resto { display: none; }
+  .calificar--entra .calificar__cabeza, .calificar--entra .calificar__columna, .calificar--entra .barra-inferior { animation: none; }
 }
 .ticket-pantalla__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
 /* Recién calificado, los botones esperan al ticket y aparecen cuando terminó de salir (Figma 04b → 04c) */

@@ -12,6 +12,8 @@ import { guardarTicketEnElTalon, sePuedeVolarCon, sinReducirMovimiento } from '.
 
 /** Al volver al disco, la caja ya está abierta (E-02) */
 const YA_ABIERTO = { yaAbierto: true }
+/** Calificar entra suave cuando venís de arrancar el ticket (E-04) */
+const DESDE_EL_TICKET = { state: { desdeElTicket: true } }
 
 const SIN_MARCO = { encabezado: false, botonera: false }
 const CORTE = '- - - - - - - - - - - - - - - - - - -'
@@ -59,14 +61,14 @@ export default function Ticket() {
     setArrancando(destino)
   }
   const alArrancarse = () => {
-    if (arrancando === 'editar') navigate(alCalificar)
+    if (arrancando === 'editar') navigate(alCalificar, DESDE_EL_TICKET)
     // Un instante con el papel en la mano y después se guarda en el disco
     if (arrancando === 'volver') setTimeout(() => ticket.current && guardarTicketEnElTalon(ticket.current, pase, () => navigate(alExhibidor)), 350)
   }
   // Por si el navegador no avisa el final de la animación
   useEffect(() => {
     if (!arrancando) return
-    const t = setTimeout(() => navigate(arrancando === 'editar' ? alCalificar : alExhibidor), arrancando === 'editar' ? 700 : 1500)
+    const t = setTimeout(() => (arrancando === 'editar' ? navigate(alCalificar, DESDE_EL_TICKET) : navigate(alExhibidor)), arrancando === 'editar' ? 700 : 1500)
     return () => clearTimeout(t)
   }, [arrancando, navigate, alCalificar, alExhibidor])
 
