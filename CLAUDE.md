@@ -19,7 +19,7 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Estilos con los tokens de `src/estilos/tokens.css` y los componentes de `src/estilos/base.css` (sin Tailwind).
 - Uso privado (T-12): Deezer es para uso no comercial y no deja guardar imágenes (se guarda solo el link de la tapa, RN-09). Entrar dice "USO PRIVADO ENTRE AMIGOS, SIN FINES COMERCIALES. DATOS DE LOS DISCOS: DEEZER." y Pasar, "N RESULTADOS · DE DEEZER" (frames 143:2492 y 143:2527).
 - El botón de Google es el oficial (blanco, Roboto, logo oficial): es lo único que no toma la estética de la app.
-- Grano de película y luz de rollo van en E-01 (semana 3).
+- Sin grano de película ni luz de rollo: se probaron en E-01 (#80, #82) y se sacaron (#30). En el iPhone traían bugs (la luz usaba `mix-blend-mode` y la botonera fija se movía con el scroll; la app debajo de la franja de la hora) y el cambio visual no lo justificaba. Si se retoma: nada de `mix-blend-mode` ni capas fijas a pantalla completa.
 
 ## Trabajo
 
