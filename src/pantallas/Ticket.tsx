@@ -50,6 +50,12 @@ export default function Ticket() {
     // Volver necesita la transición de vista para el vuelo; editar, solo poder moverse
     if (destino === 'volver' ? !sePuedeVolarCon(e) : !sinReducirMovimiento()) return
     e.preventDefault()
+    if (destino === 'volver') {
+      // Baja hasta quedar centrado en la pantalla (entre 40 y 160 px), como si lo trajeras hacia vos
+      const caja = ticket.current.getBoundingClientRect()
+      const alMedio = Math.min(160, Math.max(40, window.innerHeight / 2 - (caja.top + caja.height / 2)))
+      ticket.current.style.setProperty('--al-medio', `${Math.round(alMedio)}px`)
+    }
     setArrancando(destino)
   }
   const alArrancarse = () => {
@@ -147,6 +153,8 @@ function ImpresoraYTicket({
         <img className="impresora__luz" src={luz} alt="" width={20} height={20} />
         <span className="mono-s impresora__texto">IMPRIMIENDO</span>
         <span className="impresora__ranura" />
+        {/* E-04: el pedacito de papel que queda en la impresora cuando se arranca el ticket */}
+        <span className="impresora__resto" />
       </div>
 
       {listo && (
