@@ -3,7 +3,7 @@ import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-route
 import bordeDentado from '../assets/ticket/borde-dentado.svg'
 import codigoDeBarras from '../assets/ticket/codigo-de-barras.svg'
 import luz from '../assets/ticket/luz.svg'
-import { textoDeReaccion, useDeuda } from '../datos/calificar'
+import { textoDeReaccion, textoDeTema, useDeuda } from '../datos/calificar'
 import { useNotasDeLaRonda } from '../datos/notas'
 import { type Detalle, useDetalle } from '../datos/detalle'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
@@ -146,7 +146,7 @@ function ImpresoraYTicket({
   // El ticket sale cuando está todo: que no aparezcan renglones mientras sale de la impresora
   const listo = deuda !== null && (notas !== null || sinNotas)
   const mia = d.mia!
-  const numeroTema = mia.temaFavorito ? d.temas.findIndex((t) => t.titulo === mia.temaFavorito) + 1 : 0
+  const miTema = textoDeTema(mia.temaFavorito, d.temas)
   const reaccion = textoDeReaccion(mia.reaccion)
 
   return (
@@ -191,10 +191,10 @@ function ImpresoraYTicket({
                 <span className="mono-s">TU PUNTAJE</span>
                 <b className="lcd-l">{dosCifras(mia.puntaje)}/10</b>
               </p>
-              {mia.temaFavorito && (
+              {miTema && (
                 <p className="mono-s ticket__fila">
                   <span>TEMA FAV</span>
-                  <b>{numeroTema > 0 ? `${dosCifras(numeroTema)} ` : ''}{mia.temaFavorito.toUpperCase()}</b>
+                  <b>{miTema}</b>
                 </p>
               )}
               {reaccion && (
@@ -210,12 +210,19 @@ function ImpresoraYTicket({
                   <p className="mono-s ticket__titulo-ronda">AHORA VES LO QUE DIJO LA RONDA</p>
                   {notas.map(({ de, nota }) => {
                     const suReaccion = nota ? textoDeReaccion(nota.reaccion) : null
+                    const suTema = nota ? textoDeTema(nota.temaFavorito, d.temas) : null
                     return (
                       <div key={de.id} className="ticket__nota">
                         <p className="mono-s ticket__fila">
                           <span>{de.nombre.toUpperCase()}</span>
                           <b>{nota ? `${dosCifras(nota.puntaje)}/10${nota.editadaEn ? ' (EDITADO)' : ''}` : 'TODAVÍA NO LO ESCUCHÓ'}</b>
                         </p>
+                        {suTema && (
+                          <p className="mono-s ticket__fila">
+                            <span>TEMA FAV</span>
+                            <b>{suTema}</b>
+                          </p>
+                        )}
                         {suReaccion && (
                           <p className="mono-s ticket__fila">
                             <span>REACCIÓN</span>

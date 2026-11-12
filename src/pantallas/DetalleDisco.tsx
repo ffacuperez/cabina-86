@@ -114,7 +114,7 @@ function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) 
   // HU-15 (Figma 03d): la mía primero, como "VOS". Se muestran juntas cuando llegan las de los demás.
   const notasConLaMia = notas === null && !sinNotas ? [] : [
     ...(d.mia
-      ? [{ de: { ...ronda.yo, nombre: 'Vos' }, nota: { puntaje: d.mia.puntaje, reaccion: d.mia.reaccion, comentario: d.mia.comentario, editadaEn: null } }]
+      ? [{ de: { ...ronda.yo, nombre: 'Vos' }, nota: { puntaje: d.mia.puntaje, temaFavorito: d.mia.temaFavorito, reaccion: d.mia.reaccion, comentario: d.mia.comentario, editadaEn: null } }]
       : []),
     ...(notas ?? []),
   ]
@@ -155,7 +155,7 @@ function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) 
       {notasConLaMia.length > 0 && (
         <section className="detalle__ronda" aria-labelledby="detalle-ronda">
           <h2 id="detalle-ronda" className="mono-s">LO QUE DIJO LA RONDA</h2>
-          <NotasDeLaRonda notas={notasConLaMia} />
+          <NotasDeLaRonda notas={notasConLaMia} temas={d.temas} />
         </section>
       )}
     </>
