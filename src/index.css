@@ -319,6 +319,40 @@ a.boton { text-decoration: none; }
   height: calc(180 / 390 * 100cqw);
   transform: rotate(160deg);
 }
+/*
+ * E-02 · Figma 03a → 03b (15:1981 → 15:1869): smart animate de 800 ms, ease in-out, a los 50 ms.
+ * La caja se corre a la izquierda (x 24 → −92), el CD sale de abajo girando (x 46 → 180, 0° → 160°)
+ * y lo demás sube 24 px mientras aparece; la barra de abajo solo aparece. Solo al abrir el disco (DetalleDisco).
+ */
+.detalle--se-abre .detalle__vitrina .caja-cd { animation: caja-se-abre var(--abrir-caja); }
+.detalle--se-abre .detalle__cd { animation: cd-sale-girando var(--abrir-caja); }
+.detalle--se-abre > :not(.detalle__vitrina) { animation: sube-y-aparece var(--abrir-caja); }
+.detalle--se-abre ~ .barra-inferior { animation: aparece var(--abrir-caja); }
+@keyframes caja-se-abre { from { transform: translateX(calc(116 / 390 * 100cqw)); } }
+@keyframes cd-sale-girando {
+  /* visibility: escondido hasta que arranca (mientras la caja vuela, el CD no se ve) */
+  from { transform: translateX(calc(-134 / 390 * 100cqw)) rotate(0deg); visibility: hidden; }
+  to { transform: translateX(0) rotate(160deg); }
+}
+@keyframes sube-y-aparece { from { opacity: 0; transform: translateY(24px); } }
+@keyframes aparece { from { opacity: 0; } }
+/* Desde un estante, la caja primero vuela hasta acá (transición de vista, lib/volar) y después se abre */
+.detalle--vuela .detalle__vitrina .caja-cd { view-transition-name: caja-que-vuela; }
+.detalle--vuela .detalle__vitrina .caja-cd,
+.detalle--vuela .detalle__cd,
+.detalle--vuela > :not(.detalle__vitrina),
+.detalle--vuela ~ .barra-inferior { animation-delay: var(--volar-caja-espera); }
+::view-transition-group(caja-que-vuela) { animation-duration: var(--volar-caja); animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+/* Las dos imágenes son la misma caja: sin fundido entre ellas, solo viaja y crece */
+::view-transition-old(caja-que-vuela) { animation: none; opacity: 0; }
+::view-transition-new(caja-que-vuela) { animation: none; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
+@media (prefers-reduced-motion: reduce) {
+  .detalle--se-abre .detalle__vitrina .caja-cd,
+  .detalle--se-abre .detalle__cd,
+  .detalle--se-abre > :not(.detalle__vitrina),
+  .detalle--se-abre ~ .barra-inferior { animation: none; }
+}
 /* Tarjetita a la izquierda (la misma tarjeta, al 95 % y torcida) y los datos del disco a la derecha */
 .detalle__fila { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--esp-3); margin: 0 -6px; }
 .tarjeta-recomendado--detalle { zoom: 0.95; transform: rotate(3deg); }

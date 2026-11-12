@@ -9,6 +9,9 @@ import { type Detalle, useDetalle } from '../datos/detalle'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras, fechaDeCamara } from '../lib/texto'
 
+/** Al volver al disco, la caja ya está abierta (E-02) */
+const YA_ABIERTO = { yaAbierto: true }
+
 const SIN_MARCO = { encabezado: false, botonera: false }
 const CORTE = '- - - - - - - - - - - - - - - - - - -'
 
@@ -43,7 +46,7 @@ export default function Ticket() {
         <p className="mono-s ticket-pantalla__estado">{estado.detalle.catalogo} · CALIFICADO</p>
       ) : (
         <header className="encabezado-ronda encabezado-ronda--propio">
-          <Link className="mono-m encabezado-ronda__volver" to={alDetalle}>← VOLVER</Link>
+          <Link className="mono-m encabezado-ronda__volver" to={alDetalle} state={YA_ABIERTO}>← VOLVER</Link>
         </header>
       )}
       {estado.tipo === 'cargando' && <p className="cargando">Cargando…</p>}
