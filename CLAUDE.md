@@ -19,7 +19,7 @@ App para pasarse discos con amigos, en rondas. Stack y comandos en el README.
 - Estilos con los tokens de `src/estilos/tokens.css` y los componentes de `src/estilos/base.css` (sin Tailwind).
 - Uso privado (T-12): Deezer es para uso no comercial y no deja guardar imágenes (se guarda solo el link de la tapa, RN-09). Entrar dice "USO PRIVADO ENTRE AMIGOS, SIN FINES COMERCIALES. DATOS DE LOS DISCOS: DEEZER." y Pasar, "N RESULTADOS · DE DEEZER" (frames 143:2492 y 143:2527).
 - El botón de Google es el oficial (blanco, Roboto, logo oficial): es lo único que no toma la estética de la app.
-- Foto de rollo (E-01): `componentes/Pelicula` en la raíz de la app. El grano es una baldosa (`assets/pelicula/grano.png`, medida contra el efecto Noise del Figma: 55 % de puntos, intensidad media 3 %) fija por encima de todo, menos el botón de Google. La luz de rollo (C86/Luz de rollo, 14:1673) son los dos velados en modo pantalla arriba a la derecha y se va con el scroll. Al cambiar de pantalla, la luz se vela un instante (sin destello con *reducir movimiento*). Ninguna pantalla los dibuja por su cuenta.
+- Grano de película y luz de rollo van en E-01 (semana 3).
 
 ## Trabajo
 
