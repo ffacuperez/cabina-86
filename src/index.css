@@ -471,8 +471,9 @@ a.boton { text-decoration: none; }
 .impresora__texto { position: absolute; left: 32px; top: 10px; color: var(--acrilico); }
 .impresora__ranura { position: absolute; left: 33px; right: 33px; top: 42px; height: 6px; border-radius: 3px; background: var(--negro); }
 /* La salida empieza debajo de la impresora y recorta el ticket mientras sale */
-.ticket-salida { width: 280px; margin-top: -12px; padding: 0 7px 12px; overflow: hidden; }
-.ticket { filter: drop-shadow(0 4px 3px rgb(31 36 28 / 0.25)); }
+.ticket-salida { width: 280px; margin-top: -12px; padding: 0 7px 12px; overflow: hidden; filter: drop-shadow(0 4px 3px rgb(31 36 28 / 0.25)); }
+/* La sombra (con el borde dentado) va en la salida, que no se mueve: el ticket sí se mueve y Safari deja
+   pintada la capa de un filtro que se mueve (#93) */
 .ticket__papel {
   display: flex;
   flex-direction: column;
@@ -493,14 +494,85 @@ a.boton { text-decoration: none; }
 .ticket__nota { display: flex; flex-direction: column; gap: 6px; }
 .ticket__nota + .ticket__nota { margin-top: var(--esp-1); }
 .ticket__fecha { color: var(--naranja); font: var(--lcd-m); letter-spacing: var(--lcd-tracking); text-shadow: 0 0 4px rgb(255 122 26 / 0.6); }
-.ticket--imprimiendo { animation: ticket-sale 1.8s cubic-bezier(0.4, 0, 0.3, 1) both; }
-.ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: luz-imprimiendo 0.3s steps(2) 6; }
-@keyframes ticket-sale { from { transform: translateY(-100%); } to { transform: none; } }
+/*
+ * E-04: como el smart animate de 04b a 04c (0,3 s de espera, 1,4 s, frena al final), pero a los saltitos:
+ * el papel avanza de a tirones cada vez más cortos, como una impresora térmica, con la luz titilando a la par.
+ */
+.ticket--imprimiendo { animation: ticket-sale 1.4s ease-out 0.3s both; }
+.ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: luz-imprimiendo 0.2s steps(2) 0.3s 7; }
+@keyframes ticket-sale {
+  0% { transform: translateY(-100%); }
+  7%, 13% { transform: translateY(-84%); }
+  20%, 26% { transform: translateY(-69%); }
+  33%, 39% { transform: translateY(-55%); }
+  46%, 52% { transform: translateY(-42%); }
+  59%, 65% { transform: translateY(-30%); }
+  72%, 78% { transform: translateY(-19%); }
+  85%, 90% { transform: translateY(-9%); }
+  100% { transform: none; }
+}
 @keyframes luz-imprimiendo { 50% { opacity: 0.3; } }
+/* "Editar puntaje" lo arranca: un tirón para arriba y se cae girando (la salida deja de recortarlo) */
+.ticket-salida--arrancando { position: relative; z-index: 2; overflow: visible; } /* se cae por delante de los botones */
+.ticket--arrancado { animation: ticket-arrancado 520ms cubic-bezier(0.5, 0, 0.8, 0.4) forwards; }
+@keyframes ticket-arrancado {
+  18% { transform: translateY(-6px) rotate(-1.5deg); }
+  100% { transform: translate(40px, 110vh) rotate(10deg); }
+}
+/*
+ * "Volver al exhibidor" también lo arranca, pero lo deja en la mano: un tirón, se corta (queda el borde dentado
+ * arriba y un pedacito en la impresora) y baja hacia el medio de la pantalla. La impresora, el rótulo y los botones
+ * se desvanecen. Un instante después vuela al talón.
+ */
+.ticket--en-la-mano { animation: ticket-en-la-mano 650ms cubic-bezier(0.3, 0.7, 0.4, 1) forwards; }
+@keyframes ticket-en-la-mano {
+  18% { transform: translateY(-6px) rotate(-1.5deg); }
+  70% { transform: translateY(var(--al-medio, 84px)) rotate(2.5deg); }
+  100% { transform: translateY(calc(var(--al-medio, 84px) - 6px)) rotate(2deg); }
+}
+/* El borde del corte: dientes arriba del ticket, que se ven cuando la salida deja de recortarlo */
+.ticket { position: relative; }
+.ticket::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -5px;
+  height: 5px;
+  background: conic-gradient(from 135deg at 50% 0, var(--ticket) 90deg, transparent 0) 0 0 / 10px 5px repeat-x;
+}
+/* El pedacito que queda en la ranura, con el corte abajo */
+.impresora__resto {
+  position: absolute;
+  left: 50%;
+  top: 45px;
+  width: 266px;
+  height: 9px;
+  translate: -50% 0;
+  background:
+    linear-gradient(var(--ticket) 0 0) 0 0 / 100% 4px no-repeat,
+    conic-gradient(from -45deg at 50% 100%, var(--ticket) 90deg, transparent 0) 0 4px / 10px 5px repeat-x;
+  opacity: 0;
+}
+.ticket-pantalla:has(.ticket--en-la-mano, .ticket--arrancado) .impresora__resto { animation: resto-aparece 650ms steps(1, end) forwards; }
+@keyframes resto-aparece { 0% { opacity: 0; } 18%, 100% { opacity: 1; } }
+/* Lo demás se va despacito: primero los botones; la impresora y el rótulo, después del corte */
+.pantalla:has(.ticket--en-la-mano) .ticket-pantalla__acciones { animation: se-va 260ms ease-out forwards; }
+.pantalla:has(.ticket--en-la-mano) .impresora,
+.pantalla:has(.ticket--en-la-mano) .ticket-pantalla__estado { animation: se-va 300ms ease-out 220ms forwards; }
+@keyframes se-va { to { opacity: 0; transform: translateY(6px); } }
+/* El ticket vuela hasta el talón del estante (lib/volar): se achica mientras cruza al talón */
+::view-transition-group(ticket-a-talon) { animation-duration: 650ms; animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+::view-transition-old(ticket-a-talon) { animation-duration: 650ms; }
+::view-transition-new(ticket-a-talon) { animation-duration: 650ms; }
 @media (prefers-reduced-motion: reduce) {
-  .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz { animation: none; }
+  .ticket--imprimiendo, .ticket-pantalla:has(.ticket--imprimiendo) .impresora__luz, .ticket--arrancado, .ticket--en-la-mano { animation: none; }
+  .impresora__resto { display: none; }
 }
 .ticket-pantalla__acciones { display: flex; flex-direction: column; gap: var(--esp-2); margin-top: auto; padding-top: var(--esp-6); }
+/* Recién calificado, los botones esperan al ticket y aparecen cuando terminó de salir (Figma 04b → 04c) */
+.ticket-pantalla__acciones--esperando { visibility: hidden; }
+.ticket-pantalla__acciones:not(.ticket-pantalla__acciones--esperando) { animation: aparece 250ms ease-out; }
 .ticket-pantalla__acciones .boton { text-decoration: none; }
 
 /* ── 02e · Al fondo del pasillo: la tarjeta del archivo (T-11) ── */
