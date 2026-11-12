@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { BarraInferior } from '../componentes/BarraInferior'
 import { CabinaDeEscucha } from '../componentes/CabinaDeEscucha'
@@ -19,7 +20,7 @@ const SIN_MARCO = { encabezado: false, botonera: false }
  * Trae su encabezado ("← EXHIBIDOR" y el catálogo) y no lleva botonera.
  * Figma 03c (126:1911), HU-18: después de calificar, o si lo pasé yo, las notas de la ronda en mini tickets.
  * Figma 03d (HU-15): si ya lo califiqué, mi nota primero y "Editar puntaje" abajo.
- * Pendientes: la caja que se abre y el CD que gira (E-02) y la luz de rollo (E-01).
+ * Figma 03a (15:1981), E-02: al abrirlo, la caja se abre y el CD sale girando (useSeAbre).
  */
 export default function DetalleDisco() {
   useMarco(SIN_MARCO)
@@ -56,7 +57,24 @@ export default function DetalleDisco() {
   )
 }
 
+/** Entradas del historial donde la caja ya se abrió: al volver atrás (o desde Calificar) no se repite */
+const yaAbiertas = new Set<string>()
+
+/**
+ * E-02: la caja se abre cuando llegás al disco (desde un estante, Perfil, el pasillo o un link).
+ * No se repite al volver con "atrás" a la misma entrada ni desde Calificar o el ticket (state yaAbierto).
+ */
+function useSeAbre() {
+  const { key, state } = useLocation()
+  const [seAbre] = useState(() => !(state as { yaAbierto?: boolean } | null)?.yaAbierto && !yaAbiertas.has(key))
+  useEffect(() => {
+    yaAbiertas.add(key)
+  }, [key])
+  return seAbre
+}
+
 function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) {
+  const seAbre = useSeAbre()
   const temas = duracion(d.cantidadTemas, d.duracionSeg)
   const lePuedoVerLaNota = d.esMio || d.miPuntaje !== null
   // HU-18: después de calificar (o si lo pasé yo), las notas de los demás a la vista
@@ -70,7 +88,7 @@ function Disco({ ronda, detalle: d }: { ronda: RondaActual; detalle: Detalle }) 
   ]
   return (
     <>
-      <article className="detalle" aria-labelledby="detalle-titulo">
+      <article className={`detalle${seAbre ? ' detalle--se-abre' : ''}`} aria-labelledby="detalle-titulo">
         <div className="detalle__vitrina" aria-hidden="true">
           <CD className="detalle__cd" tapa={d.tapa} titulo={d.titulo} />
           <CajaCD tapa={d.tapa} titulo="" />

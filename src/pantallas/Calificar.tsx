@@ -8,6 +8,9 @@ import { type Detalle, useDetalle } from '../datos/detalle'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras } from '../lib/texto'
 
+/** Al volver al disco, la caja ya está abierta (E-02) */
+const YA_ABIERTO = { yaAbierto: true }
+
 const SIN_MARCO = { encabezado: false, botonera: false }
 /** Ya lo califiqué (clave primaria pase + usuario): el ticket ya existe */
 const YA_CALIFICADO = '23505'
@@ -32,7 +35,7 @@ export default function Calificar() {
     return (
       <>
         <header className="encabezado-ronda encabezado-ronda--propio">
-          <Link className="mono-m encabezado-ronda__volver" to={alDetalle}>← VOLVER</Link>
+          <Link className="mono-m encabezado-ronda__volver" to={alDetalle} state={YA_ABIERTO}>← VOLVER</Link>
         </header>
         {estado.tipo === 'cargando' && <p className="cargando">Cargando…</p>}
         {estado.tipo === 'error' && (
@@ -80,7 +83,7 @@ function Formulario({ ronda, detalle: d, alDetalle }: { ronda: RondaActual; deta
     <>
       <div className="calificar__cabeza">
         <header className="encabezado-ronda encabezado-ronda--propio">
-          <Link className="mono-m encabezado-ronda__volver calificar__volver" to={alDetalle}>← {d.titulo.toUpperCase()}</Link>
+          <Link className="mono-m encabezado-ronda__volver calificar__volver" to={alDetalle} state={YA_ABIERTO}>← {d.titulo.toUpperCase()}</Link>
         </header>
         <h1 className="cartel-l calificar__titulo">
           Bancalo o
