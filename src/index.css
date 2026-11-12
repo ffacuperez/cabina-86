@@ -337,7 +337,7 @@ a.boton { text-decoration: none; }
 @keyframes sube-y-aparece { from { opacity: 0; transform: translateY(24px); } }
 @keyframes aparece { from { opacity: 0; } }
 /* Desde un estante, la caja primero vuela hasta acá (transición de vista, lib/volar) y después se abre */
-.detalle--vuela .detalle__vitrina .caja-cd { view-transition-name: caja-que-vuela; }
+/* El nombre del vuelo se lo pone lib/volar a la caja del detalle y se lo saca al aterrizar (Safari, #93) */
 .detalle--vuela .detalle__vitrina .caja-cd,
 .detalle--vuela .detalle__cd,
 .detalle--vuela > :not(.detalle__vitrina),
