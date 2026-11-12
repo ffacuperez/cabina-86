@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { Link, Navigate, useNavigate, useParams } from 'react-router'
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router'
 import { BarraInferior } from '../componentes/BarraInferior'
 import { CajaCD } from '../componentes/CajaCD'
 import { DisplayPuntaje } from '../componentes/DisplayPuntaje'
@@ -27,10 +27,15 @@ export default function Calificar() {
   const { pase = '' } = useParams()
   const { estado, reintentar } = useDetalle(ronda, pase)
   const alDetalle = `/ronda/${ronda.id}/disco/${pase}`
+  // E-04: desde el ticket arrancado ("Editar puntaje") la pantalla entra suave, sin el "Cargando…" de golpe
+  const { state } = useLocation()
+  const [desdeElTicket] = useState(() => (state as { desdeElTicket?: boolean } | null)?.desdeElTicket === true)
 
   if (estado.tipo === 'no-esta') return <Navigate to={`/ronda/${ronda.id}`} replace />
   if (estado.tipo === 'listo' && estado.detalle.esMio) return <Navigate to={alDetalle} replace />
 
+  // Desde el ticket, mientras carga la pantalla queda vacía: así entra todo junto y suave
+  if (estado.tipo === 'cargando' && desdeElTicket) return null
   if (estado.tipo !== 'listo') {
     return (
       <>
@@ -47,10 +52,10 @@ export default function Calificar() {
       </>
     )
   }
-  return <Formulario ronda={ronda} detalle={estado.detalle} alDetalle={alDetalle} />
+  return <Formulario ronda={ronda} detalle={estado.detalle} alDetalle={alDetalle} entra={desdeElTicket} />
 }
 
-function Formulario({ ronda, detalle: d, alDetalle }: { ronda: RondaActual; detalle: Detalle; alDetalle: string }) {
+function Formulario({ ronda, detalle: d, alDetalle, entra }: { ronda: RondaActual; detalle: Detalle; alDetalle: string; entra: boolean }) {
   const navigate = useNavigate()
   // HU-15 (Figma 04e): si ya lo califiqué, se abre con lo mío cargado y se reimprime
   const mia = d.mia
@@ -80,7 +85,7 @@ function Formulario({ ronda, detalle: d, alDetalle }: { ronda: RondaActual; deta
   }
 
   return (
-    <>
+    <div className={`calificar${entra ? ' calificar--entra' : ''}`}>
       <div className="calificar__cabeza">
         <header className="encabezado-ronda encabezado-ronda--propio">
           <Link className="mono-m encabezado-ronda__volver calificar__volver" to={alDetalle} state={YA_ABIERTO}>← {d.titulo.toUpperCase()}</Link>
@@ -170,6 +175,6 @@ function Formulario({ ronda, detalle: d, alDetalle }: { ronda: RondaActual; deta
           {mia ? 'Reimprimir el ticket' : 'Imprimir el ticket'} <span className="flecha" aria-hidden="true">→</span>
         </button>
       </BarraInferior>
-    </>
+    </div>
   )
 }
