@@ -34,6 +34,11 @@
   /* Luz de rollo (light leak) */
   --luz-rollo: rgb(255 89 38);
 
+  /* Panel perforado del fondo (E-06): la luz de arriba y los agujeritos */
+  --panel-luz: color-mix(in srgb, var(--acrilico-luz) 55%, transparent);
+  --panel-agujero: color-mix(in srgb, var(--negro) 16%, transparent);
+  --panel-paso: 16px;           /* distancia entre agujeritos */
+
   /* Roles */
   --fondo: var(--acrilico);
   --texto: var(--negro);
