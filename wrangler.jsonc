@@ -7,5 +7,7 @@
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
-  }
+  },
+  // Vistas previas de las ramas que no son la de producción (wrangler preview)
+  "previews": {}
 }
