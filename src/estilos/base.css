@@ -555,6 +555,23 @@ button { font: inherit; color: inherit; }
   align-items: flex-end;
   justify-content: center;
   background: rgb(31 36 28 / 0.55);
+  /* E-05: el velo aparece con un fundido; la hoja sube desde el borde, frenando al final */
+  animation: velo-entra 240ms ease-out backwards;
+}
+.hoja-velo > .hoja { animation: hoja-sube 300ms cubic-bezier(0.22, 0.9, 0.3, 1) backwards; }
+.hoja-velo--cerrando { animation: velo-sale 220ms ease-in forwards; }
+.hoja-velo--cerrando > .hoja { animation: hoja-baja 220ms cubic-bezier(0.5, 0, 0.9, 0.6) forwards; }
+/* Arrastrando el asa la hoja sigue al dedo; al soltar sin cerrar, vuelve a su lugar */
+.hoja { transition: transform 200ms cubic-bezier(0.22, 0.9, 0.3, 1); }
+.hoja--arrastrando { transition: none; }
+.hoja__asa { touch-action: none; cursor: grab; }
+@keyframes velo-entra { from { opacity: 0; } }
+@keyframes velo-sale { to { opacity: 0; } }
+@keyframes hoja-sube { from { transform: translateY(100%); } }
+@keyframes hoja-baja { to { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .hoja-velo > .hoja, .hoja-velo--cerrando > .hoja { animation: none; }
+  .hoja { transition: none; }
 }
 .hoja {
   display: flex;
@@ -571,7 +588,8 @@ button { font: inherit; color: inherit; }
   color: var(--negro);
 }
 .hoja > .campo-link, .hoja > .boton { align-self: stretch; }
-.hoja__asa { align-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--acrilico-oscuro); }
+/* El asa: 44 × 5 a la vista, con 24 px de alto para agarrarla con el dedo */
+.hoja__asa { align-self: center; width: 44px; height: 5px; border-radius: 3px; background: var(--acrilico-oscuro); background-clip: content-box; padding: 10px 0; box-sizing: content-box; margin: -10px 0; }
 .hoja__titulo { outline: none; }
 .hoja__sumados { display: flex; flex-wrap: wrap; gap: var(--esp-2); margin: 0; padding: 0; list-style: none; }
 
