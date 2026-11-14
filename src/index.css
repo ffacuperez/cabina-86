@@ -53,6 +53,20 @@
 .entrar__link { margin-top: 31px; max-width: 330px; }
 /* T-12: uso privado y origen de los datos (Figma 00a, sección Tanda técnica) */
 .entrar__privado { margin-top: 14px; max-width: 342px; font-size: 10px; opacity: 0.6; }
+/* #106: link a la política de privacidad (Figma 160:2958) */
+.entrar__privacidad { align-self: flex-start; margin-top: var(--esp-2); color: var(--texto); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── 00c · Privacidad (#106, Figma 160:3098): pública, sin sesión ── */
+.privacidad { gap: 20px; }
+.privacidad__volver { align-self: flex-start; margin-top: var(--esp-2); padding: 0; border: 0; background: none; color: var(--texto); cursor: pointer; }
+.privacidad__cartel { margin: 0 calc(-1 * var(--esp-2)); min-height: 286px; padding-bottom: 37px; }
+.privacidad__cartel .cartel__titulo { margin-top: 11px; white-space: nowrap; overflow-wrap: normal; font-size: min(40px, 9.6vw); } /* "PRIVACIDAD" en una línea, como en el Figma */
+.privacidad__cartel .cartel__texto { margin: var(--esp-6) 0; }
+.privacidad__bloque { display: flex; flex-direction: column; gap: var(--esp-2); padding: 0 var(--esp-2); }
+.privacidad__bloque h2 { margin: 0; }
+.privacidad__bloque p { margin: 0; }
+.privacidad__bloque p + p { margin-top: var(--esp-2); }
+.privacidad a { color: inherit; }
 
 /* Cartel con el nombre de la ronda (01 · Bienvenida y 00b · Te invitaron) */
 .cartel--ronda { margin: 0 calc(-1 * var(--esp-2)); min-height: 176px; padding-bottom: 23px; }

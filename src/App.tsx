@@ -12,6 +12,7 @@ import Muestrario from './pantallas/Muestrario'
 import Pasar from './pantallas/Pasar'
 import Pasillo from './pantallas/Pasillo'
 import Perfil from './pantallas/Perfil'
+import Privacidad from './pantallas/Privacidad'
 import Ronda from './pantallas/Ronda'
 import TeInvitaron from './pantallas/TeInvitaron'
 import Ticket from './pantallas/Ticket'
@@ -23,7 +24,7 @@ export default function App() {
       <main className="app">
         <h1>Falta configurar Supabase</h1>
         <p>Faltan estas variables de entorno: {faltaConfiguracion.join(', ')}.</p>
-        <p>En Vercel: Settings → Environment Variables, marcadas para este entorno, y volvé a desplegar.</p>
+        <p>En Cloudflare: Settings → Build → Build variables and secrets del Worker, y volvé a desplegar.</p>
       </main>
     )
   }
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/entrar" element={<Entrar />} />
           <Route path="/r/:codigo" element={<TeInvitaron />} />
           <Route path="/muestrario" element={<Muestrario />} />
+          <Route path="/privacidad" element={<Privacidad />} />
           <Route element={<RequiereSesion />}>
             <Route path="/" element={<Inicio />} />
             <Route path="/armar" element={<ArmaLaRonda />} />
