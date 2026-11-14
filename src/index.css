@@ -90,6 +90,11 @@ a.boton { text-decoration: none; }
 .mis-rondas__armar { margin-top: 58px; }
 .mis-rondas__link { margin-top: var(--esp-4); }
 .mis-rondas__ayuda { margin-top: 41px; }
+/* #104 (Figma 09d): con qué cuenta entraste y cerrar sesión */
+.mis-rondas__cuenta { display: flex; flex-direction: column; align-items: flex-start; gap: var(--esp-2); margin-top: 36px; }
+.mis-rondas__cuenta p { overflow-wrap: anywhere; }
+.mis-rondas__salir { padding: 0; border: 0; background: none; color: var(--texto); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.mis-rondas__salir:disabled { opacity: 0.5; cursor: default; }
 
 /* ── 00b · Te invitaron ── */
 .invitado__titulo { margin-top: 7px; overflow-wrap: anywhere; }
