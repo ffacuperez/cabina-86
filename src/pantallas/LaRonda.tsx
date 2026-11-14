@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { HojaBorrarRonda } from '../componentes/HojaBorrarRonda'
 import { HojaInvitar } from '../componentes/HojaInvitar'
 import { conComa } from '../datos/loQuePasaste'
 import { useRondaActual } from '../datos/ronda'
@@ -12,12 +13,19 @@ import { dosCifras } from '../lib/texto'
  * PASÓ, ESCUCHÓ, PROM y DEBE (en naranja si debe algo). Solo esta ronda (RN-05).
  * Tocar una ficha abre ese pasillo entero (T-11); la tuya, Perfil.
  * Ranking, compatibilidad y el más polémico (abajo en el Figma) quedan para después del MVP.
+ * Al final, solo para quien la creó, "Borrar la ronda" (Figma 06b, #105) abre la hoja de confirmación;
+ * después de borrarla se vuelve a Mis rondas.
  */
 export default function LaRonda() {
   const ronda = useRondaActual()
   const { estado, reintentar } = useTablero(ronda)
   const [invitando, setInvitando] = useState(false)
   const cerrarHoja = useCallback(() => setInvitando(false), [])
+  const [borrando, setBorrando] = useState(false)
+  const cerrarBorrar = useCallback(() => setBorrando(false), [])
+  const navigate = useNavigate()
+  // Quien creó la ronda es quien recibe su código (#52)
+  const laCreeYo = estado.tipo === 'listo' && estado.tablero.codigo !== null
   const amigos = 1 + ronda.otros.length
 
   return (
@@ -29,7 +37,7 @@ export default function LaRonda() {
           {' · '}
           {amigos} {amigos === 1 ? 'AMIGO' : 'AMIGOS'}
         </p>
-        {estado.tipo === 'listo' && estado.tablero.codigo !== null && (
+        {laCreeYo && (
           <button className="chip-accion" type="button" aria-label={`Invitar a ${ronda.nombre}`} onClick={() => setInvitando(true)}>
             INVITAR
           </button>
@@ -51,6 +59,24 @@ export default function LaRonda() {
           </ul>
         )}
       </section>
+
+      {laCreeYo && (
+        <section className="la-ronda__borrar" aria-label="Borrar la ronda">
+          <button className="boton boton--contorno boton--peligro boton--ancho" type="button" onClick={() => setBorrando(true)}>
+            Borrar la ronda
+          </button>
+          <p className="mono-s suave">LA VES PORQUE LA ARMASTE VOS. SE BORRA PARA TODOS.</p>
+        </section>
+      )}
+
+      {borrando && estado.tipo === 'listo' && (
+        <HojaBorrarRonda
+          ronda={{ id: ronda.id, nombre: ronda.nombre }}
+          discos={estado.tablero.discos}
+          onCerrar={cerrarBorrar}
+          onBorrada={() => navigate('/', { replace: true })}
+        />
+      )}
 
       {invitando && estado.tipo === 'listo' && estado.tablero.codigo !== null && (
         <HojaInvitar

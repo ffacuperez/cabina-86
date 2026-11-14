@@ -46,6 +46,15 @@ export async function crearRonda(nombre: string): Promise<RondaCreada> {
   return data as RondaCreada
 }
 
+/** #105: la confirmación de borrar compara el nombre sin importar mayúsculas ni espacios de los costados (igual que borrar_ronda) */
+export const coincideElNombre = (escrito: string, nombre: string) => escrito.trim().toLowerCase() === nombre.trim().toLowerCase()
+
+/** #105: borra la ronda para todos (solo quien la creó; la base chequea quién sos y el nombre) */
+export async function borrarRonda(id: string, nombreEscrito: string): Promise<void> {
+  const { error } = await supabase.rpc('borrar_ronda', { p_ronda: id, p_nombre: nombreEscrito })
+  if (error) throw error
+}
+
 const porFecha =(a: { se_unio_en: string }, b: { se_unio_en: string }) => a.se_unio_en.localeCompare(b.se_unio_en)
 const nombreDePila = (nombre: string) => nombre.trim().split(/\s+/)[0]
 

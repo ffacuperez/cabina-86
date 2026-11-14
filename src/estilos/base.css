@@ -85,6 +85,7 @@ button { font: inherit; color: inherit; }
 .boton--mostaza { background: var(--mostaza); color: var(--negro); }
 .boton--contorno { background: transparent; color: var(--negro); border: var(--borde-contorno); box-shadow: none; }
 .boton--ancho { width: 100%; }
+.boton--peligro { color: var(--magenta); border-color: var(--magenta); } /* #105: borrar, con contorno */
 .boton .flecha { font: var(--texto-boton); }
 
 /* ── Chip (C86/Chip) ── */
