@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router'
 import { HojaInvitar } from '../componentes/HojaInvitar'
+import { useAuth } from '../auth/AuthProvider'
 import type { RondaMia, RondaQueInvito } from '../datos/rondas'
 
 const dosCifras = (n: number) => String(n).padStart(2, '0')
@@ -10,8 +11,12 @@ const dosCifras = (n: number) => String(n).padStart(2, '0')
  * y está en al menos una ronda (HU-01). Sin botonera (RN-08).
  * INVITAR abre la hoja con el link de esa ronda (Figma 09c, HU-04). Solo en las rondas que creaste (#52).
  * Tocar una ronda entra a su exhibidor (HU-05).
+ * Al pie, con qué cuenta entraste y "CERRAR SESIÓN" (Figma 09d, #104): sin confirmación,
+ * y RequiereSesion manda a Entrar cuando ya no hay sesión.
  */
 export default function MisRondas({ rondas, deudaTotal }: { rondas: RondaMia[]; deudaTotal: number }) {
+  const { session, salir } = useAuth()
+  const [saliendo, setSaliendo] = useState(false)
   const [invitando, setInvitando] = useState<RondaQueInvito | null>(null)
   const cerrarHoja = useCallback(() => setInvitando(null), [])
   // La tarjeta marino con filete mostaza: la última ronda en la que entraste
@@ -54,6 +59,25 @@ export default function MisRondas({ rondas, deudaTotal }: { rondas: RondaMia[]; 
       <p className="texto-s mis-rondas__ayuda">
         Tocá una ronda para entrar. Adentro, el exhibidor, Pasar, La Ronda y tu perfil son siempre de esa ronda.
       </p>
+
+      <div className="mis-rondas__cuenta">
+        {session?.user.email && <p className="mono-s suave">ENTRASTE COMO {session.user.email.toUpperCase()}</p>}
+        <button
+          className="mono-s mis-rondas__salir"
+          type="button"
+          disabled={saliendo}
+          onClick={async () => {
+            setSaliendo(true)
+            try {
+              await salir()
+            } finally {
+              setSaliendo(false)
+            }
+          }}
+        >
+          CERRAR SESIÓN
+        </button>
+      </div>
 
       {invitando && <HojaInvitar ronda={invitando} onCerrar={cerrarHoja} />}
     </main>
