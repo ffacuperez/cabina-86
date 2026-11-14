@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useLocation, useSearchParams } from 'react-router'
+import { Link, Navigate, useLocation, useSearchParams } from 'react-router'
 import { useAuth } from '../auth/AuthProvider'
 import { adondeIba, guardarAdondeIba } from '../auth/volverA'
 import tapaArtaud from '../assets/tapas/artaud.svg'
@@ -85,6 +85,8 @@ export default function Entrar() {
         <p className="mono-s suave entrar__link">¿TE PASARON UN LINK? ABRILO Y ENTRÁS DIRECTO A ESA RONDA.</p>
         {/* T-12: la API de Deezer es para uso no comercial */}
         <p className="mono-s entrar__privado">USO PRIVADO ENTRE AMIGOS, SIN FINES COMERCIALES. DATOS DE LOS DISCOS: DEEZER.</p>
+        {/* #106: Google pide el link a la política de privacidad en la home para verificar la marca */}
+        <Link className="mono-s entrar__privacidad" to="/privacidad">POLÍTICA DE PRIVACIDAD →</Link>
       </div>
     </main>
   )
