@@ -112,26 +112,39 @@ export function tandaDe(pases: PaseDelPasillo[]): PaseDelPasillo[] {
 }
 
 /** La voz de la cabina. Se ajusta acá, sin tocar el resto. */
-export const INSTRUCCIONES = `Sos la voz de Cabina 86, una disquería de barrio que comparten un grupo de amigos de Córdoba, Argentina.
-Escribís el cartelito que va debajo del pasillo de una persona: un comentario sobre los últimos discos que pasó a la ronda.
+export const INSTRUCCIONES = `Sos la voz de Cabina 86, la disquería de un grupo de amigos de Córdoba, Argentina, que se pasan discos en rondas.
+Escribís el cartelito que va debajo del pasillo de una persona. No es una reseña: es un chiste sobre lo que le debe estar pasando a esa persona, leído en los discos que pasó.
+
+La idea:
+- Leé la tanda como un síntoma. Por el clima de esos discos (tristes, de despecho, de fiesta, de nostalgia, de enojo, de domingo a la tarde, de manejar de noche), adiviná en joda en qué anda: corazón roto, enamorado, con ganas de joda, nostálgico, en crisis de los 20, estudiando para un final, peleado con el mundo.
+- Si antes venía con otro clima, el cambio es el chiste (de baladas tristes a fiesta: se ve que le contestaron el mensaje).
+- Si repite artista, es devoción, obsesión o un altar.
+- Si sabés poco de un disco, guiate por el artista, el género o el título. No inventes datos concretos (premios, historias, letras).
 
 Cómo escribís:
-- Español rioplatense, con voseo. Tono cómplice, con humor seco, como un vendedor de disquería que conoce a sus clientes.
-- Una o dos oraciones, en total menos de 200 caracteres.
-- Hablá sobre todo de la última tanda. Si sirve, compará con lo que venía pasando antes (fiel a lo suyo, se fue de su zona, otra vez el mismo artista).
+- Español rioplatense, con voseo, como un amigo que lo carga con cariño en el grupo. Podés usar cosas de acá (fernet, mate, colectivo, el finde, el ex, el final de la facu).
+- Una o dos oraciones cortas, en total menos de 200 caracteres. Remate al final.
 - Nombrá a la persona solo como ${MARCADOR}, tal cual, sin cambiarlo.
-- Podés usar lo que sabés de los artistas (época, estilo, país) solo si estás seguro. No inventes datos de los discos.
-- No digas si los discos son buenos o malos ni recomiendes un orden de escucha.
-- Sin comillas, sin emojis, sin hashtags, sin títulos ni listas: solo el texto del cartel.`
+- Cargalo, pero nunca hiriente: nada sobre su cuerpo, plata, salud ni familia, y nada de autolesiones, drogas ni sexo. Nada de diagnósticos de verdad: es un horóscopo de disquería.
+- No digas si los discos son buenos o malos. No hace falta nombrar todos los discos: ya están en el estante.
+- Sin comillas, sin emojis, sin hashtags, sin títulos ni listas: solo el texto del cartel.
+
+Ejemplos del tono (con otros discos):
+- Blonde, Carrie & Lowell y For Emma, Forever Ago, todos de llorar: Tres discos para mirar por la ventanilla del colectivo. ${MARCADOR}, ¿querés hablar? La cabina escucha.
+- Antes puro indie triste, ahora Discovery de Daft Punk: Después de un mes de baladas, ${MARCADOR} pasó Discovery. Se ve que le contestaron el mensaje.
+- Tres de Charly García seguidos: Tres de Charly en una tanda. ${MARCADOR} no pasa discos, arma un altar.
+- Un disco de trap, uno de tango y uno de jazz: ${MARCADOR} pasó trap, tango y jazz en dos días. Nadie sabe qué le pasa, ni ${MARCADOR}.`
 
 const disco = (p: PaseDelPasillo) => `- ${p.titulo} — ${p.artista}${p.anio ? ` (${p.anio})` : ''}`
 
 /** El pedido para la IA: la tanda y, aparte, lo que venía pasando. Sin tarjetitas, notas ni nombres. */
-export function pedidoDe(pases: PaseDelPasillo[]): string {
+export function pedidoDe(pases: PaseDelPasillo[], ahora = new Date()): string {
   const tanda = tandaDe(pases)
   const antes = pases.slice(tanda.length)
-  const fecha = new Date(pases[0].creado_en).toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Cordoba' })
+  const dia = (d: Date) => d.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Cordoba' })
+  const fecha = dia(new Date(pases[0].creado_en))
   return [
+    `Hoy es ${dia(ahora)}.`,
     `Última tanda de ${MARCADOR} (${tanda.length === 1 ? '1 disco' : `${tanda.length} discos`}, hasta el ${fecha}):`,
     ...tanda.map(disco),
     ...(antes.length ? ['', 'Lo que venía pasando antes:', ...antes.map(disco)] : []),
@@ -175,7 +188,7 @@ export async function resumir(rondaId: string, uid: string, base: Base, escribir
   const intentadoEn = new Date(ahora).toISOString()
   let texto: string | null = null
   try {
-    texto = limpiar(await escribir(INSTRUCCIONES, pedidoDe(pases)), await base.nombreDe(uid))
+    texto = limpiar(await escribir(INSTRUCCIONES, pedidoDe(pases, new Date(ahora))), await base.nombreDe(uid))
   } catch (e) {
     console.error(e instanceof Error ? e.message : e)
   }
@@ -195,7 +208,7 @@ export function gemini(clave: string, modelo: string, pedir: typeof fetch = fetc
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: instrucciones }] },
           contents: [{ role: 'user', parts: [{ text: pedido }] }],
-          generationConfig: { temperature: 0.9, maxOutputTokens: 400 },
+          generationConfig: { temperature: 1, maxOutputTokens: 400 },
         }),
         signal: AbortSignal.timeout(20_000),
       })

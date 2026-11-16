@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { enLista } from '../lib/texto'
 import type { DiscoEnEstante, Pasillo } from './exhibidor'
 import type { RondaActual } from './ronda'
 
@@ -56,40 +55,53 @@ function numeroDe(texto: string) {
   return h
 }
 
-const decada = (anio: number) => Math.floor(anio / 10) * 10
-/** "los 70", pero "los 2000" y "los 2010" */
-const nombreDeDecada = (d: number) => (d >= 2000 ? String(d) : String(d).slice(2))
 const corto = (anio: number) => `'${String(anio).slice(2)}`
 
 /**
- * La frase armada, sin IA: qué pasó y un dato de la tanda (las décadas, un artista que repite).
- * Solo títulos, artistas y años, como la IA.
+ * La frase armada, sin IA: un chiste con lo que se puede saber de la tanda (años, artistas que repiten,
+ * cuántos discos, si hace mucho que no pasa nada). Va mientras llega el resumen de la IA o si la IA falla.
+ * Los títulos ya están arriba, en el estante: no los repite. Solo títulos, artistas y años, como la IA.
  */
-export function fraseArmada(p: Pasillo, t: Tanda): string {
+export function fraseArmada(p: Pasillo, t: Tanda, hoy = new Date()): string {
   const nombre = p.de.nombre
-  const titulos = t.discos.map((d) => d.titulo)
-  const lista = titulos.length > 3 ? `${titulos.slice(0, 2).join(', ')} y ${titulos.length - 2} más` : enLista(titulos)
-  const primera = titulos.length === 1 ? `${nombre} pasó ${lista}, de ${t.discos[0].artista}.` : `${nombre} pasó ${lista}.`
+  const elegir = (frases: string[]) => frases[numeroDe(`${p.de.id}:${t.hasta}`) % frases.length]
 
-  const extras: string[] = []
+  const dias = Math.floor((hoy.getTime() - Date.parse(t.hasta)) / DIA)
+  if (dias > DIAS_QUIETO) {
+    return elegir([
+      `${nombre} salió a comprar puchos y no volvió. La ronda deja la luz prendida.`,
+      `${nombre} no pasa nada hace rato. La ronda sigue acá, por las dudas.`,
+    ])
+  }
+
+  const frases: string[] = []
+  const enLaTanda = new Map<string, number>()
+  for (const d of t.discos) enLaTanda.set(d.artista, (enLaTanda.get(d.artista) ?? 0) + 1)
+  const doble = [...enLaTanda].find(([, n]) => n > 1)
+  if (doble) frases.push(`Dos de ${doble[0]} en la misma tanda. Lo de ${nombre} ya no es gusto, es devoción.`)
+
+  // Un artista de la tanda que ya había pasado antes
+  const antes = todos(p).slice(t.discos.length)
+  const repite = t.discos.find((d) => antes.some((a) => a.artista === d.artista))
+  if (repite) frases.push(`Otra vez ${repite.artista}. ${nombre} no pasa discos, le prende velas.`)
+
   const anios = t.discos.map((d) => d.anio).filter((a): a is number => a !== null)
   if (anios.length > 0) {
     const min = Math.min(...anios)
     const max = Math.max(...anios)
-    if (decada(min) === decada(max)) extras.push(`Todo de los ${nombreDeDecada(decada(min))}.`)
-    else extras.push(`Del ${corto(min)} al ${corto(max)}.`)
+    if (max < 1995) frases.push(`Lo más nuevo es del ${corto(max)}. ${nombre} no confía en nada que tenga wifi.`)
+    else if (min >= 2020) frases.push(`Todo recién salido del horno. ${nombre} está al día o se aprendió los nombres para la ronda.`)
+    else if (max - min >= 30) frases.push(`Del ${corto(min)} al ${corto(max)} en una tanda. ${nombre} usa la ronda de máquina del tiempo.`)
   }
-  // Un artista de la tanda que ya había pasado antes
-  const antes = todos(p).slice(t.discos.length)
-  const repite = t.discos.find((d) => antes.some((a) => a.artista === d.artista))
-  if (repite) extras.push(`Otra vez ${repite.artista}.`)
-  const enLaTanda = new Map<string, number>()
-  for (const d of t.discos) enLaTanda.set(d.artista, (enLaTanda.get(d.artista) ?? 0) + 1)
-  const doble = [...enLaTanda].find(([, n]) => n > 1)
-  if (doble) extras.push(`${doble[0]} por partida doble.`)
 
-  if (extras.length === 0) return primera
-  return `${primera} ${extras[numeroDe(`${p.de.id}:${t.hasta}`) % extras.length]}`
+  if (t.discos.length === 1) frases.push(`Un solo disco y a dormir. ${nombre} pasa poco pero con intención.`)
+  if (t.discos.length >= 4) frases.push(`${t.discos.length} discos de una. ${nombre} vino a vaciar la mochila.`)
+
+  if (frases.length > 0) return elegir(frases)
+  return elegir([
+    `${nombre} pasó lo suyo. La cabina tiene teorías, pero se las guarda.`,
+    `Se aceptan teorías sobre qué le pasa a ${nombre} esta semana.`,
+  ])
 }
 
 type Guardado = { pasado_por: string; texto: string | null; tanda_hasta: string }

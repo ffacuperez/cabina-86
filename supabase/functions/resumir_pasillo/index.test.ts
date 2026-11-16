@@ -63,7 +63,8 @@ Deno.test('la tanda son los discos de los 3 días antes del último pase', () =>
 })
 
 Deno.test('el pedido trae la tanda y aparte lo anterior, sin tarjetitas ni nombres', () => {
-  const p = pedidoDe(PASES)
+  const p = pedidoDe(PASES, new Date('2026-11-16T15:00:00-03:00'))
+  assert.match(p, /^Hoy es 16\/11\/2026\./)
   assert.match(p, /Última tanda de \{NOMBRE\} \(3 discos/)
   assert.match(p, /- Artaud — Pescado Rabioso \(1973\)/)
   assert.match(p, /Lo que venía pasando antes:\n- Bocanada — Gustavo Cerati \(1999\)/)

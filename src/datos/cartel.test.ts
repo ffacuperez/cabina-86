@@ -53,29 +53,49 @@ describe('el pie del cartel', () => {
 })
 
 describe('la frase armada (sin IA)', () => {
-  it('nombra la tanda y suma un dato de los años', () => {
+  const frase = (p: Pasillo) => fraseArmada(p, tandaDe(p)!, HOY)
+
+  it('no repite los títulos, que ya están en el estante', () => {
     const p = pasillo([disco('Artaud', 'Pescado Rabioso', 1973, 1), disco('Clics Modernos', 'Charly García', 1983, 1.1)])
-    expect(fraseArmada(p, tandaDe(p)!)).toBe("Maxi pasó Artaud y Clics Modernos. Del '73 al '83.")
+    expect(frase(p)).not.toMatch(/Artaud|Clics Modernos/)
   })
 
-  it('con un solo disco dice de quién es', () => {
-    const p = pasillo([disco('In Rainbows', 'Radiohead', 2007, 1)])
-    expect(fraseArmada(p, tandaDe(p)!)).toBe('Maxi pasó In Rainbows, de Radiohead. Todo de los 2000.')
+  it('si todo es viejo, se ríe de eso', () => {
+    const p = pasillo([disco('Artaud', 'Pescado Rabioso', 1973, 1), disco('Clics Modernos', 'Charly García', 1983, 1.1)])
+    expect(frase(p)).toBe("Lo más nuevo es del '83. Maxi no confía en nada que tenga wifi.")
   })
 
-  it('con más de 3 discos resume la lista', () => {
-    const p = pasillo([1, 2, 3, 4].map((i) => disco(`Disco ${i}`, `Artista ${i}`, null, 1 + i / 100)))
-    expect(fraseArmada(p, tandaDe(p)!)).toBe('Maxi pasó Disco 1, Disco 2 y 2 más.')
+  it('con años muy separados, la máquina del tiempo', () => {
+    const p = pasillo([disco('Artaud', 'Pescado Rabioso', 1973, 1), disco('Halcyon', 'X', 2025, 1.1)])
+    expect(frase(p)).toBe("Del '73 al '25 en una tanda. Maxi usa la ronda de máquina del tiempo.")
   })
 
-  it('si un artista ya había pasado antes, puede decir "otra vez"', () => {
+  it('si un artista ya había pasado antes, le prende velas', () => {
     const p = pasillo([disco('Artaud', 'Spinetta', null, 1), disco('Kamikaze', 'Spinetta', null, 30, 8)])
-    expect(fraseArmada(p, tandaDe(p)!)).toBe('Maxi pasó Artaud, de Spinetta. Otra vez Spinetta.')
+    expect(frase(p)).toMatch(/^(Otra vez Spinetta\. Maxi no pasa discos, le prende velas\.|Un solo disco y a dormir\. Maxi pasa poco pero con intención\.)$/)
+  })
+
+  it('dos del mismo artista en la tanda es devoción', () => {
+    const p = pasillo([disco('A', 'Cerati', null, 1), disco('B', 'Cerati', null, 1.1)])
+    expect(frase(p)).toBe('Dos de Cerati en la misma tanda. Lo de Maxi ya no es gusto, es devoción.')
+  })
+
+  it('con más de 30 días quieto, lo extraña', () => {
+    expect(frase(pasillo([disco('A', 'X', 1990, 45)]))).toMatch(/Maxi (salió a comprar puchos|no pasa nada hace rato)/)
+  })
+
+  it('sin nada que decir, igual tira una', () => {
+    const p = pasillo([disco('A', 'X', null, 1), disco('B', 'Y', null, 1.1)])
+    expect(frase(p)).toMatch(/Maxi/)
+  })
+
+  it('la frase no cambia entre visitas', () => {
+    const p = pasillo([disco('A', 'X', 1990, 1), disco('B', 'Y', 2010, 1.1), disco('C', 'Z', 2000, 1.2), disco('D', 'W', 2005, 1.3)])
+    expect(frase(p)).toBe(frase(p))
   })
 
   it('nunca usa puntajes ni tarjetitas', () => {
     const p = pasillo([disco('Artaud', 'Pescado Rabioso', 1973, 1, 9)])
-    const frase = fraseArmada(p, tandaDe(p)!)
-    expect(frase).not.toMatch(/9\/10|\bx\b/)
+    expect(frase(p)).not.toMatch(/9\/10|\bx\b/)
   })
 })
