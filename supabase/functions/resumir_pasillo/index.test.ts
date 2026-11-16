@@ -64,11 +64,17 @@ Deno.test('la tanda son los discos de los 3 días antes del último pase', () =>
 
 Deno.test('el pedido trae la tanda y aparte lo anterior, sin tarjetitas ni nombres', () => {
   const p = pedidoDe(PASES, new Date('2026-11-16T15:00:00-03:00'))
-  assert.match(p, /^Hoy es 16\/11\/2026\./)
+  assert.doesNotMatch(p, /\d{1,2}\/\d{1,2}\/\d{4}|Hoy es/)
+  assert.doesNotMatch(p, /no pasa ningún disco/)
   assert.match(p, /Última tanda de \{NOMBRE\} \(3 discos/)
-  assert.match(p, /- Artaud — Pescado Rabioso \(1973\)/)
-  assert.match(p, /Lo que venía pasando antes:\n- Bocanada — Gustavo Cerati \(1999\)/)
+  assert.match(p, /- Artaud — Pescado Rabioso \(salió en 1973\)/)
+  assert.match(p, /Lo que había pasado en las tandas anteriores:\n- Bocanada — Gustavo Cerati \(salió en 1999\)/)
   assert.doesNotMatch(p, /Maxi/)
+})
+
+Deno.test('si hace mucho que no pasa nada, el pedido lo dice', () => {
+  const ultimo = Date.parse(PASES[0].creado_en)
+  assert.match(pedidoDe(PASES, new Date(ultimo + 45 * 24 * 60 * 60 * 1000)), /Hace 45 días que \{NOMBRE\} no pasa ningún disco\./)
 })
 
 Deno.test('limpia lo que escribe la IA y pone el nombre', () => {

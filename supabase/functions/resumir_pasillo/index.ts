@@ -123,7 +123,8 @@ La idea:
 
 Cómo escribís:
 - Español rioplatense, con voseo, como un amigo que lo carga con cariño en el grupo. Podés usar cosas de acá (fernet, mate, colectivo, el finde, el ex, el final de la facu).
-- Una o dos oraciones cortas, en total menos de 200 caracteres. Remate al final.
+- Una o dos oraciones cortas, en total menos de 160 caracteres. Remate al final. Una sola idea, no dos opciones.
+- Los años son de cuando salió cada disco, no de cuándo lo pasó: no digas cuándo pasó algo (nada de el año pasado, este mes, la semana pasada).
 - Nombrá a la persona solo como ${MARCADOR}, tal cual, sin cambiarlo.
 - Cargalo, pero nunca hiriente: nada sobre su cuerpo, plata, salud ni familia, y nada de autolesiones, drogas ni sexo. Nada de diagnósticos de verdad: es un horóscopo de disquería.
 - No digas si los discos son buenos o malos. No hace falta nombrar todos los discos: ya están en el estante.
@@ -135,19 +136,23 @@ Ejemplos del tono (con otros discos):
 - Tres de Charly García seguidos: Tres de Charly en una tanda. ${MARCADOR} no pasa discos, arma un altar.
 - Un disco de trap, uno de tango y uno de jazz: ${MARCADOR} pasó trap, tango y jazz en dos días. Nadie sabe qué le pasa, ni ${MARCADOR}.`
 
-const disco = (p: PaseDelPasillo) => `- ${p.titulo} — ${p.artista}${p.anio ? ` (${p.anio})` : ''}`
+const disco = (p: PaseDelPasillo) => `- ${p.titulo} — ${p.artista}${p.anio ? ` (salió en ${p.anio})` : ''}`
 
-/** El pedido para la IA: la tanda y, aparte, lo que venía pasando. Sin tarjetitas, notas ni nombres. */
+const DIA_MS = 24 * 60 * 60 * 1000
+
+/**
+ * El pedido para la IA: la tanda y, aparte, lo que venía pasando. Sin tarjetitas, notas ni nombres.
+ * Sin fechas de los pases (la IA las leía mal: "el año pasado"); solo si hace mucho que no pasa nada, lo dice.
+ */
 export function pedidoDe(pases: PaseDelPasillo[], ahora = new Date()): string {
   const tanda = tandaDe(pases)
   const antes = pases.slice(tanda.length)
-  const dia = (d: Date) => d.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Cordoba' })
-  const fecha = dia(new Date(pases[0].creado_en))
+  const dias = Math.floor((ahora.getTime() - Date.parse(pases[0].creado_en)) / DIA_MS)
   return [
-    `Hoy es ${dia(ahora)}.`,
-    `Última tanda de ${MARCADOR} (${tanda.length === 1 ? '1 disco' : `${tanda.length} discos`}, hasta el ${fecha}):`,
+    `Última tanda de ${MARCADOR} (${tanda.length === 1 ? '1 disco' : `${tanda.length} discos`}):`,
     ...tanda.map(disco),
-    ...(antes.length ? ['', 'Lo que venía pasando antes:', ...antes.map(disco)] : []),
+    ...(antes.length ? ['', 'Lo que había pasado en las tandas anteriores:', ...antes.map(disco)] : []),
+    ...(dias > 30 ? ['', `Hace ${dias} días que ${MARCADOR} no pasa ningún disco.`] : []),
   ].join('\n')
 }
 
