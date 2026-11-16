@@ -17,6 +17,7 @@ npm run dev      # servidor local en http://localhost:5173
 npm run build    # build de producción en dist/
 npm run preview  # sirve el build para probar la PWA
 npm run lint
+npm test         # pruebas de la lógica de la app (Vitest)
 ```
 
 ## Deploy
@@ -51,6 +52,7 @@ Viven en `supabase/functions/` (Deno). Lo compartido está en `_shared/`.
 |---|---|
 | `buscar_discos` | Busca álbumes en Deezer para Pasar y marca los que ya se pasaron en esa ronda (T-09, HU-07) |
 | `pasar_disco` | Guarda el disco desde Deezer (una sola vez) y crea el pase con la tarjetita y su número de catálogo (T-10, HU-08) |
+| `resumir_pasillo` | Escribe con Gemini el cartel "La cabina dice" de un pasillo, sobre la última tanda de esa persona (HU-19). Necesita el secreto `GEMINI_API_KEY` |
 
 ```bash
 cd supabase/functions && deno test --no-lock   # pruebas, con Deezer y la base simulados

@@ -28,8 +28,6 @@ export type Pasillo = {
   discos: DiscoEnEstante[]
   /** Los calificados más viejos, del más viejo al más nuevo (de lomo en el pasillo entero, Figma 02f) */
   archivados: DiscoEnEstante[]
-  /** La tarjetita de su último pendiente, pegada debajo del estante; null si no le debo nada */
-  tarjetita: string | null
 }
 
 export type Exhibidor = {
@@ -101,14 +99,9 @@ export function armar(filas: FilaPase[], otros: RondaActual['otros']): Exhibidor
       de: { id: f.pasado_por, nombre: quien?.nombre ?? '?', sigla: quien?.sigla ?? '???' },
       discos: [],
       archivados: [],
-      tarjetita: null,
       calificados: 0,
     }
-    if (puntaje === null) {
-      deuda++
-      // Las filas vienen de la más nueva a la más vieja: el primer pendiente es el último que me pasó
-      pasillo.tarjetita ??= f.tarjetita
-    }
+    if (puntaje === null) deuda++
     const archivado = puntaje !== null && pasillo.calificados >= QUEDAN_CALIFICADOS
     if (puntaje !== null) pasillo.calificados++
     // Del más viejo al más nuevo: las filas llegan al revés, así que cada archivado va adelante
@@ -126,7 +119,7 @@ export function armar(filas: FilaPase[], otros: RondaActual['otros']): Exhibidor
     })
     pasillos.set(f.pasado_por, pasillo)
   }
-  return { pasillos: [...pasillos.values()].map((p) => ({ de: p.de, discos: p.discos, archivados: p.archivados, tarjetita: p.tarjetita })), deuda }
+  return { pasillos: [...pasillos.values()].map((p) => ({ de: p.de, discos: p.discos, archivados: p.archivados })), deuda }
 }
 
 /** "MAX-01 AL MAX-04", o "MAX-01" si es uno solo (archivados, del más viejo al más nuevo) */

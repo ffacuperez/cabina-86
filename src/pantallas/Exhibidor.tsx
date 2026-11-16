@@ -1,7 +1,9 @@
+import { Fragment } from 'react'
 import { Link } from 'react-router'
 import { AvisoIphone } from '../componentes/AvisoIphone'
 import { DiscoEnEstante } from '../componentes/DiscoEnEstante'
-import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
+import { CartelPasillo } from '../componentes/CartelPasillo'
+import { tandaDe, useResumenes } from '../datos/cartel'
 import { type Exhibidor as ExhibidorDatos, type Pasillo, rangoDeCatalogo, useExhibidor } from '../datos/exhibidor'
 import { COLORES_LOMO } from '../lib/lomos'
 import { useRondaActual } from '../datos/ronda'
@@ -11,12 +13,14 @@ import { dosCifras } from '../lib/texto'
  * Figma 02 · Tu exhibidor (vigente, 111:1595) y 02c (15:1608): a donde se llega al entrar a una ronda (HU-05, HU-11).
  * Un pasillo por integrante que me pasó discos, con su estante que se desliza. Debajo de cada caja, título y artista.
  * Pendiente: sticker PENDIENTE; ya calificado: sigue en el estante con el talón de mi puntaje.
- * Cada pasillo con pendientes lleva pegada la tarjetita del último. El LCD muestra mi deuda en esta ronda.
+ * Debajo de cada estante, el cartel "La cabina dice" con el resumen de su última tanda (HU-19, Figma 02h).
+ * El LCD muestra mi deuda en esta ronda.
  */
 export default function Exhibidor() {
   const ronda = useRondaActual()
   const { estado, reintentar } = useExhibidor(ronda)
   const deuda = estado.tipo === 'listo' ? estado.exhibidor.deuda : ronda.deuda
+  const resumenes = useResumenes(ronda, estado.tipo === 'listo' ? estado.exhibidor.pasillos : null)
 
   return (
     <>
@@ -31,33 +35,36 @@ export default function Exhibidor() {
             <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
           </div>
         )}
-        {estado.tipo === 'listo' && <Estantes exhibidor={estado.exhibidor} rondaId={ronda.id} />}
+        {estado.tipo === 'listo' && <Estantes exhibidor={estado.exhibidor} rondaId={ronda.id} resumenes={resumenes} />}
       </section>
     </>
   )
 }
 
-function Estantes({ exhibidor, rondaId }: { exhibidor: ExhibidorDatos; rondaId: string }) {
+function Estantes({ exhibidor, rondaId, resumenes }: { exhibidor: ExhibidorDatos; rondaId: string; resumenes: Map<string, string> }) {
   const { pasillos } = exhibidor
   if (pasillos.length === 0) {
     return <p className="texto-m exhibidor__aviso">Nadie te pasó nada todavía. Qué ronda tranquila.</p>
   }
   return (
     <>
-      {pasillos.map((p) => (
-        <div key={p.de.id} className={`pasillo${p.tarjetita !== null ? ' pasillo--con-tarjetita' : ''}`}>
-          <h2 className="rotulo pasillo__rotulo">
-            Pasillo de {p.de.nombre} <span className="lcd-s">{dosCifras(p.discos.length)}</span>
-          </h2>
-          <ul className="estante" aria-label={`Lo que te pasó ${p.de.nombre}`}>
-            {p.discos.map((d) => <DiscoEnEstante key={d.paseId} disco={d} rondaId={rondaId} />)}
-            {p.archivados.length > 0 && <TarjetaArchivo pasillo={p} rondaId={rondaId} />}
-          </ul>
-          {p.tarjetita !== null && (
-            <TarjetaRecomendado por={p.de.nombre} nota={p.tarjetita} className="tarjeta-recomendado--estante" />
-          )}
-        </div>
-      ))}
+      {pasillos.map((p) => {
+        const tanda = tandaDe(p)
+        return (
+          <Fragment key={p.de.id}>
+            <div className="pasillo">
+              <h2 className="rotulo pasillo__rotulo">
+                Pasillo de {p.de.nombre} <span className="lcd-s">{dosCifras(p.discos.length)}</span>
+              </h2>
+              <ul className="estante" aria-label={`Lo que te pasó ${p.de.nombre}`}>
+                {p.discos.map((d) => <DiscoEnEstante key={d.paseId} disco={d} rondaId={rondaId} />)}
+                {p.archivados.length > 0 && <TarjetaArchivo pasillo={p} rondaId={rondaId} />}
+              </ul>
+            </div>
+            {tanda && <CartelPasillo pasillo={p} tanda={tanda} resumen={resumenes.get(p.de.id)} />}
+          </Fragment>
+        )
+      })}
       <p className="mono-s exhibidor__pista">DESLIZÁ CADA ESTANTE</p>
     </>
   )
