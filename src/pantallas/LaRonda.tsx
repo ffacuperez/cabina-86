@@ -2,7 +2,9 @@ import { useCallback, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { HojaBorrarRonda } from '../componentes/HojaBorrarRonda'
 import { HojaInvitar } from '../componentes/HojaInvitar'
+import { useInforme } from '../datos/informe'
 import { conComa } from '../datos/loQuePasaste'
+import { AdelantoInforme } from './Informe'
 import { useRondaActual } from '../datos/ronda'
 import { type Ficha, useTablero } from '../datos/tablero'
 import { dosCifras } from '../lib/texto'
@@ -13,13 +15,16 @@ import { dosCifras } from '../lib/texto'
  * PASÓ, ESCUCHÓ, PROM y DEBE (en naranja si debe algo). Solo esta ronda (RN-05).
  * Tocar una ficha abre ese pasillo entero (T-11); la tuya, Perfil.
  * Debajo de las fichas, "Ver el informe de la ronda" (Figma 06e, HU-21) abre el informe (06f).
- * El adelanto del informe (podio, compatibilidad y discordia, HU-22) va en #114.
+ * Entre las fichas y el botón, el adelanto del informe (Figma 06e, HU-22): el podio, la compatibilidad y la
+ * discordia, cada uno solo si alcanza su mínimo (RN-12).
  * Al final, solo para quien la creó, "Borrar la ronda" (Figma 06b, #105) abre la hoja de confirmación;
  * después de borrarla se vuelve a Mis rondas.
  */
 export default function LaRonda() {
   const ronda = useRondaActual()
   const { estado, reintentar } = useTablero(ronda)
+  // El adelanto del informe (HU-22): si todavía carga o falla, no se muestra y queda el botón
+  const { estado: informe } = useInforme(ronda.id)
   const [invitando, setInvitando] = useState(false)
   const cerrarHoja = useCallback(() => setInvitando(false), [])
   const [borrando, setBorrando] = useState(false)
@@ -60,6 +65,8 @@ export default function LaRonda() {
           </ul>
         )}
       </section>
+
+      {informe.tipo === 'listo' && <AdelantoInforme informe={informe.informe} />}
 
       <section className="la-ronda__informe" aria-label="El informe de la ronda">
         <Link className="boton boton--secundario boton--ancho" to={`/ronda/${ronda.id}/informe`}>

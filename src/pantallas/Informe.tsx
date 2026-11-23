@@ -200,7 +200,7 @@ export function VistaInforme({ informe: i }: { informe: DatosInforme }) {
   )
 }
 
-function Bloque({ titulo, bajada, children }: { titulo: string; bajada?: string; children: ReactNode }) {
+export function Bloque({ titulo, bajada, children }: { titulo: string; bajada?: string; children: ReactNode }) {
   return (
     <section className="informe__bloque" aria-label={titulo}>
       <h2 className="cartel-m">{titulo}</h2>
@@ -284,6 +284,49 @@ function Discordia({ disco: d }: { disco: DatosInforme['discordia'][number] }) {
         </p>
       </div>
     </article>
+  )
+}
+
+/**
+ * Figma 06e · El adelanto del informe en La Ronda (HU-22, #114): el podio, la compatibilidad (solo los vúmetros)
+ * y la discordia (solo el primero). Cada bloque aparece si alcanza su mínimo (RN-12); si no, no está.
+ */
+export function AdelantoInforme({ informe: i }: { informe: DatosInforme }) {
+  const hayCerrados = i.faltan_cerrados === 0
+  const compatibles = i.compatibilidad.filter((p) => p.pct !== null)
+  if (!hayCerrados && compatibles.length === 0) return null
+  return (
+    <div className="adelanto-informe">
+      {hayCerrados && i.podio.length > 0 && (
+        <Bloque titulo="El podio">
+          <ol className="puestos">
+            {puestos(i.podio).map(({ puesto, disco, empatados }) => (
+              <Puesto
+                key={puesto}
+                posicion={String(puesto)}
+                disco={disco}
+                titulo={empatados > 1 ? `${disco.titulo} y ${empatados - 1} más` : disco.titulo}
+                linea={empatados > 1 ? `${empatados} EMPATADOS` : disco.de_nombre ? `DE ${nombreCorto(disco.de_nombre).toUpperCase()}` : ''}
+              />
+            ))}
+          </ol>
+        </Bloque>
+      )}
+      {compatibles.length > 0 && (
+        <Bloque titulo="Compatibilidad" bajada="Qué tanto ordenan los discos igual, de a dos.">
+          <ul className="vumetros">
+            {compatibles.map((p) => (
+              <FilaVumetro key={`${p.a.sigla}-${p.b.sigla}`} nombre={`${nombreCorto(p.a.nombre)} × ${nombreCorto(p.b.nombre)}`} pct={p.pct} />
+            ))}
+          </ul>
+        </Bloque>
+      )}
+      {hayCerrados && i.discordia.length > 0 && (
+        <Bloque titulo="La discordia">
+          <Discordia disco={i.discordia[0]} />
+        </Bloque>
+      )}
+    </div>
   )
 }
 
