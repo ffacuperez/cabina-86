@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(26);
+select plan(27);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000f1', 'facu@test.com', '{"full_name":"Facu"}'),
@@ -155,6 +155,10 @@ select is(
   'Puntería: a Manu lo de Facu le gusta igual que su promedio (todo lo que escuchó es de Facu)'
 );
 select is(jsonb_array_length(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'dardos'), 12, 'Puntería: un dardo por cada nota de los tiros medidos');
+select ok(
+  (select bool_and(d ? 'tapa_url' and d ? 'titulo' and d ? 'puntaje') from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'dardos') d),
+  'Puntería: cada dardo trae la tapa, el nombre y el puntaje para la vista previa'
+);
 select is(
   pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'mejor' ->> 'titulo',
   'Disco 6',

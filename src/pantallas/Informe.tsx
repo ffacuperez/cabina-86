@@ -344,6 +344,7 @@ function Punteria({ informe: i }: { informe: DatosInforme }) {
       </div>
       <div className="punteria__diana">
         <Diana
+          key={blanco}
           dardos={dardos}
           apagada={medidos.length === 0}
           etiqueta={quien ? `La diana de ${nombreCorto(quien.nombre)}: ${dardos.length} discos` : 'La diana'}

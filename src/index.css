@@ -863,7 +863,8 @@ a.boton { text-decoration: none; }
 .punteria__blancos { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
 .punteria__blancos .chip { cursor: pointer; }
 .punteria__diana { display: flex; justify-content: center; }
-.diana { width: 240px; max-width: 100%; height: auto; overflow: visible; }
+.diana-caja { position: relative; width: 240px; max-width: 100%; }
+.diana { display: block; width: 100%; height: auto; overflow: visible; }
 .diana--apagada { opacity: 0.45; }
 .diana__oscuro { fill: var(--negro); }
 .diana__claro { fill: var(--acrilico-claro); }
@@ -887,3 +888,29 @@ a.boton { text-decoration: none; }
 .punteria__arriba { display: flex; align-items: center; gap: 10px; }
 .punteria__etiqueta { padding: 6px 10px; border-radius: 4px; background: var(--negro); color: var(--mostaza); }
 .punteria__valor { margin-left: auto; }
+.dardo__aro { fill: none; stroke: var(--mostaza); stroke-width: 2; pointer-events: none; }
+.dardo { pointer-events: none; }
+.dardo__zona { fill: transparent; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
+.dardo__zona:focus-visible { stroke: var(--marino); stroke-width: 2; }
+/* C86/Vista previa del dardo (230:3892): tapa, nombre y puntaje */
+.vista-dardo {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 180px;
+  padding: var(--esp-2) 10px var(--esp-2) var(--esp-2);
+  border: 1px solid var(--mostaza);
+  border-radius: var(--radio-m);
+  background: var(--negro);
+  box-shadow: 0 3px 8px rgb(31 35 28 / 0.35);
+  color: var(--acrilico-claro);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.vista-dardo__tapa { display: flex; flex: none; align-items: flex-end; width: 44px; height: 44px; padding: 4px; overflow: hidden; border-radius: 2px; background: var(--negro-2); color: var(--mostaza); }
+.vista-dardo__tapa .cartel-s { font-size: 8px; line-height: 1.1; overflow-wrap: break-word; }
+.vista-dardo__tapa img { width: 44px; height: 44px; margin: -4px; object-fit: cover; }
+.vista-dardo__disco { display: -webkit-box; flex: 1; min-width: 0; overflow: hidden; font: 600 13px/1.25 var(--fuente-texto); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.vista-dardo__puntaje { flex: none; padding: 2px 6px; border-radius: var(--radio-xs); background: var(--lcd); box-shadow: inset 0 2px 4px rgb(31 41 23 / 0.4); color: var(--lcd-tinta); }

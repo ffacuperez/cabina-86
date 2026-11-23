@@ -39,7 +39,7 @@ export type Tiro = {
 }
 
 /** Un disco en la diana: z es cuántos desvíos se aleja la nota del promedio de quien lo escuchó */
-export type Dardo = { de: string; a: string; pase_id: string; titulo: string; puntaje: number; z: number }
+export type Dardo = { de: string; a: string; pase_id: string; titulo: string; tapa_url: string | null; puntaje: number; z: number }
 
 type TiroDeLaRonda = { de: string; de_nombre: string; a: string; a_nombre: string; titulo: string; puntaje: number; sobre: number }
 

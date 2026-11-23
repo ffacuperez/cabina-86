@@ -201,7 +201,7 @@ orden as (
     from integrantes
 ),
 dardos as (
-  select n.pase_id, n.titulo, n.puntaje, n.de_sigla as de, n.de_nombre, n.sigla as a, n.nombre as a_nombre,
+  select n.pase_id, n.titulo, n.tapa_url, n.puntaje, n.de_sigla as de, n.de_nombre, n.sigla as a, n.nombre as a_nombre,
          n.puntaje - e.prom as sobre,
          (n.puntaje - e.prom) / e.desvio as z
     from notas n
@@ -234,7 +234,7 @@ punteria as (
                 'errado', case when discos >= 5 then errado end
               ) order by a_n, de_n), '[]'::jsonb) from tiros),
     'dardos', (select coalesce(jsonb_agg(jsonb_build_object(
-                 'de', de, 'a', a, 'pase_id', pase_id, 'titulo', titulo, 'puntaje', puntaje, 'z', round(z::numeric, 2)
+                 'de', de, 'a', a, 'pase_id', pase_id, 'titulo', titulo, 'tapa_url', tapa_url, 'puntaje', puntaje, 'z', round(z::numeric, 2)
                ) order by a, de, titulo), '[]'::jsonb) from dardos_medidos where z is not null),
     'mejor', (select jsonb_build_object('de', de, 'de_nombre', de_nombre, 'a', a, 'a_nombre', a_nombre,
                                         'titulo', titulo, 'puntaje', puntaje, 'sobre', round(sobre::numeric, 1))
