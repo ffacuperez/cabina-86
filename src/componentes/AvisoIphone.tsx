@@ -5,9 +5,9 @@ export function AvisoIphone() {
   const { mostrar, cerrar } = useAvisoIphone()
   if (!mostrar) return null
   return (
-    <aside className="aviso-iphone" aria-labelledby="aviso-iphone">
-      <p id="aviso-iphone" className="mono-s aviso-iphone__rotulo">¿TENÉS LA APP INSTALADA?</p>
-      <p className="aviso-iphone__texto">
+    <aside className="aviso aviso-iphone" aria-labelledby="aviso-iphone">
+      <p id="aviso-iphone" className="mono-s aviso__rotulo">¿TENÉS LA APP INSTALADA?</p>
+      <p className="aviso__texto">
         Abrila desde tu pantalla de inicio: ya estás en la ronda. Este link se abrió en Safari, que no comparte la sesión con la app.
       </p>
       <button className="chip-accion chip-accion--mostaza" type="button" onClick={cerrar}>ENTENDIDO</button>

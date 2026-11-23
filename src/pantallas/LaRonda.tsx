@@ -80,7 +80,7 @@ export default function LaRonda() {
 
       {invitando && estado.tipo === 'listo' && estado.tablero.codigo !== null && (
         <HojaInvitar
-          ronda={{ nombre: ronda.nombre, codigo: estado.tablero.codigo, sumados: ronda.otros.map((o) => o.nombre) }}
+          ronda={{ nombre: ronda.nombre, codigo: estado.tablero.codigo, sumados: ronda.otros.map((o) => o.nombre), creadaEn: ronda.creadaEn }}
           onCerrar={cerrarHoja}
         />
       )}

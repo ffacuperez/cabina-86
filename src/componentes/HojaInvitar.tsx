@@ -1,14 +1,17 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Hoja } from './Hoja'
-import { linkDeInvitacion, mensajeDeInvitacion } from '../datos/invitacion'
+import { avisoDeInvitacion, linkDeInvitacion, mensajeDeInvitacion } from '../datos/invitacion'
 import type { RondaQueInvito } from '../datos/rondas'
 
 /**
  * Figma 09c · Hoja "Invitá a la banda": sube sobre Mis rondas al tocar INVITAR (y desde La Ronda, HU-17).
  * Solo la abre quien creó la ronda (#52). Link con COPIAR, Invitar por WhatsApp y quiénes ya se sumaron (HU-04).
+ * Debajo de la bajada, el aviso de RN-06 (#112): cuántas horas quedan para sumarse con todo (09e) o que ya arrancó (09f).
  */
-export function HojaInvitar({ ronda, onCerrar }: { ronda: Pick<RondaQueInvito, 'nombre' | 'codigo' | 'sumados'>; onCerrar: () => void }) {
+export function HojaInvitar({ ronda, onCerrar }: { ronda: Pick<RondaQueInvito, 'nombre' | 'codigo' | 'sumados' | 'creadaEn'>; onCerrar: () => void }) {
   const idTitulo = useId()
+  const idAviso = useId()
+  const aviso = avisoDeInvitacion(ronda.creadaEn)
   const textoLink = useRef<HTMLSpanElement>(null)
   const [copiado, setCopiado] = useState(false)
   const link = linkDeInvitacion(ronda.codigo)
@@ -37,6 +40,11 @@ export function HojaInvitar({ ronda, onCerrar }: { ronda: Pick<RondaQueInvito, '
     <Hoja etiquetadaPor={idTitulo} onCerrar={onCerrar}>
       <h2 className="cartel-m hoja__titulo" id={idTitulo} tabIndex={-1}>Invitá a la banda</h2>
       <p className="texto-s">Quien abra este link se suma a {ronda.nombre}.</p>
+
+      <aside className="aviso hoja__aviso" aria-labelledby={idAviso}>
+        <p id={idAviso} className="mono-s aviso__rotulo">{aviso.rotulo}</p>
+        <p className="aviso__texto">{aviso.texto}</p>
+      </aside>
 
       <p className="campo-link">
         <span className="campo-link__texto" ref={textoLink}>{link.replace(/^https?:\/\//, '')}</span>
