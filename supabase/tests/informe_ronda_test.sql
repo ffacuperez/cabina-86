@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(20);
+select plan(26);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000f1', 'facu@test.com', '{"full_name":"Facu"}'),
@@ -141,6 +141,35 @@ select is(
   'RN-12: tibiómetro, a Facu le faltan 5 notas y a Manu 4'
 );
 select is((pg_temp.informe('10000000-0000-0000-0000-0000000000b2') -> 'termometro' -> 'reparto'), '[0,0,0,0,0,0,1,0,0,0]'::jsonb, 'Reparto: una nota de 7');
+
+-- La puntería: tiros de a pares (quien pasa → quien escucha), con 5 discos como mínimo
+select is(
+  (select count(*)::int from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'tiros') t where (t ->> 'faltan')::int = 0),
+  2,
+  'Puntería: solo se miden Facu → Manu y Facu → Maxi (6 discos cada uno)'
+);
+select is(
+  (select (t ->> 'diferencia')::numeric from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'tiros') t
+    where t ->> 'de' = 'FAC' and t ->> 'a' = 'MAN'),
+  0.00,
+  'Puntería: a Manu lo de Facu le gusta igual que su promedio (todo lo que escuchó es de Facu)'
+);
+select is(jsonb_array_length(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'dardos'), 12, 'Puntería: un dardo por cada nota de los tiros medidos');
+select is(
+  pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'mejor' ->> 'titulo',
+  'Disco 6',
+  'Puntería: el mejor tiro es el 10 de Maxi, el que más supera su promedio'
+);
+select is(
+  (select jsonb_build_array(e ->> 'titulo', e ->> 'a', e -> 'fallo_con_todos') from (select pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'errado' as e) x),
+  '["Disco 1", "MAX", false]'::jsonb,
+  'Puntería: el más errado es el 4 de Maxi, y no falló con todos (a Manu le gustó)'
+);
+select is(
+  (select t -> 'diferencia' from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b2') -> 'punteria' -> 'tiros') t where t ->> 'de' = 'FAC'),
+  'null'::jsonb,
+  'RN-12: con un solo disco, el tiro de Facu a Manu todavía no se mide'
+);
 
 select * from finish();
 rollback;

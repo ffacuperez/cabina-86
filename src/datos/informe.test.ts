@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type Informe, faltan, fraseReparto, fraseTermometro, fraseTibiometro, lucesPrendidas, notasEnLinea, porcentajeTibio, puestos } from './informe'
+import { type Informe, colorDe, conSigno, etiquetaTiro, faltan, faltanTiro, frasePunteria, posicionDardo, fraseReparto, fraseTermometro, fraseTibiometro, lucesPrendidas, notasEnLinea, porcentajeTibio, puestos } from './informe'
 
 type Termometro = Informe['termometro']
 type Fila = Informe['tibiometro'][number]
@@ -71,4 +71,39 @@ describe('detalles', () => {
     expect(faltan.podio(2)).toBe('FALTAN 2 DISCOS QUE ESCUCHEN TODOS PARA ARMAR EL PODIO.')
     expect(faltan.enComun(4)).toBe('FALTAN 4 DISCOS EN COMÚN PARA SABER SI SON COMPATIBLES.')
   })
+})
+
+describe('la puntería', () => {
+  it('PAREJO entre −0,3 y +0,3, LE PEGA y LE ERRA afuera', () => {
+    expect([etiquetaTiro(0.17), etiquetaTiro(-0.17), etiquetaTiro(0.3), etiquetaTiro(-0.45), etiquetaTiro(null)]).toEqual(['PAREJO', 'PAREJO', 'LE PEGA', 'LE ERRA', null])
+  })
+  it('el número con su signo', () => {
+    expect([conSigno(0.17), conSigno(-0.17), conSigno(0), conSigno(-0.001)]).toEqual(['+0,17', '−0,17', '0,00', '0,00'])
+  })
+  it('los colores siguen el orden de la ronda', () => {
+    const ronda = [{ sigla: 'FAC', nombre: 'Facu' }, { sigla: 'MAX', nombre: 'Maxi' }, { sigla: 'MAN', nombre: 'Manu' }, { sigla: 'JOA', nombre: 'Joa' }]
+    expect(['FAC', 'MAX', 'MAN', 'JOA'].map((s) => colorDe(ronda, s))).toEqual(['uno', 'dos', 'tres', 'uno'])
+  })
+  it('un disco muy por arriba del promedio cae en el centro, su promedio a la mitad y muy por debajo en el borde', () => {
+    const centro = posicionDardo(2.5, 0, 1, 0, 1)
+    const mitad = posicionDardo(0, 0, 1, 0, 1)
+    const borde = posicionDardo(-3, 0, 1, 0, 1)
+    const distancia = (p: { x: number; y: number }) => Math.round(Math.hypot(p.x - 120, p.y - 120))
+    expect([distancia(centro), distancia(mitad), distancia(borde)]).toEqual([3, 55, 110])
+  })
+  it('con dos que le pasan, el primero va a la izquierda y el segundo a la derecha', () => {
+    expect(posicionDardo(0, 0, 1, 0, 2).x).toBeLessThan(120)
+    expect(posicionDardo(0, 0, 1, 1, 2).x).toBeGreaterThan(120)
+  })
+  it('el mejor tiro y el más errado de la ronda', () => {
+    const p: Informe['punteria'] = {
+      tiros: [], dardos: [],
+      mejor: { de: 'FAC', de_nombre: 'Facundo Pérez', a: 'MAN', a_nombre: 'Manu', titulo: 'The Black Parade', puntaje: 10, sobre: 3.3 },
+      errado: { de: 'FAC', de_nombre: 'Facundo Pérez', a: 'MAX', a_nombre: 'Maxi', titulo: 'Heaven or Las Vegas', puntaje: 3, sobre: -3.7, oyentes: 2, fallo_con_todos: true },
+    }
+    expect(frasePunteria(p)).toBe('El mejor tiro de la ronda: Facundo a Manu con The Black Parade. Le puso 10, 3,3 más que su promedio. El más errado: Facundo con Heaven or Las Vegas, que falló con los dos.')
+    expect(frasePunteria({ ...p, errado: { ...p.errado!, fallo_con_todos: false } })).toContain('El más errado: Facundo con Heaven or Las Vegas: Maxi le puso 3.')
+    expect(frasePunteria({ ...p, mejor: null })).toBe(null)
+  })
+  it('lo que falta para medir un tiro', () => expect(faltanTiro(4, 'Facundo Pérez')).toBe('FALTAN 4 DISCOS DE FACUNDO PARA MEDIR EL TIRO.'))
 })

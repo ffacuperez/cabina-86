@@ -1,11 +1,18 @@
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { Link } from 'react-router'
 import { CajaCD } from '../componentes/CajaCD'
+import { Diana, type DardoEnDiana } from '../componentes/Diana'
 import {
   type Cita,
   type DiscoDelInforme,
   type Informe as DatosInforme,
+  colorDe,
+  conSigno,
+  etiquetaTiro,
   faltan,
+  faltanTiro,
+  frasePunteria,
+  posicionDardo,
   fraseReparto,
   fraseTermometro,
   fraseTibiometro,
@@ -143,6 +150,10 @@ export function VistaInforme({ informe: i }: { informe: DatosInforme }) {
           )}
         </Bloque>
       )}
+
+      <Bloque titulo="La puntería" bajada="Cada disco que le pasaste a alguien es un dardo: más cerca del centro, más le gustó comparado con lo que suele poner.">
+        <Punteria informe={i} />
+      </Bloque>
 
       <Bloque titulo="Compatibilidad" bajada="Qué tanto ordenan los discos igual, de a dos.">
         <Compatibilidad pares={i.compatibilidad} />
@@ -302,6 +313,74 @@ function Compatibilidad({ pares }: { pares: DatosInforme['compatibilidad'] }) {
         </>
       ) : (
         pares.length > 0 && <p className="mono-s">{faltan.enComun(minFaltan)}</p>
+      )}
+    </>
+  )
+}
+
+/** Figma 06f · La puntería: chips para elegir a quién mirar, la diana con sus dardos y una fila por quien le pasa */
+function Punteria({ informe: i }: { informe: DatosInforme }) {
+  const p = i.punteria
+  const medidos = p.tiros.filter((t) => t.diferencia !== null)
+  const [blanco, setBlanco] = useState(() => (medidos[0]?.a ?? i.integrantes[0]?.sigla ?? ''))
+  const quien = i.integrantes.find((x) => x.sigla === blanco)
+  // Los que le pasan a este blanco, en el orden de la ronda: cada uno tiene su porción de la diana y su color
+  const tiros = p.tiros.filter((t) => t.a === blanco)
+  const deQuien = i.integrantes.filter((x) => tiros.some((t) => t.de === x.sigla))
+  const dardos: DardoEnDiana[] = deQuien.flatMap((x, porcion) => {
+    const suyos = p.dardos.filter((d) => d.a === blanco && d.de === x.sigla)
+    return suyos.map((d, n) => ({ ...d, ...posicionDardo(d.z, n, suyos.length, porcion, deQuien.length), color: colorDe(i.integrantes, x.sigla) }))
+  })
+  const frase = frasePunteria(p)
+
+  return (
+    <>
+      <div className="punteria__blancos" role="group" aria-label="A quién mirar">
+        {i.integrantes.map((x) => (
+          <button key={x.sigla} type="button" className={`chip${x.sigla === blanco ? ' chip--activo' : ''}`} aria-pressed={x.sigla === blanco} onClick={() => setBlanco(x.sigla)}>
+            A {nombreCorto(x.nombre)}
+          </button>
+        ))}
+      </div>
+      <div className="punteria__diana">
+        <Diana
+          dardos={dardos}
+          apagada={medidos.length === 0}
+          etiqueta={quien ? `La diana de ${nombreCorto(quien.nombre)}: ${dardos.length} discos` : 'La diana'}
+        />
+      </div>
+      {medidos.length === 0 ? (
+        <p className="mono-s">CADA TIRO SE MIDE CUANDO UNO LE PASÓ 5 DISCOS AL OTRO Y LOS ESCUCHÓ.</p>
+      ) : (
+        <>
+          {deQuien.some((x) => dardos.some((d) => d.de === x.sigla)) && (
+            <ul className="punteria__leyenda">
+              {deQuien.filter((x) => dardos.some((d) => d.de === x.sigla)).map((x) => (
+                <li key={x.sigla} className="mono-s">
+                  <span className={`dardo-muestra dardo--${colorDe(i.integrantes, x.sigla)}`} aria-hidden="true" /> DE {nombreCorto(x.nombre).toUpperCase()}
+                </li>
+              ))}
+            </ul>
+          )}
+          <p className="mono-s">CENTRO: MUY ARRIBA DE SU PROMEDIO · PUNTEADA: SU PROMEDIO · BORDE: MUY ABAJO</p>
+          <ul className="punteria__tiros">
+            {[...tiros].sort((a, b) => (b.diferencia ?? -99) - (a.diferencia ?? -99)).map((t) => (
+              <li key={t.de} className="punteria__tiro">
+                <p className="punteria__arriba">
+                  <span className="texto-m-fuerte">De {nombreCorto(t.de_nombre)}</span>
+                  {etiquetaTiro(t.diferencia) && <span className="mono-s punteria__etiqueta">{etiquetaTiro(t.diferencia)}</span>}
+                  <span className="lcd-l punteria__valor">{t.diferencia === null ? '--' : conSigno(t.diferencia)}</span>
+                </p>
+                <p className="mono-s">
+                  {t.diferencia === null || !t.mejor || !t.errado
+                    ? faltanTiro(t.faltan, t.de_nombre)
+                    : `MEJOR TIRO: ${t.mejor.titulo.toUpperCase()} (${t.mejor.puntaje}) · ERRADO: ${t.errado.titulo.toUpperCase()} (${t.errado.puntaje})`}
+                </p>
+              </li>
+            ))}
+          </ul>
+          {frase && <p className="texto-s">{frase}</p>}
+        </>
       )}
     </>
   )

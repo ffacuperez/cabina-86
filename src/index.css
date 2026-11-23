@@ -858,3 +858,32 @@ a.boton { text-decoration: none; }
 .informe__cita { margin: 0; }
 .informe__cita blockquote { margin: 0; }
 .informe__cita--marino { background: var(--marino); }
+
+/* La puntería: C86/Diana y C86/Dardo (Figma 225:3834, 225:3851) */
+.punteria__blancos { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+.punteria__blancos .chip { cursor: pointer; }
+.punteria__diana { display: flex; justify-content: center; }
+.diana { width: 240px; max-width: 100%; height: auto; overflow: visible; }
+.diana--apagada { opacity: 0.45; }
+.diana__oscuro { fill: var(--negro); }
+.diana__claro { fill: var(--acrilico-claro); }
+.diana__mostaza { fill: var(--mostaza); }
+.diana__centro { fill: var(--magenta); }
+.diana__mira { stroke: var(--acrilico-oscuro); stroke-width: 1; opacity: 0.35; }
+.diana__promedio { fill: none; stroke: var(--acrilico-oscuro); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.diana__filete { fill: none; stroke: var(--mostaza); stroke-width: 2; }
+.dardo { stroke: var(--acrilico-claro); stroke-width: 2; filter: drop-shadow(0 1px 1px rgb(31 35 28 / 0.45)); }
+.dardo--uno { fill: var(--naranja); }
+.dardo--dos { fill: var(--marino); }
+.dardo--tres { fill: var(--magenta); }
+.dardo-muestra { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--acrilico-claro); border-radius: 50%; vertical-align: -2px; box-sizing: border-box; }
+.dardo-muestra.dardo--uno { background: var(--naranja); }
+.dardo-muestra.dardo--dos { background: var(--marino); }
+.dardo-muestra.dardo--tres { background: var(--magenta); }
+.punteria__leyenda { display: flex; flex-wrap: wrap; gap: var(--esp-1) var(--esp-4); margin: 0; padding: 0; list-style: none; }
+.punteria__tiros { display: flex; flex-direction: column; gap: var(--esp-3); margin: 0; padding: 0; list-style: none; }
+.punteria__tiro { display: flex; flex-direction: column; gap: var(--esp-1); padding-bottom: var(--esp-2); border-bottom: 1px solid var(--negro); }
+.punteria__tiro p { margin: 0; }
+.punteria__arriba { display: flex; align-items: center; gap: 10px; }
+.punteria__etiqueta { padding: 6px 10px; border-radius: 4px; background: var(--negro); color: var(--mostaza); }
+.punteria__valor { margin-left: auto; }

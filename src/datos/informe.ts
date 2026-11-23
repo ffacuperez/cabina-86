@@ -22,10 +22,33 @@ export type DiscoDelInforme = {
   notas: NotaDeDisco[]
 }
 
+export type Integrante = { sigla: string; nombre: string }
+
+/** Un tiro: lo que `de` le pasó a `a`, comparado con el promedio de `a` (se mide con 5 discos) */
+export type Tiro = {
+  de: string
+  de_nombre: string
+  a: string
+  a_nombre: string
+  discos: number
+  faltan: number
+  /** Promedio de lo que le puso menos su promedio; null si faltan discos */
+  diferencia: number | null
+  mejor: { titulo: string; puntaje: number } | null
+  errado: { titulo: string; puntaje: number } | null
+}
+
+/** Un disco en la diana: z es cuántos desvíos se aleja la nota del promedio de quien lo escuchó */
+export type Dardo = { de: string; a: string; pase_id: string; titulo: string; puntaje: number; z: number }
+
+type TiroDeLaRonda = { de: string; de_nombre: string; a: string; a_nombre: string; titulo: string; puntaje: number; sobre: number }
+
 export type Informe = {
   /** Discos cerrados que cuentan */
   discos: number
   notas: number
+  /** En el orden de la ronda (los colores de los dardos siguen este orden) */
+  integrantes: Integrante[]
   /** Cuántos discos cerrados faltan para podio, fondo, discordia y extremos (mínimo 3) */
   faltan_cerrados: number
   termometro: {
@@ -67,6 +90,12 @@ export type Informe = {
     une: { titulo: string; a: number; b: number } | null
     separa: { titulo: string; a: number; b: number } | null
   }[]
+  punteria: {
+    tiros: Tiro[]
+    dardos: Dardo[]
+    mejor: TiroDeLaRonda | null
+    errado: (TiroDeLaRonda & { oyentes: number; fallo_con_todos: boolean }) | null
+  }
   extremos: {
     sigla: string
     nombre: string
@@ -167,5 +196,57 @@ export const faltan = {
   podio: (n: number) => `${n === 1 ? 'FALTA 1 DISCO QUE ESCUCHEN' : `FALTAN ${n} DISCOS QUE ESCUCHEN`} TODOS PARA ARMAR EL PODIO.`,
   enComun: (n: number) => `${n === 1 ? 'FALTA 1 DISCO' : `FALTAN ${n} DISCOS`} EN COMÚN PARA SABER SI SON COMPATIBLES.`,
 }
+
+// ── La puntería ──
+
+/** PAREJO entre −0,3 y +0,3; desde +0,3, LE PEGA; desde −0,3, LE ERRA */
+export function etiquetaTiro(diferencia: number | null) {
+  if (diferencia === null) return null
+  if (diferencia >= 0.3) return 'LE PEGA'
+  if (diferencia <= -0.3) return 'LE ERRA'
+  return 'PAREJO'
+}
+
+/** "+0,17", "−0,17" (con el signo menos de verdad) o "0,00" */
+export function conSigno(n: number) {
+  const texto = Math.abs(n).toFixed(2).replace('.', ',')
+  if (Math.round(n * 100) === 0) return '0,00'
+  return n > 0 ? `+${texto}` : `−${texto}`
+}
+
+/** Los colores de los dardos (C86/Dardo): el orden de quien pasa en la ronda */
+export const COLORES_DARDO = ['uno', 'dos', 'tres'] as const
+export const colorDe = (integrantes: Integrante[], sigla: string) =>
+  COLORES_DARDO[Math.max(0, integrantes.findIndex((i) => i.sigla === sigla)) % COLORES_DARDO.length]
+
+/**
+ * Dónde cae un dardo en una diana de 240 × 240 (centro en 120, 120; radio útil 110).
+ * La distancia al centro sale de z: +2 desvíos o más al centro, su promedio a la mitad, −2 o menos al borde.
+ * Cada uno de los que le pasan tiene su porción de la diana (con 10° de margen) y sus discos se reparten en ella.
+ */
+export function posicionDardo(z: number, indice: number, total: number, porcion: number, porciones: number) {
+  const r = Math.max(0.03, Math.min(1, (2 - z) / 4)) * 110
+  const ancho = 360 / porciones
+  const desde = 90 + porcion * ancho + 10
+  const hasta = 90 + (porcion + 1) * ancho - 10
+  const angulo = ((desde + ((hasta - desde) * (indice + 0.5)) / total) * Math.PI) / 180
+  return { x: Math.round((120 + r * Math.cos(angulo)) * 10) / 10, y: Math.round((120 - r * Math.sin(angulo)) * 10) / 10 }
+}
+
+/** "El mejor tiro de la ronda: Facu a Manu con The Black Parade. Le puso 10, 3,3 más que su promedio. El más errado: …" */
+export function frasePunteria(p: Informe['punteria']) {
+  if (!p.mejor) return null
+  const m = p.mejor
+  const partes = [`El mejor tiro de la ronda: ${pila(m.de_nombre)} a ${pila(m.a_nombre)} con ${m.titulo}. Le puso ${m.puntaje}, ${String(m.sobre.toFixed(1)).replace('.', ',')} más que su promedio.`]
+  const e = p.errado
+  if (e && e.sobre < 0) {
+    const conQuien = e.fallo_con_todos && e.oyentes > 1 ? (e.oyentes === 2 ? ', que falló con los dos' : ', que falló con todos') : `: ${pila(e.a_nombre)} le puso ${e.puntaje}`
+    partes.push(`El más errado: ${pila(e.de_nombre)} con ${e.titulo}${conQuien}.`)
+  }
+  return partes.join(' ')
+}
+
+/** Qué falta para medir un tiro */
+export const faltanTiro = (n: number, de: string) => `${n === 1 ? 'FALTA 1 DISCO' : `FALTAN ${n} DISCOS`} DE ${pila(de).toUpperCase()} PARA MEDIR EL TIRO.`
 
 export { pila as nombreCorto }

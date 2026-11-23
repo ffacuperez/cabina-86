@@ -7,11 +7,14 @@
 --
 -- Mínimos (RN-12): cada bloque trae "faltan" (0 si ya alcanza) y la app muestra cuánto falta.
 --   termómetro: 10 notas · tibiómetro: 5 notas de cada uno · podio, fondo, discordia y extremos:
---   3 discos cerrados · compatibilidad: 5 discos en común por par.
+--   3 discos cerrados · compatibilidad: 5 discos en común por par · puntería: 5 discos por tiro.
 --
 -- Compatibilidad = correlación de las notas del par × 100 (0 si es negativa).
 -- Discordia = las dos notas del disco que más se alejan en la escala de cada uno: cuántos desvíos se
 -- aleja cada nota del promedio de quien la puso (un 4 de alguien que vive en el 7 pesa más).
+-- Puntería = cuánto le gusta a cada uno lo que le pasa cada otro, comparado con su promedio. Un "tiro"
+-- es un par (quien pasa → quien escucha) y se mide con 5 discos; cada disco es un dardo de la diana,
+-- con su z (desvíos sobre el promedio de quien lo escuchó).
 -- Si no sos integrante devuelve null. Es "create or replace": se puede aplicar a mano antes de mergear.
 
 create or replace function public.informe_ronda(p_ronda uuid)
@@ -193,6 +196,56 @@ extremos as (
        group by i.usuario_id, i.sigla, i.nombre, i.se_unio_en
     ) e
 ),
+orden as (
+  select usuario_id, sigla, nombre, row_number() over (order by se_unio_en, usuario_id) as n
+    from integrantes
+),
+dardos as (
+  select n.pase_id, n.titulo, n.puntaje, n.de_sigla as de, n.de_nombre, n.sigla as a, n.nombre as a_nombre,
+         n.puntaje - e.prom as sobre,
+         (n.puntaje - e.prom) / e.desvio as z
+    from notas n
+    join escala e using (usuario_id)
+   where n.de_sigla is not null
+),
+tiros as (
+  select de.sigla as de, de.nombre as de_nombre, a.sigla as a, a.nombre as a_nombre, de.n as de_n, a.n as a_n,
+         count(d.pase_id)::int as discos,
+         avg(d.sobre) as diferencia,
+         (array_agg(jsonb_build_object('titulo', d.titulo, 'puntaje', d.puntaje) order by d.sobre desc, d.titulo)
+            filter (where d.pase_id is not null))[1] as mejor,
+         (array_agg(jsonb_build_object('titulo', d.titulo, 'puntaje', d.puntaje) order by d.sobre, d.titulo)
+            filter (where d.pase_id is not null))[1] as errado
+    from orden de
+    join orden a on a.usuario_id <> de.usuario_id
+    left join dardos d on d.de = de.sigla and d.a = a.sigla
+   group by de.sigla, de.nombre, a.sigla, a.nombre, de.n, a.n
+),
+dardos_medidos as (
+  select d.* from dardos d join tiros t on t.de = d.de and t.a = d.a where t.discos >= 5
+),
+punteria as (
+  select jsonb_build_object(
+    'tiros', (select coalesce(jsonb_agg(jsonb_build_object(
+                'de', de, 'de_nombre', de_nombre, 'a', a, 'a_nombre', a_nombre,
+                'discos', discos, 'faltan', greatest(0, 5 - discos),
+                'diferencia', case when discos >= 5 then round(diferencia::numeric, 2) end,
+                'mejor', case when discos >= 5 then mejor end,
+                'errado', case when discos >= 5 then errado end
+              ) order by a_n, de_n), '[]'::jsonb) from tiros),
+    'dardos', (select coalesce(jsonb_agg(jsonb_build_object(
+                 'de', de, 'a', a, 'pase_id', pase_id, 'titulo', titulo, 'puntaje', puntaje, 'z', round(z::numeric, 2)
+               ) order by a, de, titulo), '[]'::jsonb) from dardos_medidos where z is not null),
+    'mejor', (select jsonb_build_object('de', de, 'de_nombre', de_nombre, 'a', a, 'a_nombre', a_nombre,
+                                        'titulo', titulo, 'puntaje', puntaje, 'sobre', round(sobre::numeric, 1))
+                from dardos_medidos order by sobre desc, titulo limit 1),
+    'errado', (select jsonb_build_object('de', d.de, 'de_nombre', d.de_nombre, 'a', d.a, 'a_nombre', d.a_nombre,
+                                         'titulo', d.titulo, 'puntaje', d.puntaje, 'sobre', round(d.sobre::numeric, 1),
+                                         'oyentes', (select count(*) from dardos x where x.pase_id = d.pase_id)::int,
+                                         'fallo_con_todos', (select bool_and(x.sobre < 0) from dardos x where x.pase_id = d.pase_id))
+                 from dardos_medidos d order by d.sobre, d.titulo limit 1)
+  ) as j
+),
 comentarios as (
   select n.*,
          n.comentario ~* '(oportunidad|volver a escuch|escucho m[aá]s|refresc|revisit|otra vuelta|otra pasada|me estoy perdiendo)' as promete
@@ -219,6 +272,7 @@ picante as (
 select jsonb_build_object(
          'discos', t.discos,
          'notas', t.notas,
+         'integrantes', (select jsonb_agg(jsonb_build_object('sigla', sigla, 'nombre', nombre) order by n) from orden),
          'faltan_cerrados', greatest(0, 3 - t.discos),
          'termometro', (select j from termometro),
          'tibiometro', (select j from tibiometro),
@@ -227,6 +281,7 @@ select jsonb_build_object(
          'fondo', coalesce((select jsonb_agg(j order by titulo) from disco_json where puesto_desde_abajo = 1), '[]'::jsonb),
          'discordia', (select j from discordia),
          'compatibilidad', (select j from compatibilidad),
+         'punteria', (select j from punteria),
          'extremos', (select j from extremos),
          'oportunidad', (select j from oportunidad),
          'picante', (select j from picante)
