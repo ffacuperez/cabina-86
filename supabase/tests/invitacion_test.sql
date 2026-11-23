@@ -11,8 +11,9 @@ insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000f2', 'manu@test.com', '{"full_name":"Manu"}'),
   ('00000000-0000-0000-0000-0000000000f3', 'maxi@test.com', '{"full_name":"Maxi R"}');
 
-insert into public.rondas (id, nombre, codigo_invitacion, creada_por) values
-  ('10000000-0000-0000-0000-0000000000b1', 'Birrinhas do Sabado', '3F9A2C1B7E', '00000000-0000-0000-0000-0000000000f1');
+-- La ronda se armó hace 5 días: ya pasaron las 24 horas de RN-06 (la tolerancia se prueba en rn06_tolerancia_test.sql)
+insert into public.rondas (id, nombre, codigo_invitacion, creada_por, creada_en) values
+  ('10000000-0000-0000-0000-0000000000b1', 'Birrinhas do Sabado', '3F9A2C1B7E', '00000000-0000-0000-0000-0000000000f1', now() - interval '5 days');
 insert into public.miembros_ronda (ronda_id, usuario_id, sigla, se_unio_en) values
   ('10000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-0000000000f1', 'FAC', now() - interval '5 days'),
   ('10000000-0000-0000-0000-0000000000b1', '00000000-0000-0000-0000-0000000000f2', 'MAN', now() - interval '4 days');
@@ -59,7 +60,7 @@ select is(
   'HU-02: quedo como integrante con mi sigla'
 );
 
--- Escenario: No heredo discos anteriores (RN-06)
+-- Escenario: Pasadas las 24 horas, no heredo discos anteriores (RN-06)
 select is(
   (select pendientes from public.deuda where usuario_id = auth.uid() and ronda_id = '10000000-0000-0000-0000-0000000000b1'),
   0,
