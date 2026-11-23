@@ -7,6 +7,7 @@ import DetalleDisco from './pantallas/DetalleDisco'
 import Entrar from './pantallas/Entrar'
 import Exhibidor from './pantallas/Exhibidor'
 import Inicio from './pantallas/Inicio'
+import Informe from './pantallas/Informe'
 import LaRonda from './pantallas/LaRonda'
 import Muestrario from './pantallas/Muestrario'
 import Pasar from './pantallas/Pasar'
@@ -44,6 +45,7 @@ export default function App() {
               <Route index element={<Exhibidor />} />
               <Route path="pasar" element={<Pasar />} />
               <Route path="ronda" element={<LaRonda />} />
+              <Route path="informe" element={<Informe />} />
               <Route path="pasillo/:de" element={<Pasillo />} />
               <Route path="perfil" element={<Perfil />} />
               <Route path="disco/:pase" element={<DetalleDisco />} />

@@ -1,0 +1,319 @@
+import type { ReactNode } from 'react'
+import { Link } from 'react-router'
+import { CajaCD } from '../componentes/CajaCD'
+import {
+  type Cita,
+  type DiscoDelInforme,
+  type Informe as DatosInforme,
+  faltan,
+  fraseReparto,
+  fraseTermometro,
+  fraseTibiometro,
+  lucesPrendidas,
+  nombreCorto,
+  notasEnLinea,
+  porcentajeTibio,
+  puestos,
+  useInforme,
+} from '../datos/informe'
+import { conComa } from '../datos/loQuePasaste'
+import { useMarco, useRondaActual } from '../datos/ronda'
+import { dosCifras } from '../lib/texto'
+
+const CON_BOTONERA = { encabezado: false, botonera: true }
+
+/**
+ * Figma 06f · El informe de la ronda (183:3680), HU-21 (#113); con pocos datos, 06g (184:3816).
+ * Se llega desde "Ver el informe de la ronda" en La Ronda y vuelve con "← LA RONDA".
+ * Los números salen de informe_ronda (solo discos cerrados que podés ver, RN-13 y RN-01);
+ * cada bloque se muestra cuando alcanza su mínimo (RN-12) y, si no, dice cuánto falta.
+ */
+export default function Informe() {
+  useMarco(CON_BOTONERA)
+  const ronda = useRondaActual()
+  const { estado, reintentar } = useInforme(ronda.id)
+
+  return (
+    <div className="informe">
+      <header className="encabezado-ronda encabezado-ronda--propio">
+        <Link className="mono-m encabezado-ronda__volver" to={`/ronda/${ronda.id}/ronda`}>← LA RONDA</Link>
+        <p className="mono-s encabezado-ronda__nombre">{ronda.nombre.toUpperCase()}</p>
+      </header>
+      <h1 className="cartel-xl informe__titulo">El<br />informe</h1>
+
+      {estado.tipo === 'cargando' && <p className="cargando">Cargando…</p>}
+      {estado.tipo === 'error' && (
+        <div className="detalle__aviso">
+          <p role="alert" className="error">No pudimos armar el informe.</p>
+          <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
+        </div>
+      )}
+      {estado.tipo === 'listo' && <VistaInforme informe={estado.informe} />}
+    </div>
+  )
+}
+
+/** El contenido del informe, sin la carga (también sirve para mirarlo con datos de ejemplo). */
+export function VistaInforme({ informe: i }: { informe: DatosInforme }) {
+  const t = i.termometro
+  const hayCerrados = i.faltan_cerrados === 0
+
+  return (
+    <>
+      <p className="lcd informe__total">
+        {dosCifras(i.discos)} {i.discos === 1 ? 'DISCO' : 'DISCOS'} · {dosCifras(i.notas)} {i.notas === 1 ? 'NOTA' : 'NOTAS'}
+      </p>
+      <p className="mono-s informe__aclaracion">SOLO CUENTAN LOS DISCOS QUE YA ESCUCHARON TODOS</p>
+
+      <Bloque titulo="El termómetro">
+        <dl className="numeros-lcd">
+          <NumeroLcd rotulo="NOTAS" valor={dosCifras(t.notas)} />
+          <NumeroLcd rotulo="PROM" valor={t.faltan ? '--' : conComa(t.promedio ?? 0)} apagado={t.faltan > 0} />
+          <NumeroLcd rotulo="1 Y 2" valor={t.faltan ? '--' : dosCifras(t.uno_y_dos)} apagado={t.faltan > 0} />
+          <NumeroLcd rotulo="9 Y 10" valor={t.faltan ? '--' : dosCifras(t.nueve_y_diez)} apagado={t.faltan > 0} />
+        </dl>
+        <p className="lcd informe__lcd-grande">{t.faltan ? faltan.notas(t.faltan) : `${porcentajeTibio(t)}% ENTRE 6 Y 8`}</p>
+        <p className="texto-m-fuerte informe__frase">
+          {t.faltan ? 'El termómetro arranca con 10 notas en discos que ya escucharon todos.' : fraseTermometro(t)}
+        </p>
+      </Bloque>
+
+      <Bloque titulo="El tibiómetro" bajada="Cuántas de sus notas caen entre 6 y 8. Más alto, más tibio.">
+        <ul className="vumetros">
+          {i.tibiometro.map((f) => (
+            <FilaVumetro key={f.sigla} nombre={nombreCorto(f.nombre)} pct={f.faltan ? null : f.entre_6_y_8_pct} />
+          ))}
+        </ul>
+        <p className="texto-s">
+          {i.tibiometro.some((f) => f.faltan === 0) ? fraseTibiometro(i.tibiometro) : 'Cada uno entra al tibiómetro cuando tenga 5 notas.'}
+        </p>
+      </Bloque>
+
+      {t.faltan === 0 && (
+        <Bloque titulo="Cómo se reparten las notas">
+          <Reparto reparto={t.reparto} />
+          <p className="texto-s">{fraseReparto(t)}</p>
+        </Bloque>
+      )}
+
+      <Bloque titulo="El podio">
+        {hayCerrados ? (
+          <ol className="puestos">
+            {puestos(i.podio).map(({ puesto, disco, empatados }) => (
+              <Puesto
+                key={puesto}
+                posicion={String(puesto)}
+                disco={disco}
+                titulo={empatados > 1 ? `${disco.titulo} y ${empatados - 1} más` : disco.titulo}
+                linea={empatados > 1 ? `${empatados} EMPATADOS` : disco.de_nombre ? `DE ${nombreCorto(disco.de_nombre).toUpperCase()}` : ''}
+              />
+            ))}
+          </ol>
+        ) : (
+          <p className="mono-s">{faltan.podio(i.faltan_cerrados)}</p>
+        )}
+      </Bloque>
+
+      {hayCerrados && i.fondo.length > 0 && (
+        <Bloque titulo="El fondo de la bandeja">
+          <ol className="puestos">
+            <Puesto
+              posicion={String(i.discos)}
+              disco={i.fondo[0]}
+              titulo={i.fondo.length > 1 ? `${i.fondo[0].titulo} y ${i.fondo.length - 1} más` : i.fondo[0].titulo}
+              linea={i.fondo.length > 1 ? `${i.fondo.length} EMPATADOS` : notasEnLinea(i.fondo[0])}
+            />
+          </ol>
+        </Bloque>
+      )}
+
+      {hayCerrados && i.discordia.length > 0 && (
+        <Bloque titulo="Los discos de la discordia">
+          <Discordia disco={i.discordia[0]} />
+          {i.discordia.length > 1 && (
+            <p className="mono-s">
+              TAMBIÉN:{' '}
+              {i.discordia.slice(1).map((d, n) => (
+                <span key={d.pase_id}>
+                  {n > 0 && <br />}
+                  {d.titulo.toUpperCase()} · {d.alta.sigla} {d.alta.puntaje} · {d.baja.sigla} {d.baja.puntaje}
+                </span>
+              ))}
+            </p>
+          )}
+        </Bloque>
+      )}
+
+      <Bloque titulo="Compatibilidad" bajada="Qué tanto ordenan los discos igual, de a dos.">
+        <Compatibilidad pares={i.compatibilidad} />
+      </Bloque>
+
+      {hayCerrados && i.extremos.length > 0 && (
+        <Bloque titulo="Lo más alto y lo más bajo">
+          <ul className="extremos">
+            {i.extremos.map((e) => (
+              <li key={e.sigla} className="extremos__fila">
+                <p className="texto-m-fuerte">{nombreCorto(e.nombre)}</p>
+                <p className="mono-s">MÁS ALTA&nbsp; {e.alta.puntaje} · {e.alta.discos.join(', ')}</p>
+                <p className="mono-s">MÁS BAJA&nbsp; {e.baja.puntaje} · {e.baja.discos.join(', ')}</p>
+              </li>
+            ))}
+          </ul>
+        </Bloque>
+      )}
+
+      {hayCerrados && i.oportunidad.promesas > 0 && (
+        <Bloque titulo="Tengo que darle otra oportunidad" bajada="Comentarios que prometen volver a escucharlo. ¿Alguno lo hizo?">
+          <p className="lcd informe__lcd-grande">
+            {i.oportunidad.promesas} {i.oportunidad.promesas === 1 ? 'PROMESA' : 'PROMESAS'} DE VOLVER
+          </p>
+          {i.oportunidad.citas.map((c) => <TarjetaCita key={`${c.sigla}-${c.titulo}`} cita={c} />)}
+        </Bloque>
+      )}
+
+      {hayCerrados && i.picante && (
+        <Bloque titulo="La más picante">
+          <TarjetaCita cita={i.picante} marino />
+        </Bloque>
+      )}
+
+      {!hayCerrados && (
+        <p className="mono-s informe__pie">
+          EL FONDO DE LA BANDEJA, LA DISCORDIA, LAS NOTAS MÁS ALTAS Y MÁS BAJAS Y LAS CRÍTICAS APARECEN CUANDO LA RONDA TENGA 3 DISCOS QUE ESCUCHARON TODOS.
+        </p>
+      )}
+      <p className="mono-s informe__pie">
+        SE ACTUALIZA CADA VEZ QUE LA RONDA TERMINA DE ESCUCHAR UN DISCO. LAS NOTAS DE UN DISCO APARECEN CUANDO LO ESCUCHARON TODOS.
+      </p>
+    </>
+  )
+}
+
+function Bloque({ titulo, bajada, children }: { titulo: string; bajada?: string; children: ReactNode }) {
+  return (
+    <section className="informe__bloque" aria-label={titulo}>
+      <h2 className="cartel-m">{titulo}</h2>
+      {bajada && <p className="texto-s">{bajada}</p>}
+      {children}
+    </section>
+  )
+}
+
+function NumeroLcd({ rotulo, valor, apagado = false }: { rotulo: string; valor: string; apagado?: boolean }) {
+  return (
+    <div className={`numero-lcd${apagado ? ' numero-lcd--apagado' : ''}`}>
+      <dt className="lcd-s">{rotulo}</dt>
+      <dd className="lcd-l">{valor}</dd>
+    </div>
+  )
+}
+
+/** Vúmetro de 10 luces (Figma 06f: tibiómetro y compatibilidad); sin datos, apagado y "--" */
+function FilaVumetro({ nombre, pct }: { nombre: string; pct: number | null }) {
+  const prendidas = lucesPrendidas(pct)
+  return (
+    <li className="vumetro">
+      <span className="texto-m-fuerte vumetro__nombre">{nombre}</span>
+      <span className="vumetro__luces" role="img" aria-label={pct === null ? 'Sin datos todavía' : `${pct} %`}>
+        {Array.from({ length: 10 }, (_, n) => (
+          <span key={n} className={`vumetro__luz${n < prendidas ? ' vumetro__luz--prendida' : ''}`} />
+        ))}
+      </span>
+      <span className="lcd-l vumetro__pct" aria-hidden="true">{pct === null ? '--' : `${pct}%`}</span>
+    </li>
+  )
+}
+
+function Reparto({ reparto }: { reparto: number[] }) {
+  const max = Math.max(1, ...reparto)
+  return (
+    <ul className="reparto" aria-label="Cuántas notas hay de cada valor, del 1 al 10">
+      {reparto.map((cantidad, n) => (
+        <li key={n} className={`reparto__nota${cantidad ? '' : ' reparto__nota--vacia'}`} aria-label={`${cantidad} de ${n + 1}`}>
+          <span className="lcd-s reparto__cantidad" aria-hidden="true">{dosCifras(cantidad)}</span>
+          <span className="reparto__barra" style={{ height: `${Math.max(2, Math.round((cantidad / max) * 96))}px` }} aria-hidden="true" />
+          <span className="lcd-s reparto__valor" aria-hidden="true">{n + 1}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function Puesto({ posicion, disco, titulo, linea }: { posicion: string; disco: DiscoDelInforme; titulo: string; linea: string }) {
+  return (
+    <li className="puesto">
+      <span className="puesto__posicion" aria-label={`Puesto ${posicion}`}>{posicion}</span>
+      <span className="puesto__caja"><CajaCD tapa={disco.tapa_url} titulo={disco.titulo} /></span>
+      <span className="puesto__datos">
+        <span className="texto-m-fuerte puesto__titulo">{titulo}</span>
+        <span className="lcd-s">{linea}</span>
+      </span>
+      <span className="lcd-l puesto__promedio">{conComa(disco.promedio)}</span>
+    </li>
+  )
+}
+
+function Discordia({ disco: d }: { disco: DatosInforme['discordia'][number] }) {
+  return (
+    <article className="discordia">
+      <span className="discordia__tapa">
+        {d.tapa_url ? <img src={d.tapa_url} alt="" loading="lazy" /> : <span className="cartel-s">{d.titulo}</span>}
+      </span>
+      <div className="discordia__datos">
+        <p className="texto-s">
+          <strong className="discordia__titulo">{d.titulo}</strong> · {d.artista}
+          {d.de_nombre ? ` · lo pasó ${nombreCorto(d.de_nombre)}` : ''}
+        </p>
+        <dl className="numeros-lcd">
+          <NumeroLcd rotulo={d.baja.sigla} valor={dosCifras(d.baja.puntaje)} />
+          <NumeroLcd rotulo={d.alta.sigla} valor={dosCifras(d.alta.puntaje)} />
+        </dl>
+        <p className="texto-m-fuerte discordia__frase">
+          {d.puntos} {d.puntos === 1 ? 'punto' : 'puntos'} de diferencia.{d.puntos <= 4 ? ' En una ronda de tibios, es un escándalo.' : ' Se armó.'}
+        </p>
+      </div>
+    </article>
+  )
+}
+
+function Compatibilidad({ pares }: { pares: DatosInforme['compatibilidad'] }) {
+  const conDatos = pares.filter((p) => p.pct !== null)
+  const minFaltan = Math.min(...pares.map((p) => p.faltan))
+  return (
+    <>
+      <ul className="vumetros">
+        {pares.map((p) => (
+          <FilaVumetro key={`${p.a.sigla}-${p.b.sigla}`} nombre={`${nombreCorto(p.a.nombre)} × ${nombreCorto(p.b.nombre)}`} pct={p.pct} />
+        ))}
+      </ul>
+      {conDatos.length > 0 ? (
+        <>
+          <p className="mono-s">
+            {conDatos.map((p, n) => (
+              <span key={`${p.a.sigla}-${p.b.sigla}`}>
+                {n > 0 && <br />}
+                {p.a.sigla} × {p.b.sigla}
+                {p.une && ` · LOS UNE ${p.une.titulo.toUpperCase()}`}
+                {p.separa && ` · LOS SEPARA ${p.separa.titulo.toUpperCase()}`}
+              </span>
+            ))}
+          </p>
+          <p className="texto-s">Sale de pocos discos por par: es para reírse, no para decidir amistades.</p>
+        </>
+      ) : (
+        pares.length > 0 && <p className="mono-s">{faltan.enComun(minFaltan)}</p>
+      )}
+    </>
+  )
+}
+
+function TarjetaCita({ cita: c, marino = false }: { cita: Cita; marino?: boolean }) {
+  return (
+    <figure className={`aviso informe__cita${marino ? ' informe__cita--marino' : ''}`}>
+      <figcaption className="mono-s aviso__rotulo">
+        {nombreCorto(c.nombre).toUpperCase()} · {c.puntaje} A {c.titulo.toUpperCase()}
+      </figcaption>
+      <blockquote className="aviso__texto">“{c.comentario}”</blockquote>
+    </figure>
+  )
+}
