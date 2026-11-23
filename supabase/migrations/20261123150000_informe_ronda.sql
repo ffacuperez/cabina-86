@@ -12,9 +12,9 @@
 -- Compatibilidad = correlación de las notas del par × 100 (0 si es negativa).
 -- Discordia = las dos notas del disco que más se alejan en la escala de cada uno: cuántos desvíos se
 -- aleja cada nota del promedio de quien la puso (un 4 de alguien que vive en el 7 pesa más).
--- Si no sos integrante devuelve null.
+-- Si no sos integrante devuelve null. Es "create or replace": se puede aplicar a mano antes de mergear.
 
-create function public.informe_ronda(p_ronda uuid)
+create or replace function public.informe_ronda(p_ronda uuid)
 returns jsonb
 language sql
 stable
