@@ -12,7 +12,8 @@ import { dosCifras } from '../lib/texto'
  * Cuántos discos van y cuántos son, INVITAR (solo quien creó la ronda, #52) y una ficha por integrante:
  * PASÓ, ESCUCHÓ, PROM y DEBE (en naranja si debe algo). Solo esta ronda (RN-05).
  * Tocar una ficha abre ese pasillo entero (T-11); la tuya, Perfil.
- * Ranking, compatibilidad y el más polémico (abajo en el Figma) quedan para después del MVP.
+ * Debajo de las fichas, "Ver el informe de la ronda" (Figma 06e, HU-21) abre el informe (06f).
+ * El adelanto del informe (podio, compatibilidad y discordia, HU-22) va en #114.
  * Al final, solo para quien la creó, "Borrar la ronda" (Figma 06b, #105) abre la hoja de confirmación;
  * después de borrarla se vuelve a Mis rondas.
  */
@@ -58,6 +59,13 @@ export default function LaRonda() {
             {estado.tablero.fichas.map((f) => <FichaIntegrante key={f.integrante.id} ficha={f} rondaId={ronda.id} />)}
           </ul>
         )}
+      </section>
+
+      <section className="la-ronda__informe" aria-label="El informe de la ronda">
+        <Link className="boton boton--secundario boton--ancho" to={`/ronda/${ronda.id}/informe`}>
+          Ver el informe de la ronda <span className="flecha" aria-hidden="true">→</span>
+        </Link>
+        <p className="mono-s">TERMÓMETRO, TIBIÓMETRO, EL FONDO DE LA BANDEJA Y MÁS. SOLO CUENTAN LOS DISCOS QUE YA ESCUCHARON TODOS.</p>
       </section>
 
       {laCreeYo && (

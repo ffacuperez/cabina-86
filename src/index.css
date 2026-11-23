@@ -798,3 +798,119 @@ a.boton { text-decoration: none; }
   letter-spacing: var(--lcd-tracking);
 }
 .fila-pasado__marcador--falta { background: var(--naranja); color: var(--negro); }
+
+/* ── El informe de la ronda (Figma 06f / 06g, HU-21) ── */
+.la-ronda__informe { display: flex; flex-direction: column; gap: var(--esp-2); }
+.informe { display: flex; flex-direction: column; padding-bottom: var(--esp-8); }
+.informe__titulo { margin-top: var(--esp-2); }
+.informe__total { align-self: flex-start; margin-top: var(--esp-3); }
+.informe__aclaracion { margin: 22px 0 0; }
+.informe__bloque { display: flex; flex-direction: column; gap: 10px; padding-top: var(--esp-6); }
+.informe__bloque > h2, .informe__bloque > p { margin: 0; }
+.informe__lcd-grande { align-self: flex-start; }
+.informe__frase { margin: 0; }
+.informe__pie { margin: var(--esp-6) 0 0; }
+.numero-lcd--apagado { opacity: 0.55; }
+
+/* Vúmetro de 10 luces: tibiómetro y compatibilidad */
+.vumetros { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.vumetro { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px; align-items: center; gap: 10px; }
+.vumetro__nombre { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vumetro__luces { display: flex; gap: 3px; padding: 5px 6px; border-radius: var(--radio-xs); background: var(--negro); }
+.vumetro__luz { width: 10px; height: 14px; border-radius: 1px; background: var(--negro-2); }
+.vumetro__luz--prendida { background: var(--mostaza); box-shadow: 0 0 4px color-mix(in srgb, var(--mostaza) 70%, transparent); }
+.vumetro__pct { text-align: right; }
+
+/* Reparto: barras del 1 al 10 */
+.reparto { display: flex; justify-content: space-between; align-items: flex-end; gap: 6px; margin: 0; padding: 12px 12px 10px; border-radius: var(--radio-m); background: var(--negro); list-style: none; }
+.reparto__nota { display: flex; flex: 1; flex-direction: column; align-items: center; gap: var(--esp-1); }
+.reparto__cantidad { color: var(--mostaza); }
+.reparto__barra { width: 100%; max-width: 20px; border-radius: 1px; background: var(--mostaza); box-shadow: 0 0 4px color-mix(in srgb, var(--mostaza) 70%, transparent); }
+.reparto__valor { color: var(--acrilico); }
+.reparto__nota--vacia .reparto__cantidad { color: var(--negro-2); }
+.reparto__nota--vacia .reparto__barra { background: var(--negro-2); box-shadow: none; }
+
+/* Puestos del podio y del fondo de la bandeja */
+.puestos { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.puesto { display: flex; align-items: center; gap: var(--esp-3); padding-bottom: var(--esp-2); border-bottom: 1px solid var(--negro); }
+.puesto__posicion { flex: none; min-width: 23px; font: 400 56px/0.9 var(--fuente-lcd); }
+.puesto__caja .caja-cd { --caja-ancho: 57px; }
+.puesto__datos { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.puesto__titulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.puesto__promedio { flex: none; }
+
+/* Los discos de la discordia (tarjeta marino del Figma) */
+.discordia { display: flex; gap: 14px; padding: 14px; border-radius: var(--radio-m); background: var(--marino); color: var(--acrilico-claro); }
+.discordia__tapa { display: flex; flex: none; align-items: flex-end; width: 96px; height: 96px; padding: 6px; overflow: hidden; background: var(--negro-2); color: var(--mostaza); }
+.discordia__tapa .cartel-s { font-size: 13px; line-height: 1.1; overflow-wrap: break-word; hyphens: auto; }
+.discordia__tapa img { width: 96px; height: 96px; margin: -6px; object-fit: cover; }
+.discordia__datos { display: flex; flex: 1; flex-direction: column; gap: 6px; min-width: 0; }
+.discordia__datos > p { margin: 0; }
+.discordia__titulo { font-weight: 600; }
+.discordia .numeros-lcd { align-self: flex-start; }
+.discordia .numero-lcd { flex: none; min-width: 47px; }
+.discordia__frase { color: var(--mostaza); }
+
+.extremos { display: flex; flex-direction: column; gap: var(--esp-3); margin: 0; padding: 0; list-style: none; }
+.extremos__fila { display: flex; flex-direction: column; gap: 2px; padding-bottom: var(--esp-2); border-bottom: 1px solid var(--negro); }
+.extremos__fila p { margin: 0; }
+
+.informe__cita { margin: 0; }
+.informe__cita blockquote { margin: 0; }
+.informe__cita--marino { background: var(--marino); }
+
+/* La puntería: C86/Diana y C86/Dardo (Figma 225:3834, 225:3851) */
+.punteria__blancos { display: flex; flex-wrap: wrap; gap: var(--esp-2); }
+.punteria__blancos .chip { cursor: pointer; }
+.punteria__diana { display: flex; justify-content: center; }
+.diana-caja { position: relative; width: 240px; max-width: 100%; }
+.diana { display: block; width: 100%; height: auto; overflow: visible; }
+.diana--apagada { opacity: 0.45; }
+.diana__oscuro { fill: var(--negro); }
+.diana__claro { fill: var(--acrilico-claro); }
+.diana__mostaza { fill: var(--mostaza); }
+.diana__centro { fill: var(--magenta); }
+.diana__mira { stroke: var(--acrilico-oscuro); stroke-width: 1; opacity: 0.35; }
+.diana__promedio { fill: none; stroke: var(--acrilico-oscuro); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.diana__filete { fill: none; stroke: var(--mostaza); stroke-width: 2; }
+.dardo { stroke: var(--acrilico-claro); stroke-width: 2; filter: drop-shadow(0 1px 1px rgb(31 35 28 / 0.45)); }
+.dardo--uno { fill: var(--naranja); }
+.dardo--dos { fill: var(--marino); }
+.dardo--tres { fill: var(--magenta); }
+.dardo-muestra { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--acrilico-claro); border-radius: 50%; vertical-align: -2px; box-sizing: border-box; }
+.dardo-muestra.dardo--uno { background: var(--naranja); }
+.dardo-muestra.dardo--dos { background: var(--marino); }
+.dardo-muestra.dardo--tres { background: var(--magenta); }
+.punteria__leyenda { display: flex; flex-wrap: wrap; gap: var(--esp-1) var(--esp-4); margin: 0; padding: 0; list-style: none; }
+.punteria__tiros { display: flex; flex-direction: column; gap: var(--esp-3); margin: 0; padding: 0; list-style: none; }
+.punteria__tiro { display: flex; flex-direction: column; gap: var(--esp-1); padding-bottom: var(--esp-2); border-bottom: 1px solid var(--negro); }
+.punteria__tiro p { margin: 0; }
+.punteria__arriba { display: flex; align-items: center; gap: 10px; }
+.punteria__etiqueta { padding: 6px 10px; border-radius: 4px; background: var(--negro); color: var(--mostaza); }
+.punteria__valor { margin-left: auto; }
+.dardo__aro { fill: none; stroke: var(--mostaza); stroke-width: 2; pointer-events: none; }
+.dardo { pointer-events: none; }
+.dardo__zona { fill: transparent; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
+.dardo__zona:focus-visible { stroke: var(--marino); stroke-width: 2; }
+/* C86/Vista previa del dardo (230:3892): tapa, nombre y puntaje */
+.vista-dardo {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  width: 180px;
+  padding: var(--esp-2) 10px var(--esp-2) var(--esp-2);
+  border: 1px solid var(--mostaza);
+  border-radius: var(--radio-m);
+  background: var(--negro);
+  box-shadow: 0 3px 8px rgb(31 35 28 / 0.35);
+  color: var(--acrilico-claro);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.vista-dardo__tapa { display: flex; flex: none; align-items: flex-end; width: 44px; height: 44px; padding: 4px; overflow: hidden; border-radius: 2px; background: var(--negro-2); color: var(--mostaza); }
+.vista-dardo__tapa .cartel-s { font-size: 8px; line-height: 1.1; overflow-wrap: break-word; }
+.vista-dardo__tapa img { width: 44px; height: 44px; margin: -4px; object-fit: cover; }
+.vista-dardo__disco { display: -webkit-box; flex: 1; min-width: 0; overflow: hidden; font: 600 13px/1.25 var(--fuente-texto); -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.vista-dardo__puntaje { flex: none; padding: 2px 6px; border-radius: var(--radio-xs); background: var(--lcd); box-shadow: inset 0 2px 4px rgb(31 41 23 / 0.4); color: var(--lcd-tinta); }
