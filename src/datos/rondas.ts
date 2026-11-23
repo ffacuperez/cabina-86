@@ -16,6 +16,8 @@ export type RondaMia = {
   deuda: number
   /** Cuándo entré a esta ronda por última vez (la registra entrar_a_ronda, HU-05) */
   ultimaEntrada: string
+  /** Cuándo se armó: las primeras 24 horas, quien se suma hereda lo pasado (RN-06, #115) */
+  creadaEn: string
 }
 
 /** Una ronda que creé: tiene link para invitar */
@@ -32,6 +34,7 @@ type FilaMiembro = {
   rondas: {
     id: string
     nombre: string
+    creada_en: string
     miembros_ronda: { se_unio_en: string; usuario_id: string; usuarios: { nombre: string } | null }[]
   }
 }
@@ -75,7 +78,7 @@ export function useMisRondas() {
     Promise.all([
       supabase
         .from('miembros_ronda')
-        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, miembros_ronda(se_unio_en, usuario_id, usuarios(nombre)))')
+        .select('se_unio_en, ultima_entrada, rondas!inner(id, nombre, creada_en, miembros_ronda(se_unio_en, usuario_id, usuarios(nombre)))')
         .eq('usuario_id', uid),
       supabase.from('deuda').select('ronda_id, pendientes').eq('usuario_id', uid),
       supabase.from('deuda_total').select('pendientes').eq('usuario_id', uid).maybeSingle(),
@@ -104,6 +107,7 @@ export function useMisRondas() {
             sumados: miembros.filter((m) => m.usuario_id !== uid).map(pila),
             deuda: deudaPorRonda.get(r.id) ?? 0,
             ultimaEntrada: ultima_entrada,
+            creadaEn: r.creada_en,
           }
         })
 

@@ -10,6 +10,24 @@ export function mensajeDeInvitacion(nombre: string, link: string) {
   return `Sumate a ${nombre} en Cabina 86: ${link}`
 }
 
+/** RN-06 con tolerancia (#115): quien se suma en las primeras 24 horas desde que se armó la ronda hereda lo que ya se pasó. */
+export const HORAS_PARA_SUMARSE_CON_TODO = 24
+const HORA_MS = 60 * 60 * 1000
+
+/**
+ * El aviso de la hoja Invitá a la banda (Figma 09e / 09f, #112).
+ * Mientras quedan horas, cuántas (redondeado para abajo, para no prometer de más); después, que la ronda ya arrancó.
+ */
+export function avisoDeInvitacion(creadaEn: string, ahora: number = Date.now()): { rotulo: string; texto: string } {
+  const quedan = Date.parse(creadaEn) + HORAS_PARA_SUMARSE_CON_TODO * HORA_MS - ahora
+  if (quedan > 0) {
+    const horas = Math.floor(quedan / HORA_MS)
+    const cuanto = horas >= 2 ? `QUEDAN ${horas} HORAS` : horas === 1 ? 'QUEDA 1 HORA' : 'QUEDA MENOS DE UNA HORA'
+    return { rotulo: `${cuanto} PARA SUMARSE CON TODO`, texto: 'Quien entre antes recibe todo lo que ya se pasó. Después, arranca de cero.' }
+  }
+  return { rotulo: 'LA RONDA YA ARRANCÓ', texto: 'Quien se sume ahora arranca de cero: no ve lo que ya se pasó.' }
+}
+
 /** Lo que muestra "Te invitaron" (Figma 00b) antes de iniciar sesión. */
 export type Invitacion = {
   nombre: string

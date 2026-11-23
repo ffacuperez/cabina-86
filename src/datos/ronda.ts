@@ -24,6 +24,8 @@ export type RondaActual = {
   yo: Integrante
   /** Cuándo me sumé: lo pasado antes no es mío (RN-06) */
   unidoEn: string
+  /** Cuándo se armó la ronda: las primeras 24 horas, quien se suma hereda lo pasado (RN-06, #115) */
+  creadaEn: string
   /** Los demás integrantes, en el orden en que se sumaron */
   otros: Integrante[]
 }
@@ -42,6 +44,7 @@ type Estado =
 type FilaRonda = {
   id: string
   nombre: string
+  creada_en: string
   miembros_ronda: { usuario_id: string; sigla: string; se_unio_en: string; usuarios: { nombre: string } | null }[]
 }
 
@@ -65,7 +68,7 @@ export function useRonda(id: string) {
     Promise.all([
       supabase
         .from('rondas')
-        .select('id, nombre, miembros_ronda(usuario_id, sigla, se_unio_en, usuarios(nombre))')
+        .select('id, nombre, creada_en, miembros_ronda(usuario_id, sigla, se_unio_en, usuarios(nombre))')
         .eq('id', id)
         .maybeSingle(),
       supabase.from('deuda').select('pendientes').eq('ronda_id', id).eq('usuario_id', uid).maybeSingle(),
@@ -90,6 +93,7 @@ export function useRonda(id: string) {
           deuda: (deuda.data as { pendientes: number } | null)?.pendientes ?? 0,
           yo,
           unidoEn: miFila.se_unio_en,
+          creadaEn: fila.creada_en,
           otros: integrantes.filter((i) => i.id !== uid),
         },
       })
