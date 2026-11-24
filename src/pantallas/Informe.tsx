@@ -21,7 +21,7 @@ import {
   notasEnLinea,
   porcentajeTibio,
   puestos,
-  unDecimal,
+  dosDecimales,
   useInforme,
 } from '../datos/informe'
 import { conComa } from '../datos/loQuePasaste'
@@ -444,16 +444,16 @@ function Punteria({ informe: i, inicial }: { informe: DatosInforme; inicial?: st
 }
 
 /**
- * "MAXI LE PONE 6,9 A LO DE MANU · A TODO, 6,7". Mano a mano no hay "a todo" que comparar:
- * "MAXI LE PONE 6,9 A LO DE FACU · FACU A LO DE MAXI, 7,2".
+ * "MAXI LE PONE 6,93 A LO DE MANU · A TODO, 6,73", con dos decimales como la placa. Mano a mano no hay "a todo"
+ * que comparar: "MAXI LE PONE 6,93 A LO DE FACU · FACU A LO DE MAXI, 7,24".
  */
 function lineaTiro(t: DatosInforme['punteria']['tiros'][number], tiros: DatosInforme['punteria']['tiros'], manoAMano: boolean) {
   const a = nombreCorto(t.a_nombre).toUpperCase()
   const de = nombreCorto(t.de_nombre).toUpperCase()
-  const ida = `${a} LE PONE ${unDecimal(t.le_pone!)} A LO DE ${de}`
-  if (!manoAMano) return `${ida} · A TODO, ${unDecimal(t.a_todo!)}`
+  const ida = `${a} LE PONE ${dosDecimales(t.le_pone!)} A LO DE ${de}`
+  if (!manoAMano) return `${ida} · A TODO, ${dosDecimales(t.a_todo!)}`
   const vuelta = tiros.find((x) => x.de === t.a && x.a === t.de)?.le_pone
-  return `${ida} · ${de} A LO DE ${a}, ${vuelta == null ? '--' : unDecimal(vuelta)}`
+  return `${ida} · ${de} A LO DE ${a}, ${vuelta == null ? '--' : dosDecimales(vuelta)}`
 }
 
 function TarjetaCita({ cita: c, marino = false }: { cita: Cita; marino?: boolean }) {
