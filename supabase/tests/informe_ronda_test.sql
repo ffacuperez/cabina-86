@@ -157,8 +157,8 @@ select is(
 select is(
   (select jsonb_build_array(t -> 'le_pone', t -> 'a_todo') from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'tiros') t
     where t ->> 'de' = 'FAC' and t ->> 'a' = 'MAX'),
-  '[6.7, 6.7]'::jsonb,
-  '#121: Maxi le pone 6,7 a lo de Facu y 6,7 a todo (todo lo que escuchó es de Facu)'
+  '[6.67, 6.67]'::jsonb,
+  '#121: Maxi le pone 6,67 a lo de Facu y 6,67 a todo (con dos decimales, para la placa) (todo lo que escuchó es de Facu)'
 );
 select is(
   (select t -> 'le_pone' from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b2') -> 'punteria' -> 'tiros') t where t ->> 'de' = 'FAC'),

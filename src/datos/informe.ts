@@ -254,6 +254,8 @@ export const faltanTiro = (n: number, de: string) => `${n === 1 ? 'FALTA 1 DISCO
 
 /** "6,9" */
 export const unDecimal = (n: number) => n.toFixed(1).replace('.', ',')
+/** "6,93": solo en la placa del pasillo, donde las diferencias son chicas y nos gustan los datos */
+export const dosDecimales = (n: number) => n.toFixed(2).replace('.', ',')
 
 // ── La placa del pasillo (Figma 02i, C86/Placa del pasillo 245:3935, HU-23) ──
 

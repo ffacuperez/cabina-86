@@ -221,8 +221,8 @@ punteria as (
                 'de', de, 'de_nombre', de_nombre, 'a', a, 'a_nombre', a_nombre,
                 'discos', discos, 'faltan', greatest(0, 5 - discos),
                 'diferencia', case when discos >= 5 then round(diferencia::numeric, 2) end,
-                'le_pone', case when discos >= 5 then round(le_pone::numeric, 1) end,
-                'a_todo', case when discos >= 5 then round(a_todo::numeric, 1) end,
+                'le_pone', case when discos >= 5 then round(le_pone::numeric, 2) end,
+                'a_todo', case when discos >= 5 then round(a_todo::numeric, 2) end,
                 'mejor', case when discos >= 5 then mejor end,
                 'errado', case when discos >= 5 then errado end
               ) order by a_n, de_n), '[]'::jsonb) from tiros),

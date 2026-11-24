@@ -1,9 +1,9 @@
 import { Link } from 'react-router'
-import { type Placa, posicionPlaca, unDecimal } from '../datos/informe'
+import { type Placa, dosDecimales, posicionPlaca } from '../datos/informe'
 
 /**
  * Figma 02i · C86/Placa del pasillo (245:3935, HU-23): debajo de cada estante, en vez de "La cabina dice".
- * Cuánto le ponés a lo de esa persona y cuánto a todo (PAREJO / TE PEGA / NO TE PEGA, 5 discos para medirlo).
+ * Cuánto le ponés a lo de esa persona y cuánto a todo, con dos decimales (PAREJO / TE PEGA / NO TE PEGA, 5 discos para medirlo).
  * En rondas de dos, mano a mano: lo tuyo a lo de él y lo de él a lo tuyo, sin etiqueta. La mini diana tiene
  * un dardo con su color, donde cae el promedio de sus discos. Toda la placa lleva a la puntería del informe.
  */
@@ -34,17 +34,17 @@ export function PlacaPasillo({ placa, color, rondaId, yo }: { placa: Placa; colo
           <>
             <span className="placa-pasillo__fila">
               <span className="mono-s">A LO DE {p.de.toUpperCase()} LE PONÉS</span>
-              <span className="placa-pasillo__numero">{unDecimal(p.lePones)}</span>
+              <span className="placa-pasillo__numero">{dosDecimales(p.lePones)}</span>
               {p.tipo === 'medido' ? (
                 <>
                   <span className="mono-s">· A TODO,</span>
-                  <span className="placa-pasillo__numero">{unDecimal(p.aTodo)}</span>
+                  <span className="placa-pasillo__numero">{dosDecimales(p.aTodo)}</span>
                   <span className="placa-pasillo__etiqueta">{p.etiqueta}</span>
                 </>
               ) : (
                 <>
                   <span className="mono-s">· {p.de.toUpperCase()} A LO TUYO,</span>
-                  <span className="placa-pasillo__numero">{p.teDevuelve === null ? '--' : unDecimal(p.teDevuelve)}</span>
+                  <span className="placa-pasillo__numero">{p.teDevuelve === null ? '--' : dosDecimales(p.teDevuelve)}</span>
                 </>
               )}
             </span>

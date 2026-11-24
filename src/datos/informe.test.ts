@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type Informe, colorDe, etiquetaPlaca, placaDelPasillo, posicionPlaca, unDecimal, conSigno, etiquetaTiro, faltan, faltanTiro, frasePunteria, posicionDardo, fraseReparto, fraseTermometro, fraseTibiometro, lucesPrendidas, notasEnLinea, porcentajeTibio, puestos } from './informe'
+import { type Informe, colorDe, dosDecimales, etiquetaPlaca, placaDelPasillo, posicionPlaca, unDecimal, conSigno, etiquetaTiro, faltan, faltanTiro, frasePunteria, posicionDardo, fraseReparto, fraseTermometro, fraseTibiometro, lucesPrendidas, notasEnLinea, porcentajeTibio, puestos } from './informe'
 
 type Termometro = Informe['termometro']
 type Fila = Informe['tibiometro'][number]
@@ -160,5 +160,7 @@ describe('La placa del pasillo (02i)', () => {
     expect(posicionPlaca(-5).x).toBeCloseTo(197.8, 0) // muy abajo de su promedio: el borde
     expect(posicionPlaca(5)).toEqual(posicionPlaca(2))
     expect(unDecimal(6.75)).toBe('6,8')
+    expect(dosDecimales(6.9)).toBe('6,90')
+    expect(dosDecimales(6.93)).toBe('6,93')
   })
 })
