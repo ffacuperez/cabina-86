@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { type Informe, colorDe, conSigno, etiquetaTiro, faltan, faltanTiro, frasePunteria, posicionDardo, fraseReparto, fraseTermometro, fraseTibiometro, lucesPrendidas, notasEnLinea, porcentajeTibio, puestos } from './informe'
+import { type Informe, colorDe, dosDecimales, etiquetaPlaca, placaDelPasillo, posicionPlaca, unDecimal, conSigno, etiquetaTiro, faltan, faltanTiro, frasePunteria, posicionDardo, fraseReparto, fraseTermometro, fraseTibiometro, lucesPrendidas, notasEnLinea, porcentajeTibio, puestos } from './informe'
 
 type Termometro = Informe['termometro']
 type Fila = Informe['tibiometro'][number]
@@ -106,4 +106,61 @@ describe('la puntería', () => {
     expect(frasePunteria({ ...p, mejor: null })).toBe(null)
   })
   it('lo que falta para medir un tiro', () => expect(faltanTiro(4, 'Facundo Pérez')).toBe('FALTAN 4 DISCOS DE FACUNDO PARA MEDIR EL TIRO.'))
+})
+
+describe('La placa del pasillo (02i)', () => {
+  const persona = (sigla: string, nombre: string) => ({ sigla, nombre })
+  type Tiro = Informe['punteria']['tiros'][number]
+  const tiro = (de: string, a: string, t: Partial<Tiro>): Tiro => ({
+    de, de_nombre: { FAC: 'Facu Pérez', MAX: 'Maxi', MAN: 'Manu' }[de]!, a, a_nombre: a, discos: 6, faltan: 0,
+    diferencia: 0.1, le_pone: 6.9, a_todo: 6.8, mejor: { titulo: 'Facelift', puntaje: 9 }, errado: { titulo: 'Otro', puntaje: 4 }, ...t,
+  })
+  const informe = (integrantes: string[], tiros: Tiro[]) =>
+    ({
+      integrantes: integrantes.map((s) => persona(s, s)),
+      punteria: {
+        tiros,
+        dardos: [
+          { de: 'MAX', a: 'FAC', pase_id: '1', titulo: 'A', tapa_url: null, puntaje: 8, z: 1 },
+          { de: 'MAX', a: 'FAC', pase_id: '2', titulo: 'B', tapa_url: null, puntaje: 6, z: 0 },
+        ],
+        mejor: null, errado: null,
+      },
+    }) as unknown as Informe
+
+  it('mide con 5 discos: lo que le ponés a lo suyo, a todo y la etiqueta', () => {
+    const i = informe(['FAC', 'MAX', 'MAN'], [tiro('MAX', 'FAC', { diferencia: 0.4, le_pone: 7.2, a_todo: 6.8 })])
+    expect(placaDelPasillo(i, 'FAC', 'MAX')).toEqual({
+      tipo: 'medido', de: 'Maxi', lePones: 7.2, aTodo: 6.8, etiqueta: 'TE PEGA', favorito: { titulo: 'Facelift', puntaje: 9 }, z: 0.5,
+    })
+  })
+
+  it('con menos de 5 discos dice cuántos van', () => {
+    const i = informe(['FAC', 'MAX', 'MAN'], [tiro('MAX', 'FAC', { discos: 2, faltan: 3, diferencia: null, le_pone: null, a_todo: null })])
+    expect(placaDelPasillo(i, 'FAC', 'MAX')).toEqual({ tipo: 'faltan', de: 'Maxi', vas: 2 })
+  })
+
+  it('en rondas de dos es mano a mano: lo que te pone él a vos, sin etiqueta', () => {
+    const i = informe(['FAC', 'MAX'], [tiro('MAX', 'FAC', { le_pone: 6.9 }), tiro('FAC', 'MAX', { le_pone: 7.2 })])
+    expect(placaDelPasillo(i, 'FAC', 'MAX')).toMatchObject({ tipo: 'mano-a-mano', lePones: 6.9, teDevuelve: 7.2 })
+    const sinVuelta = informe(['FAC', 'MAX'], [tiro('MAX', 'FAC', {}), tiro('FAC', 'MAX', { le_pone: null, a_todo: null, diferencia: null })])
+    expect(placaDelPasillo(sinVuelta, 'FAC', 'MAX')).toMatchObject({ tipo: 'mano-a-mano', teDevuelve: null })
+  })
+
+  it('sin tiro no hay placa', () => {
+    expect(placaDelPasillo(informe(['FAC', 'MAX', 'MAN'], []), 'FAC', 'MAX')).toBeNull()
+  })
+
+  it('la etiqueta se dice desde quien escucha', () => {
+    expect([0.3, -0.3, 0.29, -0.29].map(etiquetaPlaca)).toEqual(['TE PEGA', 'NO TE PEGA', 'PAREJO', 'PAREJO'])
+  })
+
+  it('el dardo de la mini diana cae a la distancia de su z, arriba a la derecha', () => {
+    expect(posicionPlaca(0)).toEqual({ x: 158.9, y: 81.1 }) // la punteada (r 55)
+    expect(posicionPlaca(-5).x).toBeCloseTo(197.8, 0) // muy abajo de su promedio: el borde
+    expect(posicionPlaca(5)).toEqual(posicionPlaca(2))
+    expect(unDecimal(6.75)).toBe('6,8')
+    expect(dosDecimales(6.9)).toBe('6,90')
+    expect(dosDecimales(6.93)).toBe('6,93')
+  })
 })

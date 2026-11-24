@@ -1,5 +1,5 @@
-import { type ReactNode, useState } from 'react'
-import { Link } from 'react-router'
+import { type ReactNode, useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router'
 import { CajaCD } from '../componentes/CajaCD'
 import { Diana, type DardoEnDiana } from '../componentes/Diana'
 import {
@@ -7,7 +7,7 @@ import {
   type DiscoDelInforme,
   type Informe as DatosInforme,
   colorDe,
-  conSigno,
+  esManoAMano,
   etiquetaTiro,
   faltan,
   faltanTiro,
@@ -21,6 +21,7 @@ import {
   notasEnLinea,
   porcentajeTibio,
   puestos,
+  dosDecimales,
   useInforme,
 } from '../datos/informe'
 import { conComa } from '../datos/loQuePasaste'
@@ -34,11 +35,13 @@ const CON_BOTONERA = { encabezado: false, botonera: true }
  * Se llega desde "Ver el informe de la ronda" en La Ronda y vuelve con "← LA RONDA".
  * Los números salen de informe_ronda (solo discos cerrados que podés ver, RN-13 y RN-01);
  * cada bloque se muestra cuando alcanza su mínimo (RN-12) y, si no, dice cuánto falta.
+ * Desde la placa del pasillo (02i) llega con state { blanco, aLaPunteria }: arranca en la puntería mirándote a vos.
  */
 export default function Informe() {
   useMarco(CON_BOTONERA)
   const ronda = useRondaActual()
   const { estado, reintentar } = useInforme(ronda.id)
+  const desde = useLocation().state as { blanco?: string; aLaPunteria?: boolean } | null
 
   return (
     <div className="informe">
@@ -55,15 +58,19 @@ export default function Informe() {
           <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
         </div>
       )}
-      {estado.tipo === 'listo' && <VistaInforme informe={estado.informe} />}
+      {estado.tipo === 'listo' && <VistaInforme informe={estado.informe} blanco={desde?.blanco} aLaPunteria={desde?.aLaPunteria} />}
     </div>
   )
 }
 
 /** El contenido del informe, sin la carga (también sirve para mirarlo con datos de ejemplo). */
-export function VistaInforme({ informe: i }: { informe: DatosInforme }) {
+export function VistaInforme({ informe: i, blanco, aLaPunteria = false }: { informe: DatosInforme; blanco?: string; aLaPunteria?: boolean }) {
   const t = i.termometro
   const hayCerrados = i.faltan_cerrados === 0
+
+  useEffect(() => {
+    if (aLaPunteria) document.getElementById('punteria')?.scrollIntoView({ block: 'start' })
+  }, [aLaPunteria])
 
   return (
     <>
@@ -151,13 +158,16 @@ export function VistaInforme({ informe: i }: { informe: DatosInforme }) {
         </Bloque>
       )}
 
-      <Bloque titulo="La puntería" bajada="Cada disco que le pasaste a alguien es un dardo: más cerca del centro, más le gustó comparado con lo que suele poner.">
-        <Punteria informe={i} />
+      <Bloque id="punteria" titulo="La puntería" bajada="Cada disco que le pasaste a alguien es un dardo: más cerca del centro, más le gustó comparado con lo que suele poner.">
+        <Punteria informe={i} inicial={blanco} />
       </Bloque>
 
-      <Bloque titulo="Compatibilidad" bajada="Qué tanto ordenan los discos igual, de a dos.">
-        <Compatibilidad pares={i.compatibilidad} />
-      </Bloque>
+      {/* En rondas de dos no hay discos en común: cada disco lo escucha solo el otro */}
+      {!esManoAMano(i) && (
+        <Bloque titulo="Compatibilidad" bajada="Qué tanto ordenan los discos igual, de a dos.">
+          <Compatibilidad pares={i.compatibilidad} />
+        </Bloque>
+      )}
 
       {hayCerrados && i.extremos.length > 0 && (
         <Bloque titulo="Lo más alto y lo más bajo">
@@ -200,9 +210,9 @@ export function VistaInforme({ informe: i }: { informe: DatosInforme }) {
   )
 }
 
-export function Bloque({ titulo, bajada, children }: { titulo: string; bajada?: string; children: ReactNode }) {
+export function Bloque({ id, titulo, bajada, children }: { id?: string; titulo: string; bajada?: string; children: ReactNode }) {
   return (
-    <section className="informe__bloque" aria-label={titulo}>
+    <section id={id} className="informe__bloque" aria-label={titulo}>
       <h2 className="cartel-m">{titulo}</h2>
       {bajada && <p className="texto-s">{bajada}</p>}
       {children}
@@ -293,7 +303,7 @@ function Discordia({ disco: d }: { disco: DatosInforme['discordia'][number] }) {
  */
 export function AdelantoInforme({ informe: i }: { informe: DatosInforme }) {
   const hayCerrados = i.faltan_cerrados === 0
-  const compatibles = i.compatibilidad.filter((p) => p.pct !== null)
+  const compatibles = esManoAMano(i) ? [] : i.compatibilidad.filter((p) => p.pct !== null)
   if (!hayCerrados && compatibles.length === 0) return null
   return (
     <div className="adelanto-informe">
@@ -362,10 +372,13 @@ function Compatibilidad({ pares }: { pares: DatosInforme['compatibilidad'] }) {
 }
 
 /** Figma 06f · La puntería: chips para elegir a quién mirar, la diana con sus dardos y una fila por quien le pasa */
-function Punteria({ informe: i }: { informe: DatosInforme }) {
+function Punteria({ informe: i, inicial }: { informe: DatosInforme; inicial?: string }) {
   const p = i.punteria
   const medidos = p.tiros.filter((t) => t.diferencia !== null)
-  const [blanco, setBlanco] = useState(() => (medidos[0]?.a ?? i.integrantes[0]?.sigla ?? ''))
+  const manoAMano = esManoAMano(i)
+  const [blanco, setBlanco] = useState(() =>
+    inicial && i.integrantes.some((x) => x.sigla === inicial) ? inicial : (medidos[0]?.a ?? i.integrantes[0]?.sigla ?? ''),
+  )
   const quien = i.integrantes.find((x) => x.sigla === blanco)
   // Los que le pasan a este blanco, en el orden de la ronda: cada uno tiene su porción de la diana y su color
   const tiros = p.tiros.filter((t) => t.a === blanco)
@@ -412,9 +425,9 @@ function Punteria({ informe: i }: { informe: DatosInforme }) {
               <li key={t.de} className="punteria__tiro">
                 <p className="punteria__arriba">
                   <span className="texto-m-fuerte">De {nombreCorto(t.de_nombre)}</span>
-                  {etiquetaTiro(t.diferencia) && <span className="mono-s punteria__etiqueta">{etiquetaTiro(t.diferencia)}</span>}
-                  <span className="lcd-l punteria__valor">{t.diferencia === null ? '--' : conSigno(t.diferencia)}</span>
+                  {!manoAMano && etiquetaTiro(t.diferencia) && <span className="mono-s punteria__etiqueta">{etiquetaTiro(t.diferencia)}</span>}
                 </p>
+                {t.le_pone != null && t.a_todo != null && <p className="mono-s">{lineaTiro(t, p.tiros, manoAMano)}</p>}
                 <p className="mono-s">
                   {t.diferencia === null || !t.mejor || !t.errado
                     ? faltanTiro(t.faltan, t.de_nombre)
@@ -428,6 +441,19 @@ function Punteria({ informe: i }: { informe: DatosInforme }) {
       )}
     </>
   )
+}
+
+/**
+ * "MAXI LE PONE 6,93 A LO DE MANU · A TODO, 6,73", con dos decimales como la placa. Mano a mano no hay "a todo"
+ * que comparar: "MAXI LE PONE 6,93 A LO DE FACU · FACU A LO DE MAXI, 7,24".
+ */
+function lineaTiro(t: DatosInforme['punteria']['tiros'][number], tiros: DatosInforme['punteria']['tiros'], manoAMano: boolean) {
+  const a = nombreCorto(t.a_nombre).toUpperCase()
+  const de = nombreCorto(t.de_nombre).toUpperCase()
+  const ida = `${a} LE PONE ${dosDecimales(t.le_pone!)} A LO DE ${de}`
+  if (!manoAMano) return `${ida} · A TODO, ${dosDecimales(t.a_todo!)}`
+  const vuelta = tiros.find((x) => x.de === t.a && x.a === t.de)?.le_pone
+  return `${ida} · ${de} A LO DE ${a}, ${vuelta == null ? '--' : dosDecimales(vuelta)}`
 }
 
 function TarjetaCita({ cita: c, marino = false }: { cita: Cita; marino?: boolean }) {

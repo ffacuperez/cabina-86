@@ -12,7 +12,7 @@ import { dosCifras } from '../lib/texto'
 /**
  * Figma 06 · La Ronda — pared de exhibidores (17:2077), HU-17.
  * Cuántos discos van y cuántos son, INVITAR (solo quien creó la ronda, #52) y una ficha por integrante:
- * PASÓ, ESCUCHÓ, PROM y DEBE (en naranja si debe algo). Solo esta ronda (RN-05).
+ * PASÓ, ESCUCHÓ, LE PONEN y DEBE (en naranja si debe algo). Solo esta ronda (RN-05).
  * Tocar una ficha abre ese pasillo entero (T-11); la tuya, Perfil.
  * Debajo de las fichas, "Ver el informe de la ronda" (Figma 06e, HU-21) abre el informe (06f).
  * Entre las fichas y el botón, el adelanto del informe (Figma 06e, HU-22): el podio, la compatibilidad y la
@@ -125,7 +125,7 @@ function FichaIntegrante({ ficha: f, rondaId }: { ficha: Ficha; rondaId: string 
           <dd className="lcd-l">{dosCifras(f.escucho)}</dd>
         </div>
         <div className="numero-lcd">
-          <dt className="lcd-s">PROM</dt>
+          <dt className="lcd-s">LE PONEN</dt>
           <dd className="lcd-l">{f.promedio === null ? '--' : conComa(f.promedio)}</dd>
         </div>
         <div className={`numero-lcd${f.debe > 0 ? ' numero-lcd--debe' : ''}`}>

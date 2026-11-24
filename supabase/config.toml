@@ -431,6 +431,3 @@ verify_jwt = false
 
 [functions.pasar_disco]
 verify_jwt = false
-
-[functions.resumir_pasillo]
-verify_jwt = false

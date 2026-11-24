@@ -189,30 +189,42 @@ a.boton { text-decoration: none; }
  * HU-19 · Figma 02h variante B: "La cabina dice", el display debajo de cada estante. Va en el flujo,
  * así un texto largo corre lo de abajo en vez de taparlo (la tarjetita del pasillo que había antes lo pisaba).
  */
-.cartel-pasillo {
+.placa-pasillo {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
   margin: 18px var(--margen-pantalla) 30px;
-  padding: 10px 12px 12px;
+  padding: 10px 12px 10px 10px;
   border-radius: 6px;
-  background: var(--negro-2);
+  background: var(--negro);
+  color: var(--acrilico-claro);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.cartel-pasillo__rotulo { color: var(--mostaza); }
-.cartel-pasillo__pantalla {
-  padding: 8px 10px;
-  border: 3px solid var(--negro);
-  border-radius: 3px;
+.placa-pasillo:focus-visible { outline: 2px solid var(--marino); outline-offset: 2px; }
+.placa-pasillo__diana { flex: none; width: 44px; height: 44px; overflow: visible; }
+.placa-pasillo__mira { stroke: var(--acrilico-oscuro); stroke-width: 4; opacity: 0.5; }
+.placa-pasillo__promedio { fill: none; stroke: var(--acrilico-oscuro); stroke-width: 6; stroke-dasharray: 12 12; opacity: 0.6; }
+.placa-pasillo__filete { fill: none; stroke: var(--mostaza); stroke-width: 6; opacity: 0.4; }
+.placa-pasillo__dardo { stroke: var(--acrilico-claro); stroke-width: 8; }
+.placa-pasillo__texto { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.placa-pasillo__fila { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+.placa-pasillo__numero {
+  padding: 1px 5px;
+  border-radius: var(--radio-xs);
   background: var(--lcd);
   color: var(--lcd-tinta);
-  font-family: var(--fuente-lcd);
-  font-size: 19px;
-  line-height: 1.05;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
+  font: 400 20px/1 var(--fuente-lcd);
 }
-.cartel-pasillo__pie { color: var(--acrilico); }
+.placa-pasillo__etiqueta {
+  padding: 2px 6px;
+  border: 1px solid var(--mostaza);
+  border-radius: var(--radio-xs);
+  color: var(--mostaza);
+  font: 500 10px/1.2 var(--fuente-mono);
+  letter-spacing: 0.8px;
+}
+.placa-pasillo__suave { color: var(--acrilico-oscuro); }
 
 /* ── 05a · Pasar — elegir disco (HU-07) ── */
 .pasar__titulo { margin-top: var(--esp-2); }
@@ -889,7 +901,6 @@ a.boton { text-decoration: none; }
 .punteria__tiro p { margin: 0; }
 .punteria__arriba { display: flex; align-items: center; gap: 10px; }
 .punteria__etiqueta { padding: 6px 10px; border-radius: 4px; background: var(--negro); color: var(--mostaza); }
-.punteria__valor { margin-left: auto; }
 .dardo__aro { fill: none; stroke: var(--mostaza); stroke-width: 2; pointer-events: none; }
 .dardo { pointer-events: none; }
 .dardo__zona { fill: transparent; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
