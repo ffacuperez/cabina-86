@@ -44,7 +44,6 @@ const BLOQUES: { titulo: string; parrafos: ReactNode[] }[] = [
     titulo: '05 · LOS DATOS DE LOS DISCOS',
     parrafos: [
       'La búsqueda de discos usa Deezer y las tapas se cargan desde Deezer. Deezer no recibe tu nombre ni tu mail.',
-      'El cartel "La cabina dice" de cada pasillo lo escribe Gemini, la IA de Google: le mandamos solo el título, el artista y el año de los discos que pasó esa persona. No le mandamos nombres, tarjetitas, puntajes ni comentarios. Como usamos su versión gratuita, Google puede usar esos datos de los discos para mejorar sus productos.',
     ],
   },
   {
@@ -81,7 +80,7 @@ export default function Privacidad() {
     <main className="pantalla privacidad">
       <button className="mono-s privacidad__volver" type="button" onClick={volver}>← VOLVER</button>
 
-      <Cartel className="privacidad__cartel" sticker="16·11·26">
+      <Cartel className="privacidad__cartel" sticker="24·11·26">
         <p className="mono-s cartel__rotulo">LA LETRA CHICA</p>
         <h1 className="cartel-xl cartel__titulo">Privacidad</h1>
         <p className="cartel__texto">Qué datos usa Cabina 86, para qué, y qué podés hacer con ellos. Corto y sin vueltas.</p>
@@ -95,7 +94,7 @@ export default function Privacidad() {
         </section>
       ))}
 
-      <p className="mono-s">ACTUALIZADA EL 16 DE NOVIEMBRE DE 2026 · CABINA86.COM</p>
+      <p className="mono-s">ACTUALIZADA EL 24 DE NOVIEMBRE DE 2026 · CABINA86.COM</p>
     </main>
   )
 }

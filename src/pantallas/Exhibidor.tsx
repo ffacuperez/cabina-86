@@ -2,8 +2,8 @@ import { Fragment } from 'react'
 import { Link } from 'react-router'
 import { AvisoIphone } from '../componentes/AvisoIphone'
 import { DiscoEnEstante } from '../componentes/DiscoEnEstante'
-import { CartelPasillo } from '../componentes/CartelPasillo'
-import { tandaDe, useResumenes } from '../datos/cartel'
+import { PlacaPasillo } from '../componentes/PlacaPasillo'
+import { colorDe, type Informe, placaDelPasillo, useInforme } from '../datos/informe'
 import { type Exhibidor as ExhibidorDatos, type Pasillo, rangoDeCatalogo, useExhibidor } from '../datos/exhibidor'
 import { COLORES_LOMO } from '../lib/lomos'
 import { useRondaActual } from '../datos/ronda'
@@ -13,14 +13,16 @@ import { dosCifras } from '../lib/texto'
  * Figma 02 · Tu exhibidor (vigente, 111:1595) y 02c (15:1608): a donde se llega al entrar a una ronda (HU-05, HU-11).
  * Un pasillo por integrante que me pasó discos, con su estante que se desliza. Debajo de cada caja, título y artista.
  * Pendiente: sticker PENDIENTE; ya calificado: sigue en el estante con el talón de mi puntaje.
- * Debajo de cada estante, el cartel "La cabina dice" con el resumen de su última tanda (HU-19, Figma 02h).
+ * Debajo de cada estante, la placa del pasillo (HU-23, Figma 02i): cuánto le ponés a lo suyo y cuánto a todo.
+ * Sale del informe de la ronda; si carga o falla, no se muestra.
  * El LCD muestra mi deuda en esta ronda.
  */
 export default function Exhibidor() {
   const ronda = useRondaActual()
   const { estado, reintentar } = useExhibidor(ronda)
   const deuda = estado.tipo === 'listo' ? estado.exhibidor.deuda : ronda.deuda
-  const resumenes = useResumenes(ronda, estado.tipo === 'listo' ? estado.exhibidor.pasillos : null)
+  const { estado: delInforme } = useInforme(ronda.id)
+  const informe = delInforme.tipo === 'listo' ? delInforme.informe : null
 
   return (
     <>
@@ -35,13 +37,13 @@ export default function Exhibidor() {
             <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
           </div>
         )}
-        {estado.tipo === 'listo' && <Estantes exhibidor={estado.exhibidor} rondaId={ronda.id} resumenes={resumenes} />}
+        {estado.tipo === 'listo' && <Estantes exhibidor={estado.exhibidor} rondaId={ronda.id} informe={informe} yo={ronda.yo.sigla} />}
       </section>
     </>
   )
 }
 
-function Estantes({ exhibidor, rondaId, resumenes }: { exhibidor: ExhibidorDatos; rondaId: string; resumenes: Map<string, string> }) {
+function Estantes({ exhibidor, rondaId, informe, yo }: { exhibidor: ExhibidorDatos; rondaId: string; informe: Informe | null; yo: string }) {
   const { pasillos } = exhibidor
   if (pasillos.length === 0) {
     return <p className="texto-m exhibidor__aviso">Nadie te pasó nada todavía. Qué ronda tranquila.</p>
@@ -49,7 +51,7 @@ function Estantes({ exhibidor, rondaId, resumenes }: { exhibidor: ExhibidorDatos
   return (
     <>
       {pasillos.map((p) => {
-        const tanda = tandaDe(p)
+        const placa = informe && placaDelPasillo(informe, yo, p.de.sigla)
         return (
           <Fragment key={p.de.id}>
             <div className="pasillo">
@@ -61,7 +63,7 @@ function Estantes({ exhibidor, rondaId, resumenes }: { exhibidor: ExhibidorDatos
                 {p.archivados.length > 0 && <TarjetaArchivo pasillo={p} rondaId={rondaId} />}
               </ul>
             </div>
-            {tanda && <CartelPasillo pasillo={p} tanda={tanda} resumen={resumenes.get(p.de.id)} />}
+            {placa && <PlacaPasillo placa={placa} color={colorDe(informe.integrantes, p.de.sigla)} rondaId={rondaId} yo={yo} />}
           </Fragment>
         )
       })}

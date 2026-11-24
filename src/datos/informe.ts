@@ -34,6 +34,9 @@ export type Tiro = {
   faltan: number
   /** Promedio de lo que le puso menos su promedio; null si faltan discos */
   diferencia: number | null
+  /** Lo que le pone a lo de quien pasa y a todo lo que escuchó en la ronda; null si faltan discos */
+  le_pone: number | null
+  a_todo: number | null
   mejor: { titulo: string; puntaje: number } | null
   errado: { titulo: string; puntaje: number } | null
 }
@@ -248,5 +251,51 @@ export function frasePunteria(p: Informe['punteria']) {
 
 /** Qué falta para medir un tiro */
 export const faltanTiro = (n: number, de: string) => `${n === 1 ? 'FALTA 1 DISCO' : `FALTAN ${n} DISCOS`} DE ${pila(de).toUpperCase()} PARA MEDIR EL TIRO.`
+
+/** "6,9" */
+export const unDecimal = (n: number) => n.toFixed(1).replace('.', ',')
+
+// ── La placa del pasillo (Figma 02i, C86/Placa del pasillo 245:3935, HU-23) ──
+
+type Favorito = { titulo: string; puntaje: number } | null
+
+export type Placa =
+  | { tipo: 'faltan'; de: string; vas: number }
+  | { tipo: 'medido'; de: string; lePones: number; aTodo: number; etiqueta: string; favorito: Favorito; z: number }
+  | { tipo: 'mano-a-mano'; de: string; lePones: number; teDevuelve: number | null; favorito: Favorito; z: number }
+
+/** La etiqueta de la placa, desde quien escucha: TE PEGA, NO TE PEGA o PAREJO (los mismos cortes que etiquetaTiro) */
+export function etiquetaPlaca(diferencia: number) {
+  return { 'LE PEGA': 'TE PEGA', 'LE ERRA': 'NO TE PEGA', PAREJO: 'PAREJO' }[etiquetaTiro(diferencia)!]
+}
+
+/**
+ * Lo que dice la placa debajo del pasillo de `de` para `yo` (siglas): cuánto le ponés a lo suyo y cuánto a todo.
+ * En rondas de dos no hay "a todo" que comparar (todo lo que escuchaste es suyo): mano a mano, lo que te pone él a vos.
+ * null si el informe no trae ese tiro.
+ */
+export function placaDelPasillo(i: Informe, yo: string, de: string): Placa | null {
+  const tiro = i.punteria.tiros.find((t) => t.de === de && t.a === yo)
+  if (!tiro) return null
+  const nombre = pila(tiro.de_nombre)
+  if (tiro.le_pone === null || tiro.a_todo === null || tiro.diferencia === null) return { tipo: 'faltan', de: nombre, vas: tiro.discos }
+  const suyos = i.punteria.dardos.filter((d) => d.de === de && d.a === yo)
+  const z = suyos.length ? suyos.reduce((s, d) => s + d.z, 0) / suyos.length : 0
+  if (i.integrantes.length === 2) {
+    const vuelta = i.punteria.tiros.find((t) => t.de === yo && t.a === de)
+    return { tipo: 'mano-a-mano', de: nombre, lePones: tiro.le_pone, teDevuelve: vuelta?.le_pone ?? null, favorito: tiro.mejor, z }
+  }
+  return { tipo: 'medido', de: nombre, lePones: tiro.le_pone, aTodo: tiro.a_todo, etiqueta: etiquetaPlaca(tiro.diferencia), favorito: tiro.mejor, z }
+}
+
+/** El dardo de la mini diana (viewBox 240): a la distancia de su z, como en la grande, arriba a la derecha */
+export function posicionPlaca(z: number) {
+  const r = Math.max(0.03, Math.min(1, (2 - z) / 4)) * 110
+  const a = Math.PI / 4
+  return { x: Math.round((120 + r * Math.cos(a)) * 10) / 10, y: Math.round((120 - r * Math.sin(a)) * 10) / 10 }
+}
+
+/** Para la puntería del informe: en rondas de dos, "a todo" es lo mismo que "a lo de él" */
+export const esManoAMano = (i: Informe) => i.integrantes.length === 2
 
 export { pila as nombreCorto }

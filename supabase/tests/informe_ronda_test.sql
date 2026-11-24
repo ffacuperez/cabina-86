@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(27);
+select plan(29);
 
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-0000000000f1', 'facu@test.com', '{"full_name":"Facu"}'),
@@ -153,6 +153,17 @@ select is(
     where t ->> 'de' = 'FAC' and t ->> 'a' = 'MAN'),
   0.00,
   'Puntería: a Manu lo de Facu le gusta igual que su promedio (todo lo que escuchó es de Facu)'
+);
+select is(
+  (select jsonb_build_array(t -> 'le_pone', t -> 'a_todo') from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'tiros') t
+    where t ->> 'de' = 'FAC' and t ->> 'a' = 'MAX'),
+  '[6.7, 6.7]'::jsonb,
+  '#121: Maxi le pone 6,7 a lo de Facu y 6,7 a todo (todo lo que escuchó es de Facu)'
+);
+select is(
+  (select t -> 'le_pone' from jsonb_array_elements(pg_temp.informe('10000000-0000-0000-0000-0000000000b2') -> 'punteria' -> 'tiros') t where t ->> 'de' = 'FAC'),
+  'null'::jsonb,
+  '#121: sin 5 discos no hay promedios para mostrar'
 );
 select is(jsonb_array_length(pg_temp.informe('10000000-0000-0000-0000-0000000000b1') -> 'punteria' -> 'dardos'), 12, 'Puntería: un dardo por cada nota de los tiros medidos');
 select ok(
