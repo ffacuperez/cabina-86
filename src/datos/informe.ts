@@ -278,7 +278,7 @@ export function placaDelPasillo(i: Informe, yo: string, de: string): Placa | nul
   const tiro = i.punteria.tiros.find((t) => t.de === de && t.a === yo)
   if (!tiro) return null
   const nombre = pila(tiro.de_nombre)
-  if (tiro.le_pone === null || tiro.a_todo === null || tiro.diferencia === null) return { tipo: 'faltan', de: nombre, vas: tiro.discos }
+  if (tiro.le_pone == null || tiro.a_todo == null || tiro.diferencia === null) return { tipo: 'faltan', de: nombre, vas: tiro.discos }
   const suyos = i.punteria.dardos.filter((d) => d.de === de && d.a === yo)
   const z = suyos.length ? suyos.reduce((s, d) => s + d.z, 0) / suyos.length : 0
   if (i.integrantes.length === 2) {

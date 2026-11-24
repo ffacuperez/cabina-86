@@ -427,7 +427,7 @@ function Punteria({ informe: i, inicial }: { informe: DatosInforme; inicial?: st
                   <span className="texto-m-fuerte">De {nombreCorto(t.de_nombre)}</span>
                   {!manoAMano && etiquetaTiro(t.diferencia) && <span className="mono-s punteria__etiqueta">{etiquetaTiro(t.diferencia)}</span>}
                 </p>
-                {t.le_pone !== null && t.a_todo !== null && <p className="mono-s">{lineaTiro(t, p.tiros, manoAMano)}</p>}
+                {t.le_pone != null && t.a_todo != null && <p className="mono-s">{lineaTiro(t, p.tiros, manoAMano)}</p>}
                 <p className="mono-s">
                   {t.diferencia === null || !t.mejor || !t.errado
                     ? faltanTiro(t.faltan, t.de_nombre)
