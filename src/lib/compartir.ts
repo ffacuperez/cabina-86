@@ -1,23 +1,25 @@
 /**
- * Compartir y guardar una imagen (#127).
- * - Compartir: el menú del teléfono con la imagen y el link; si el navegador no comparte archivos, se baja.
- * - Guardar imagen: en el teléfono también es el menú (sin el texto), porque ahí está "Guardar imagen" y la foto
- *   va a la galería. Bajarla con un link de descarga en iPhone abre un visor de archivos de golpe, con el
- *   ícono de PNG, y no la guarda en Fotos. En la compu, se baja.
+ * Compartir o guardar una imagen (#127, #129).
+ * En el iPhone una página web no puede guardar una imagen directo en Fotos: la única forma es el menú del
+ * teléfono, que tiene "Guardar imagen" (bajarla con un link abre de golpe un visor de archivos). Por eso en el
+ * teléfono hay un solo botón, "Compartir o guardar", que abre ese menú con la imagen y el link. En la compu,
+ * o si el navegador no comparte archivos, el botón es "Guardar imagen" y la baja.
  * En iPhone el menú tiene que abrirse con el toque, así que la imagen tiene que estar lista antes.
  */
 export const TEXTO_AL_COMPARTIR = 'Con mis amigos nos pasamos discos en Cabina 86. Armá tu ronda: https://cabina86.com/?ref=tarjeta'
 
-export function sePuedeCompartir(archivo: File) {
-  return typeof navigator !== 'undefined' && typeof navigator.canShare === 'function' && navigator.canShare({ files: [archivo] })
+export type Modo = 'menu' | 'bajar'
+
+/** 'menu' en el teléfono con un navegador que comparte archivos; si no, 'bajar' */
+export function modoDeCompartir({ telefono, comparteArchivos }: { telefono: boolean; comparteArchivos: boolean }): Modo {
+  return telefono && comparteArchivos ? 'menu' : 'bajar'
 }
 
-/** Teléfono o tablet: pantalla táctil como puntero principal */
-export const esTelefono = () => typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
-
-/** Cómo se guarda: con el menú del teléfono (que tiene "Guardar imagen") o bajando el archivo */
-export function comoGuardar({ telefono, comparteArchivos }: { telefono: boolean; comparteArchivos: boolean }): 'menu' | 'bajar' {
-  return telefono && comparteArchivos ? 'menu' : 'bajar'
+/** El modo en este navegador (con el archivo, si ya está, para preguntar si se puede compartir ese en particular) */
+export function modoAca(archivo?: File): Modo {
+  const telefono = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true
+  const puede = typeof navigator !== 'undefined' && typeof navigator.canShare === 'function'
+  return modoDeCompartir({ telefono, comparteArchivos: puede && (!archivo || navigator.canShare({ files: [archivo] })) })
 }
 
 export function aArchivo(imagen: Blob, nombre: string) {
@@ -35,32 +37,16 @@ function bajar(imagen: Blob, nombre: string) {
   setTimeout(() => URL.revokeObjectURL(url), 10_000)
 }
 
-type Resultado = 'compartido' | 'cancelado' | 'bajado'
-
-async function menu(archivo: File, conTexto: boolean): Promise<Resultado | null> {
-  try {
-    await navigator.share(conTexto ? { files: [archivo], text: TEXTO_AL_COMPARTIR } : { files: [archivo] })
-    return 'compartido'
-  } catch (e) {
-    return (e as Error).name === 'AbortError' ? 'cancelado' : null
-  }
-}
-
-export async function compartirImagen(imagen: Blob, nombre: string): Promise<Resultado> {
+/** 'compartido' (eligió algo en el menú), 'cancelado' (lo cerró) o 'bajado' */
+export async function compartirOGuardar(imagen: Blob, nombre: string): Promise<'compartido' | 'cancelado' | 'bajado'> {
   const archivo = aArchivo(imagen, nombre)
-  if (sePuedeCompartir(archivo)) {
-    const r = await menu(archivo, true)
-    if (r) return r
-  }
-  bajar(imagen, nombre)
-  return 'bajado'
-}
-
-export async function guardarImagen(imagen: Blob, nombre: string): Promise<Resultado> {
-  const archivo = aArchivo(imagen, nombre)
-  if (comoGuardar({ telefono: esTelefono(), comparteArchivos: sePuedeCompartir(archivo) }) === 'menu') {
-    const r = await menu(archivo, false)
-    if (r) return r
+  if (modoAca(archivo) === 'menu') {
+    try {
+      await navigator.share({ files: [archivo], text: TEXTO_AL_COMPARTIR })
+      return 'compartido'
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return 'cancelado'
+    }
   }
   bajar(imagen, nombre)
   return 'bajado'
