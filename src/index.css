@@ -931,7 +931,9 @@ a.boton { text-decoration: none; }
 /* ── Compartir en historias (#127, Figma 03f, 04f, 06h, 08d y 08e) ── */
 /* Dos botones de contorno a la mitad: Editar puntaje y Compartir */
 .botones-a-la-par { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-self: stretch; width: 100%; }
-.botones-a-la-par > .boton { min-width: 0; padding-left: var(--esp-2); padding-right: var(--esp-2); }
+/* "EDITAR PUNTAJE" casi no entra en medio botón: la letra se achica con el ancho de la pantalla (13 px como mucho)
+   para que entre en una línea; si igual no entra, pasa a dos líneas centradas en vez de irse para un costado */
+.botones-a-la-par > .boton { min-width: 0; padding: 0 6px; font-size: min(13px, 3.3vw); letter-spacing: 0; line-height: 1.1; text-align: center; }
 .informe__fila-total { display: flex; flex-wrap: wrap; align-items: center; gap: var(--esp-2) var(--esp-3); margin-top: var(--esp-3); }
 .informe__fila-total .informe__total { margin: 0; }
 .hoja-compartir__vista { display: flex; justify-content: center; align-self: stretch; min-height: 120px; padding: 4px 0; }
