@@ -241,6 +241,8 @@ button { font: inherit; color: inherit; }
   color: rgb(31 35 28 / 0.6);
   font: 400 calc(var(--u) * 30) / 1 var(--fuente-lcd);
 }
+/* C86/Tapa · edición Cabina (#125): la tapa que dibuja la app; el tamaño lo da el contenedor */
+.tapa-cabina { display: block; width: 100%; height: auto; }
 /* Sin tapa suelta (lista de resultados de 05a): sin caja */
 .sin-tapa {
   flex: none;
