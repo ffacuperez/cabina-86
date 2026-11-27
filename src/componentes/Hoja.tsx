@@ -1,4 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { reacomodarPantalla } from '../lib/pantalla'
 
 /** Arrastrando el asa hacia abajo: con más de esto (o un tirón rápido) se cierra */
 const ARRASTRE_PARA_CERRAR = 90
@@ -27,6 +28,8 @@ export function Hoja({ etiquetadaPor, onCerrar, children }: { etiquetadaPor: str
     return () => {
       document.body.style.overflow = overflowPrevio
       document.removeEventListener('keydown', alTeclear)
+      // Al destrabar el scroll, que el iPhone vuelva a medir la pantalla (si no, la barra de abajo queda flotando, #133)
+      reacomodarPantalla()
     }
   }, [cerrar])
 

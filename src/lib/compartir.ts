@@ -6,6 +6,8 @@
  * o si el navegador no comparte archivos, el botón es "Guardar imagen" y la baja.
  * En iPhone el menú tiene que abrirse con el toque, así que la imagen tiene que estar lista antes.
  */
+import { reacomodarPantalla } from './pantalla'
+
 export const TEXTO_AL_COMPARTIR = 'Con mis amigos nos pasamos discos en Cabina 86. Armá tu ronda: https://cabina86.com/?ref=tarjeta'
 
 export type Modo = 'menu' | 'bajar'
@@ -46,6 +48,9 @@ export async function compartirOGuardar(imagen: Blob, nombre: string): Promise<'
       return 'compartido'
     } catch (e) {
       if ((e as Error).name === 'AbortError') return 'cancelado'
+    } finally {
+      // Al volver del menú, el iPhone puede dejar la barra de abajo a mitad de pantalla (#133)
+      reacomodarPantalla()
     }
   }
   bajar(imagen, nombre)
