@@ -7,7 +7,7 @@ import { textoDeReaccion, textoDeTema, useDeuda } from '../datos/calificar'
 import { useNotasDeLaRonda } from '../datos/notas'
 import { type Detalle, useDetalle } from '../datos/detalle'
 import { tarjetaDelDisco } from '../datos/tarjetas'
-import { tarjetaDelDiscoEnPng } from '../lib/tarjetas'
+import { tarjetaDelDisco as dibujarDisco } from '../lib/tarjetas'
 import { HojaCompartirDisco } from './DetalleDisco'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras, fechaDeCamara } from '../lib/texto'
@@ -78,7 +78,7 @@ export default function Ticket() {
   // Figma 04f (#127): Compartir al lado de Editar puntaje
   const [compartiendo, setCompartiendo] = useState(false)
   const tarjeta = estado.tipo === 'listo' ? tarjetaDelDisco(estado.detalle, ronda.nombre) : null
-  const generar = useCallback(() => tarjetaDelDiscoEnPng(tarjeta!), [tarjeta])
+  const generar = useCallback(() => dibujarDisco(tarjeta!), [tarjeta])
 
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
   if (estado.tipo === 'listo' && !estado.detalle.mia) {

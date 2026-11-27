@@ -45,8 +45,9 @@ function lienzo() {
   return { canvas, ctx }
 }
 
-function aPng(canvas: HTMLCanvasElement) {
-  return new Promise<Blob>((ok, mal) => canvas.toBlob((b) => (b ? ok(b) : mal(new Error('Sin imagen'))), 'image/png'))
+/** En JPEG: pesa unas cuatro veces menos que en PNG (1,2 MB) y las historias la recomprimen igual */
+function aImagen(canvas: HTMLCanvasElement) {
+  return new Promise<Blob>((ok, mal) => canvas.toBlob((b) => (b ? ok(b) : mal(new Error('Sin imagen'))), 'image/jpeg', 0.92))
 }
 
 type Ctx = CanvasRenderingContext2D
@@ -150,7 +151,7 @@ const grados = (g: number) => (g * Math.PI) / 180
 
 // ── 08a · La foto analógica ──
 
-export async function tarjetaDelDiscoEnPng(t: TarjetaDisco): Promise<Blob> {
+export async function tarjetaDelDisco(t: TarjetaDisco): Promise<Blob> {
   await fuentes()
   const { canvas, ctx } = lienzo()
   ctx.fillStyle = C.negro
@@ -224,7 +225,7 @@ export async function tarjetaDelDiscoEnPng(t: TarjetaDisco): Promise<Blob> {
 
   texto(ctx, t.ronda, 44, 872.6, F.mono(11), C.verdeClaro, 0.8)
   texto(ctx, 'CABINA86.COM', 496, 872.6, F.mono(11, 700), C.mostaza, 0.8, 'right')
-  return aPng(canvas)
+  return aImagen(canvas)
 }
 
 // ── 08c · El ticket del informe ──
@@ -235,7 +236,7 @@ const BARRAS = [2, 1, 3, 1, 2, 4]
 
 type Pieza = { alto: number; dibujar: (ctx: Ctx, y: number) => void }
 
-export async function tarjetaDelInformeEnPng(t: TarjetaInforme): Promise<Blob> {
+export async function tarjetaDelInforme(t: TarjetaInforme): Promise<Blob> {
   await fuentes()
   const { canvas, ctx } = lienzo()
   ctx.fillStyle = C.verde
@@ -333,5 +334,5 @@ export async function tarjetaDelInformeEnPng(t: TarjetaInforme): Promise<Blob> {
     t.sticker.forEach((s, i) => texto(ctx, s, 0, (i - (n - 1) / 2) * 16, F.mono(14, 700), C.negro, 0.6, 'center'))
     ctx.restore()
   }
-  return aPng(canvas)
+  return aImagen(canvas)
 }
