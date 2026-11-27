@@ -9,6 +9,8 @@ export type Detalle = {
   paseId: string
   /** MAX-07 */
   catalogo: string
+  /** Para la tapa ilustrada de la tarjeta para compartir (#125) */
+  deezerId: number | null
   titulo: string
   artista: string
   anio: number | null
@@ -49,6 +51,7 @@ type FilaPase = {
   creado_en: string
   pasado_por: string
   discos: {
+    deezer_id: number
     titulo: string
     artista: string
     anio: number | null
@@ -78,7 +81,7 @@ export function useDetalle(ronda: RondaActual, paseId: string) {
         .from('pases')
         .select(
           'id, numero, tarjetita, creado_en, pasado_por, ' +
-            'discos(titulo, artista, anio, tapa_url, cantidad_temas, duracion_seg, link_spotify, link_ytm, temas), ' +
+            'discos(deezer_id, titulo, artista, anio, tapa_url, cantidad_temas, duracion_seg, link_spotify, link_ytm, temas), ' +
             'calificaciones(puntaje, tema_favorito, reaccion, comentario, creada_en)',
         )
         .eq('id', paseId)
@@ -117,6 +120,7 @@ export function armar(f: FilaPase, calificaron: { usuario_id: string }[], ronda:
   return {
     paseId: f.id,
     catalogo: `${de.sigla}-${dosCifras(f.numero)}`,
+    deezerId: f.discos?.deezer_id ?? null,
     titulo: f.discos?.titulo ?? '',
     artista: f.discos?.artista ?? '',
     anio: f.discos?.anio ?? null,

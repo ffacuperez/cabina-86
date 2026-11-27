@@ -1,14 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useParams } from 'react-router'
 import { BarraInferior } from '../componentes/BarraInferior'
 import { CabinaDeEscucha } from '../componentes/CabinaDeEscucha'
 import { CajaCD } from '../componentes/CajaCD'
 import { CD } from '../componentes/CD'
+import { HojaCompartir } from '../componentes/HojaCompartir'
 import { NotasDeLaRonda } from '../componentes/NotasDeLaRonda'
 import { TarjetaRecomendado } from '../componentes/TarjetaRecomendado'
 import { type Detalle, duracion, useDetalle } from '../datos/detalle'
 import { useNotasDeLaRonda } from '../datos/notas'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
+import { tarjetaDelDisco } from '../datos/tarjetas'
+import { tarjetaDelDiscoEnPng } from '../lib/tarjetas'
 import { haceCuanto } from '../lib/texto'
 import type { CajaEnVuelo } from '../lib/volar'
 
@@ -42,9 +45,14 @@ export default function DetalleDisco() {
         ? { a: `/ronda/${ronda.id}/pasillo/${desde.de}`, texto: '← PASILLO' }
         : { a: alExhibidor, texto: '← EXHIBIDOR' }
 
+  const d = estado.tipo === 'listo' ? estado.detalle : null
+  // Figma 03f (#127): si ya lo calificaste, Compartir al lado de Editar puntaje (sin tener que editar)
+  const [compartiendo, setCompartiendo] = useState(false)
+  const tarjeta = d ? tarjetaDelDisco(d, ronda.nombre) : null
+  const generar = useCallback(() => tarjetaDelDiscoEnPng(tarjeta!), [tarjeta])
+
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
 
-  const d = estado.tipo === 'listo' ? estado.detalle : null
   const caja = d ? { tapa: d.tapa, titulo: d.titulo } : estado.tipo === 'cargando' ? vuela : undefined
   const catalogo = d?.catalogo ?? (estado.tipo === 'cargando' ? vuela?.catalogo : undefined)
 
@@ -77,7 +85,12 @@ export default function DetalleDisco() {
       {d && !d.esMio && (
         <BarraInferior>
           {d.mia ? (
-            <Link className="boton boton--contorno" to="calificar">Editar puntaje</Link>
+            <div className="botones-a-la-par">
+              <Link className="boton boton--contorno" to="calificar">Editar puntaje</Link>
+              <button className="boton boton--contorno" type="button" onClick={() => setCompartiendo(true)}>
+                Compartir <span className="flecha" aria-hidden="true">↗</span>
+              </button>
+            </div>
           ) : (
             <Link className="boton boton--mostaza" to="calificar">
               Bancalo o bardealo <span className="flecha" aria-hidden="true">→</span>
@@ -85,7 +98,22 @@ export default function DetalleDisco() {
           )}
         </BarraInferior>
       )}
+      {compartiendo && tarjeta && <HojaCompartirDisco generar={generar} onCerrar={() => setCompartiendo(false)} />}
     </>
+  )
+}
+
+/** Figma 08d (#127): la hoja con la foto analógica del disco (08a) */
+export function HojaCompartirDisco({ generar, onCerrar }: { generar: () => Promise<Blob>; onCerrar: () => void }) {
+  return (
+    <HojaCompartir
+      titulo="Compartí tu nota"
+      bajada="Una imagen para historias, con tu puntaje y el disco."
+      nota="VA CON EL LINK A CABINA86.COM. LA TAPA ES LA EDICIÓN CABINA DEL DISCO."
+      nombreArchivo="cabina86-disco.png"
+      generar={generar}
+      onCerrar={onCerrar}
+    />
   )
 }
 
