@@ -27,7 +27,7 @@ import {
 } from '../datos/informe'
 import { conComa } from '../datos/loQuePasaste'
 import { tarjetaDelInforme } from '../datos/tarjetas'
-import { tarjetaDelInformeEnPng } from '../lib/tarjetas'
+import { tarjetaDelInforme as dibujarInforme } from '../lib/tarjetas'
 import { useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras } from '../lib/texto'
 
@@ -47,7 +47,7 @@ export default function Informe() {
   const desde = useLocation().state as { blanco?: string; aLaPunteria?: boolean } | null
   const [compartiendo, setCompartiendo] = useState(false)
   const informe = estado.tipo === 'listo' ? estado.informe : null
-  const generar = useCallback(() => tarjetaDelInformeEnPng(tarjetaDelInforme(informe!, ronda.nombre)), [informe, ronda.nombre])
+  const generar = useCallback(() => dibujarInforme(tarjetaDelInforme(informe!, ronda.nombre)), [informe, ronda.nombre])
 
   return (
     <div className="informe">
@@ -72,7 +72,7 @@ export default function Informe() {
           titulo="Compartí el informe"
           bajada="El ticket de la ronda, para historias."
           nota="VA CON EL LINK A CABINA86.COM. TUS AMIGOS SALEN CON SU NOMBRE DE PILA."
-          nombreArchivo="cabina86-informe.png"
+          nombreArchivo="cabina86-informe.jpg"
           generar={generar}
           onCerrar={() => setCompartiendo(false)}
         />

@@ -5,7 +5,8 @@ import { Hoja } from './Hoja'
 /**
  * Figma 08d / 08e (#127): la hoja para compartir una tarjeta en historias. Arma la imagen apenas se abre
  * (en iPhone el menú de compartir tiene que abrirse con el toque, sin esperar), la muestra en chiquito y
- * ofrece "Compartir" (el menú del teléfono) y "Guardar imagen" (se baja el PNG).
+ * ofrece "Compartir" (el menú del teléfono) y "Guardar imagen" (en el teléfono, el mismo menú sin el texto,
+ * donde está "Guardar imagen" para la galería; en la compu, se baja). Ver lib/compartir.ts.
  */
 export function HojaCompartir({
   titulo,
@@ -46,7 +47,7 @@ export function HojaCompartir({
   async function compartir() {
     if (!lista) return
     const r = await compartirImagen(lista.blob, nombreArchivo)
-    if (r === 'guardado') setAviso('Tu navegador no comparte imágenes: la bajamos.')
+    if (r === 'bajado') setAviso('Tu navegador no comparte imágenes: la bajamos.')
   }
 
   return (
