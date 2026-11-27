@@ -1,12 +1,12 @@
 import { useEffect, useId, useState } from 'react'
-import { compartirImagen, guardarImagen } from '../lib/compartir'
+import { aArchivo, compartirOGuardar, type Modo, modoAca } from '../lib/compartir'
 import { Hoja } from './Hoja'
 
 /**
- * Figma 08d / 08e (#127): la hoja para compartir una tarjeta en historias. Arma la imagen apenas se abre
- * (en iPhone el menú de compartir tiene que abrirse con el toque, sin esperar), la muestra en chiquito y
- * ofrece "Compartir" (el menú del teléfono) y "Guardar imagen" (en el teléfono, el mismo menú sin el texto,
- * donde está "Guardar imagen" para la galería; en la compu, se baja). Ver lib/compartir.ts.
+ * Figma 08d / 08e (#127, #129): la hoja para compartir una tarjeta en historias. Arma la imagen apenas se abre
+ * (en iPhone el menú de compartir tiene que abrirse con el toque, sin esperar) y la muestra en chiquito.
+ * Un solo botón: en el teléfono "Compartir o guardar" abre el menú del teléfono, que tiene "Guardar imagen";
+ * en la compu "Guardar imagen" la baja. Ver lib/compartir.ts.
  */
 export function HojaCompartir({
   titulo,
@@ -24,7 +24,7 @@ export function HojaCompartir({
   onCerrar: () => void
 }) {
   const idTitulo = useId()
-  const [imagen, setImagen] = useState<{ blob: Blob; url: string } | 'error' | null>(null)
+  const [imagen, setImagen] = useState<{ blob: Blob; url: string; modo: Modo } | 'error' | null>(null)
   const [aviso, setAviso] = useState('')
 
   useEffect(() => {
@@ -33,21 +33,23 @@ export function HojaCompartir({
     generar()
       .then((blob) => {
         url = URL.createObjectURL(blob)
-        if (vigente) setImagen({ blob, url })
+        if (vigente) setImagen({ blob, url, modo: modoAca(aArchivo(blob, nombreArchivo)) })
       })
       .catch(() => vigente && setImagen('error'))
     return () => {
       vigente = false
       if (url) URL.revokeObjectURL(url)
     }
-  }, [generar])
+  }, [generar, nombreArchivo])
 
   const lista = imagen && imagen !== 'error' ? imagen : null
+  // Mientras se arma, el botón ya dice lo que va a hacer
+  const modo = lista?.modo ?? modoAca()
 
-  async function compartir() {
+  async function alTocar() {
     if (!lista) return
-    const r = await compartirImagen(lista.blob, nombreArchivo)
-    if (r === 'bajado') setAviso('Tu navegador no comparte imágenes: la bajamos.')
+    const r = await compartirOGuardar(lista.blob, nombreArchivo)
+    if (r === 'bajado' && modo === 'menu') setAviso('Tu navegador no comparte imágenes: la bajamos.')
   }
 
   return (
@@ -63,13 +65,19 @@ export function HojaCompartir({
           <p className="cargando">Armando la tarjeta…</p>
         )}
       </div>
-      <button className="boton boton--ancho" type="button" onClick={compartir} disabled={!lista}>
-        Compartir <span className="flecha" aria-hidden="true">↗</span>
+      <button className="boton boton--ancho" type="button" onClick={alTocar} disabled={!lista}>
+        {modo === 'menu' ? (
+          <>
+            Compartir o guardar <span className="flecha" aria-hidden="true">↗</span>
+          </>
+        ) : (
+          'Guardar imagen'
+        )}
       </button>
-      <button className="boton boton--contorno boton--ancho" type="button" onClick={() => lista && guardarImagen(lista.blob, nombreArchivo)} disabled={!lista}>
-        Guardar imagen
-      </button>
-      <p className="mono-s hoja-compartir__nota">{nota}</p>
+      <p className="mono-s hoja-compartir__nota">
+        {modo === 'menu' && 'EN EL MENÚ ESTÁ GUARDAR IMAGEN, PARA TU GALERÍA. '}
+        {nota}
+      </p>
       <span className="sr-only" aria-live="polite">{aviso}</span>
       {aviso && <p className="texto-s">{aviso}</p>}
     </Hoja>
