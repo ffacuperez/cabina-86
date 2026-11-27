@@ -11,7 +11,7 @@ import { type Detalle, duracion, useDetalle } from '../datos/detalle'
 import { useNotasDeLaRonda } from '../datos/notas'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { tarjetaDelDisco } from '../datos/tarjetas'
-import { tarjetaDelDiscoEnPng } from '../lib/tarjetas'
+import { tarjetaDelDisco as dibujarDisco } from '../lib/tarjetas'
 import { haceCuanto } from '../lib/texto'
 import type { CajaEnVuelo } from '../lib/volar'
 
@@ -49,7 +49,7 @@ export default function DetalleDisco() {
   // Figma 03f (#127): si ya lo calificaste, Compartir al lado de Editar puntaje (sin tener que editar)
   const [compartiendo, setCompartiendo] = useState(false)
   const tarjeta = d ? tarjetaDelDisco(d, ronda.nombre) : null
-  const generar = useCallback(() => tarjetaDelDiscoEnPng(tarjeta!), [tarjeta])
+  const generar = useCallback(() => dibujarDisco(tarjeta!), [tarjeta])
 
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
 
@@ -110,7 +110,7 @@ export function HojaCompartirDisco({ generar, onCerrar }: { generar: () => Promi
       titulo="Compartí tu nota"
       bajada="Una imagen para historias, con tu puntaje y el disco."
       nota="VA CON EL LINK A CABINA86.COM. LA TAPA ES LA EDICIÓN CABINA DEL DISCO."
-      nombreArchivo="cabina86-disco.png"
+      nombreArchivo="cabina86-disco.jpg"
       generar={generar}
       onCerrar={onCerrar}
     />
