@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
+import { anotarOrigen } from '../lib/origen'
 import { supabase } from '../lib/supabase'
 
 type Auth = {
@@ -34,6 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = supabase.auth.onAuthStateChange((_evento, nueva) => setSession(nueva))
     return () => data.subscription.unsubscribe()
   }, [])
+
+  // #135: con sesión, se anota de dónde llegó (una sola vez; la base lo guarda solo si la cuenta es nueva)
+  const usuario = session?.user.id
+  useEffect(() => {
+    if (usuario) void anotarOrigen()
+  }, [usuario])
 
   async function entrarConGoogle() {
     setFalloElIngreso(false)
