@@ -12,6 +12,7 @@ const BLOQUES: { titulo: string; parrafos: ReactNode[] }[] = [
     parrafos: [
       'De tu cuenta de Google: tu nombre, tu foto y tu mail. Nada más: no leemos tus contactos, tus mails ni tus archivos.',
       'De lo que hacés acá: las rondas que armás o a las que te sumás, los discos que pasás con su tarjetita, y tus puntajes, temas favoritos, reacciones y comentarios.',
+      'Si llegaste por un link con etiqueta (de un video, de una tarjeta compartida o de una invitación), anotamos de dónde, para saber qué trae gente. Solo eso: no sabemos qué miraste ni quién te lo pasó.',
     ],
   },
   {
@@ -80,7 +81,7 @@ export default function Privacidad() {
     <main className="pantalla privacidad">
       <button className="mono-s privacidad__volver" type="button" onClick={volver}>← VOLVER</button>
 
-      <Cartel className="privacidad__cartel" sticker="24·11·26">
+      <Cartel className="privacidad__cartel" sticker="27·11·26">
         <p className="mono-s cartel__rotulo">LA LETRA CHICA</p>
         <h1 className="cartel-xl cartel__titulo">Privacidad</h1>
         <p className="cartel__texto">Qué datos usa Cabina 86, para qué, y qué podés hacer con ellos. Corto y sin vueltas.</p>
@@ -94,7 +95,7 @@ export default function Privacidad() {
         </section>
       ))}
 
-      <p className="mono-s">ACTUALIZADA EL 24 DE NOVIEMBRE DE 2026 · CABINA86.COM</p>
+      <p className="mono-s">ACTUALIZADA EL 27 DE NOVIEMBRE DE 2026 · CABINA86.COM</p>
     </main>
   )
 }
