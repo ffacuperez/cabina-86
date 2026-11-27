@@ -103,9 +103,8 @@ const ANCHO_ZALANDO: Record<string, number> = {
   '(': 52.5, ')': 52.4, '+': 72, $: 88, '#': 97.6, '…': 97.5,
 }
 
-/** Lo que mide un texto en mayúsculas, en px, en Zalando a ese tamaño (con el espaciado del Figma) */
-export function anchoTitulo(texto: string, tamano: number) {
-  const espaciado = tamano === 14 ? 0.3 : 0
+/** Lo que mide un texto en mayúsculas, en px, en Zalando a ese tamaño (con el espaciado del Figma, o el que se pase) */
+export function anchoTitulo(texto: string, tamano: number, espaciado = tamano === 14 ? 0.3 : 0) {
   let total = 0
   for (const letra of texto) {
     const base = letra.normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -269,4 +268,62 @@ export function tapaCabina(disco: { deezerId: number | string; titulo: string; a
     }
   }
   return { dibujo: 'CLI', paleta: PALETAS.CLI[paleta], texto: textoRecortado('CLI', titulo, disco.artista, disco.anio) }
+}
+
+// ── Las formas de cada dibujo, exportadas del Figma (las dibujan el SVG y el canvas de las tarjetas) ──
+
+export type Forma =
+  | { tipo: 'circulo'; cx: number; cy: number; r: number; color: string }
+  | { tipo: 'rect'; x: number; y: number; w: number; h: number; color: string; giro?: number }
+  | { tipo: 'path'; d: string; color: string }
+
+const ESTRELLA =
+  'M133 60L142.471 92.134L171.891 76.1091L155.866 105.529L188 115L155.866 124.471L171.891 153.891L142.471 137.866L133 170L123.529 137.866L94.1091 153.891L110.134 124.471L78 115L110.134 105.529L94.1091 76.1091L123.529 92.134L133 60Z'
+
+const triangulo = (x: number, y: number, color: string): Forma => ({
+  tipo: 'path',
+  d: `M${x} ${y}L${x + 12.99} ${y + 19.5}H${x - 12.99}L${x} ${y}Z`,
+  color,
+})
+
+/** Las formas, en orden, sobre el fondo. `giro` es en grados alrededor de la esquina de arriba a la izquierda. */
+export function formasDe(tapa: Pick<Tapa, 'dibujo' | 'paleta'>): Forma[] {
+  const f = tapa.paleta.formas
+  const fondo = tapa.paleta.fondo
+  switch (tapa.dibujo) {
+    case 'ART':
+      return [
+        { tipo: 'circulo', cx: 186, cy: 186, r: 90, color: f[0] },
+        { tipo: 'path', d: 'M171 18L209.971 76.5H132.029L171 18Z', color: f[1] },
+        ...[96, 105, 114, 123, 132].map((y): Forma => ({ tipo: 'rect', x: 18, y, w: 70, h: 3, color: f[2] })),
+      ]
+    case 'BOC':
+      return [
+        ...[130, 100, 70, 40].map((r, i): Forma => ({ tipo: 'circulo', cx: 100, cy: 200, r, color: i % 2 ? fondo : f[0] })),
+        { tipo: 'rect', x: 0, y: 0, w: 200, h: 8, color: f[1] },
+      ]
+    case 'CLI':
+      return [
+        ...[-6, 28, 62, 96, 130, 164].map((x): Forma => ({ tipo: 'rect', x, y: 120, w: 16, h: 160, color: f[0], giro: 35 })),
+        ...[148, 164, 180].flatMap((cy) => [156, 172, 188].map((cx): Forma => ({ tipo: 'circulo', cx, cy, r: 4, color: f[1] }))),
+      ]
+    case 'DIN':
+      return [
+        { tipo: 'path', d: ESTRELLA, color: f[0] },
+        { tipo: 'circulo', cx: 133, cy: 115, r: 12, color: f[1] },
+        { tipo: 'rect', x: 0, y: 186, w: 200, h: 14, color: f[0] },
+      ]
+    case 'INR':
+      return [
+        { tipo: 'circulo', cx: 45, cy: 145, r: 35, color: f[0] },
+        { tipo: 'circulo', cx: 108, cy: 144, r: 48, color: f[1] },
+        { tipo: 'circulo', cx: 158, cy: 148, r: 28, color: f[2] },
+        { tipo: 'circulo', cx: 170, cy: 90, r: 20, color: f[3] },
+      ]
+    case 'TPB':
+      return [
+        triangulo(91, 80, f[0]), triangulo(151, 80, f[0]), triangulo(121, 108, f[1]), triangulo(181, 108, f[1]),
+        triangulo(91, 136, f[0]), triangulo(151, 136, f[0]), triangulo(121, 164, f[1]), triangulo(181, 164, f[1]),
+      ]
+  }
 }

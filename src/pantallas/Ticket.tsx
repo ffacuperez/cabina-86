@@ -1,4 +1,4 @@
-import { type MouseEvent, type RefObject, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router'
 import bordeDentado from '../assets/ticket/borde-dentado.svg'
 import codigoDeBarras from '../assets/ticket/codigo-de-barras.svg'
@@ -6,6 +6,9 @@ import luz from '../assets/ticket/luz.svg'
 import { textoDeReaccion, textoDeTema, useDeuda } from '../datos/calificar'
 import { useNotasDeLaRonda } from '../datos/notas'
 import { type Detalle, useDetalle } from '../datos/detalle'
+import { tarjetaDelDisco } from '../datos/tarjetas'
+import { tarjetaDelDiscoEnPng } from '../lib/tarjetas'
+import { HojaCompartirDisco } from './DetalleDisco'
 import { type RondaActual, useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras, fechaDeCamara } from '../lib/texto'
 import { guardarTicketEnElTalon, sePuedeVolarCon, sinReducirMovimiento } from '../lib/volar'
@@ -72,6 +75,11 @@ export default function Ticket() {
     return () => clearTimeout(t)
   }, [arrancando, navigate, alCalificar, alExhibidor])
 
+  // Figma 04f (#127): Compartir al lado de Editar puntaje
+  const [compartiendo, setCompartiendo] = useState(false)
+  const tarjeta = estado.tipo === 'listo' ? tarjetaDelDisco(estado.detalle, ronda.nombre) : null
+  const generar = useCallback(() => tarjetaDelDiscoEnPng(tarjeta!), [tarjeta])
+
   if (estado.tipo === 'no-esta') return <Navigate to={alExhibidor} replace />
   if (estado.tipo === 'listo' && !estado.detalle.mia) {
     return <Navigate to={estado.detalle.esMio ? alDetalle : `${alDetalle}/calificar`} replace />
@@ -114,11 +122,19 @@ export default function Ticket() {
           Volver al exhibidor <span className="flecha" aria-hidden="true">→</span>
         </Link>
         {estado.tipo === 'listo' && (
-          <Link className="boton boton--ancho boton--contorno" to={alCalificar} onClick={arrancarPara('editar')}>
-            Editar puntaje
-          </Link>
+          <div className="botones-a-la-par">
+            <Link className="boton boton--contorno" to={alCalificar} onClick={arrancarPara('editar')}>
+              Editar puntaje
+            </Link>
+            {tarjeta && (
+              <button className="boton boton--contorno" type="button" onClick={() => setCompartiendo(true)}>
+                Compartir <span className="flecha" aria-hidden="true">↗</span>
+              </button>
+            )}
+          </div>
         )}
       </div>
+      {compartiendo && tarjeta && <HojaCompartirDisco generar={generar} onCerrar={() => setCompartiendo(false)} />}
     </>
   )
 }

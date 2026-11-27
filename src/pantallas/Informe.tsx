@@ -1,7 +1,8 @@
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { CajaCD } from '../componentes/CajaCD'
 import { Diana, type DardoEnDiana } from '../componentes/Diana'
+import { HojaCompartir } from '../componentes/HojaCompartir'
 import {
   type Cita,
   type DiscoDelInforme,
@@ -25,6 +26,8 @@ import {
   useInforme,
 } from '../datos/informe'
 import { conComa } from '../datos/loQuePasaste'
+import { tarjetaDelInforme } from '../datos/tarjetas'
+import { tarjetaDelInformeEnPng } from '../lib/tarjetas'
 import { useMarco, useRondaActual } from '../datos/ronda'
 import { dosCifras } from '../lib/texto'
 
@@ -42,6 +45,9 @@ export default function Informe() {
   const ronda = useRondaActual()
   const { estado, reintentar } = useInforme(ronda.id)
   const desde = useLocation().state as { blanco?: string; aLaPunteria?: boolean } | null
+  const [compartiendo, setCompartiendo] = useState(false)
+  const informe = estado.tipo === 'listo' ? estado.informe : null
+  const generar = useCallback(() => tarjetaDelInformeEnPng(tarjetaDelInforme(informe!, ronda.nombre)), [informe, ronda.nombre])
 
   return (
     <div className="informe">
@@ -58,13 +64,36 @@ export default function Informe() {
           <button className="boton boton--contorno" type="button" onClick={reintentar}>Probar de nuevo</button>
         </div>
       )}
-      {estado.tipo === 'listo' && <VistaInforme informe={estado.informe} blanco={desde?.blanco} aLaPunteria={desde?.aLaPunteria} />}
+      {estado.tipo === 'listo' && (
+        <VistaInforme informe={estado.informe} blanco={desde?.blanco} aLaPunteria={desde?.aLaPunteria} onCompartir={() => setCompartiendo(true)} />
+      )}
+      {compartiendo && informe && (
+        <HojaCompartir
+          titulo="Compartí el informe"
+          bajada="El ticket de la ronda, para historias."
+          nota="VA CON EL LINK A CABINA86.COM. TUS AMIGOS SALEN CON SU NOMBRE DE PILA."
+          nombreArchivo="cabina86-informe.png"
+          generar={generar}
+          onCerrar={() => setCompartiendo(false)}
+        />
+      )}
     </div>
   )
 }
 
 /** El contenido del informe, sin la carga (también sirve para mirarlo con datos de ejemplo). */
-export function VistaInforme({ informe: i, blanco, aLaPunteria = false }: { informe: DatosInforme; blanco?: string; aLaPunteria?: boolean }) {
+export function VistaInforme({
+  informe: i,
+  blanco,
+  aLaPunteria = false,
+  onCompartir,
+}: {
+  informe: DatosInforme
+  blanco?: string
+  aLaPunteria?: boolean
+  /** Figma 06h (#127): COMPARTIR al lado del total abre la hoja con el ticket del informe (08e) */
+  onCompartir?: () => void
+}) {
   const t = i.termometro
   const hayCerrados = i.faltan_cerrados === 0
 
@@ -74,9 +103,16 @@ export function VistaInforme({ informe: i, blanco, aLaPunteria = false }: { info
 
   return (
     <>
-      <p className="lcd informe__total">
-        {dosCifras(i.discos)} {i.discos === 1 ? 'DISCO' : 'DISCOS'} · {dosCifras(i.notas)} {i.notas === 1 ? 'NOTA' : 'NOTAS'}
-      </p>
+      <div className="informe__fila-total">
+        <p className="lcd informe__total">
+          {dosCifras(i.discos)} {i.discos === 1 ? 'DISCO' : 'DISCOS'} · {dosCifras(i.notas)} {i.notas === 1 ? 'NOTA' : 'NOTAS'}
+        </p>
+        {onCompartir && (
+          <button className="chip-accion" type="button" aria-label="Compartir el informe" onClick={onCompartir}>
+            COMPARTIR ↗
+          </button>
+        )}
+      </div>
       <p className="mono-s informe__aclaracion">SOLO CUENTAN LOS DISCOS QUE YA ESCUCHARON TODOS</p>
 
       <Bloque titulo="El termómetro">
